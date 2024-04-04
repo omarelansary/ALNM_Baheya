@@ -36,7 +36,14 @@ def main():
                     "Medical Conditions": medical_conditions if any_medical_conditions else None,
                     "Agreed to Terms": agreed_to_terms
                 }
-                st.json(info)
+                
+                # Store data in a DataFrame
+                df = pd.DataFrame([info])
+
+                # Display user-submitted data
+                st.subheader("You have submitted the following information:")
+                st.write(df)
+                
             else:
                 st.warning("Please agree to the terms and conditions.")
 
