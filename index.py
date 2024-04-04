@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+from helper_functions import divide_by_two  # Importing the function from helper_functions.py
+
 def main():
     st.title("Preschool Enrollment Form")
 
@@ -43,6 +45,9 @@ def main():
                 # Display user-submitted data
                 st.subheader("You have submitted the following information:")
                 st.write(df)
+                st.subheader("Age devided by 2 is:")
+                st.write(divide_by_two(child_age))
+                
                 
             else:
                 st.warning("Please agree to the terms and conditions.")
