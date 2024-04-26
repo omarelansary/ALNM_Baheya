@@ -1,10 +1,9 @@
 import streamlit as st
 import pandas as pd
 from helper_functions import divide_by_two  # Importing the function from helper_functions.py
-
 def main():
     st.title("Preschool Enrollment Form")
-
+    
     # Form inputs
     with st.form("preschool_form"):
         st.subheader("Child Information")
