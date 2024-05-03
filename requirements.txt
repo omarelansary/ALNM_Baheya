@@ -33,3 +33,4 @@ fuzzywuzzy
 django4-background-tasks
 djangorestframework_simplejwt
 python-Levenshtein
+psycopg2-binary
