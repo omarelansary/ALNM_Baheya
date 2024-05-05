@@ -15,8 +15,10 @@ class Migration(migrations.Migration):
             name='Doctor',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('firstname', models.CharField(max_length=255)),
-                ('lastname', models.CharField(max_length=255)),
+                ('firstName', models.CharField(max_length=200)),
+                ('lastName', models.CharField(max_length=200)),
+                ('email' ,models.EmailField(max_length = 255)),
+                ('password', models.CharField(max_length=500)),
             ],
         ),
     ]
