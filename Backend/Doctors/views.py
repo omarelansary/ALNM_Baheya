@@ -20,6 +20,8 @@ import jwt
 from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.auth.hashers import check_password
+from django.core.mail import send_mail
+from django.core.exceptions import ObjectDoesNotExist
 
 def generate_jwt_token(user_id):
     # Define payload (claims) for the JWT token
@@ -37,50 +39,53 @@ def generate_jwt_token(user_id):
 def doctors(request):
     return Response({"message":"This is the doctor's Api"})
 
-#=========BRAND NEW SIGN UP========================================
-#Steps:
-#1-chek mail exists or new 
-#2-create user
-#3-send verification(fn) mail to user email 
-#4-Return user not token
-
 @api_view(['POST'])
-def signUp(request):
+def forgotPassword(request):
     # Get request data
-    first_name = request.data.get('firstName')
-    last_name = request.data.get('lastName')
     email = request.data.get('email')
     password = request.data.get('password')
 
-    # Check if all required fields are provided
-    if not first_name or not last_name or not email or not password:
-        return Response({'success': False, 'message': 'Please provide all required fields'}, status=400)
-
-    # Check if email already exists in the database
-    if Doctor.objects.filter(email=email).exists():
-        # Email already exists
-        return Response({'success': False, 'message': 'Email already exists'}, status=400)
-    else:
-        # # Hash the password using bcrypt
-        # hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        # Hash the password using Django's default hashing algorithm
+    # Check if both email and password are provided
+    if not email:
+        return Response({'success': False, 'message': 'Please provide an email'}, status=400)
+    if not password:
+        return Response({'success': False, 'message': 'Please provide a password'}, status=400)
+    
+    try:
+        # Check if a Doctor object with the provided email exists
+        doctor = Doctor.objects.get(email=email)
+        
+        # Hash the new password
         hashed_password = make_password(password)
-        # # Convert the hashed password to a string
-        # hashed_password_str = hashed_password.decode('utf-8')
+        
+        # Update the password for the doctor object
+        doctor.password = hashed_password
+        
+        # Save the doctor object to update the password in the database
+        doctor.save()
 
-        # Create a new Doctor instance
-        doctor = Doctor.objects.create(
-            firstName=first_name,
-            lastName=last_name,
-            email=email,
-            password=hashed_password
-        )
-        # Return success response with doctor details
-        return Response({'success': True, 'doctor': {'id': doctor.id, 'firstName': doctor.firstName, 'lastName': doctor.lastName, 'email': doctor.email,'password':doctor.password}, 'message': 'Doctor created successfully'})
+        #send email to doctor
+        my_subject='Password notification for Baheya ALNM Website'
+        my_message='Your password is restored successfully. You can now login with your credentials.'
+        send_mail(
+            subject=my_subject,
+            message=my_message,
+            recipient_list=[email],
+            from_email=None,
+            fail_silently=False)
 
-#=====BRAND NEW LOGIN FOR NEW MANUALLY DEFINED DOCTOR'S MODEL======
+        return Response({'success': True,'message': 'Password restored successfully.'})
+    
+    except ObjectDoesNotExist:
+        # Handle the case where no Doctor object with the provided email exists
+        return Response({'success': False, 'message': 'Email address not found.'}, status=404)
+    
+    except Exception as e:
+        # Handle unexpected exceptions
+        return Response({'success': False, 'message': 'An unexpected error occurred.'}, status=500)
 
-#================================
+
+#============================================
 @api_view(['POST'])
 def login(request):
     # Get request data
@@ -95,34 +100,23 @@ def login(request):
     if Doctor.objects.filter(email=email).exists():
         #compare password (methode 2)
         doctor=Doctor.objects.get(email=email)
-        print("Manual password checker:")
-        print(type(password))
-        print("Password matching check: ",check_password(doctor.password,password))
-        # Email exists, proceed with authentication
-        user = authenticate(email=email, password=password)
-        
+        print("My doctor object:\n",doctor)
+        print("Database password:\n",doctor.password)
+        print("User entered password:\n",password)
 
-        
-        
-
-        token=generate_jwt_token(doctor.id)
-        print("My token: ",token)
-
-        if user is not None:
-            
-            # # Serialize the user object to include user data in the response
-            # serializer = UserSerializer(instance=user)
-            # Authentication successful
-            
-            # Here you can perform any additional tasks you need
-            return Response({'success': True,'token': token,'message': 'Login successful'})
-            
+        print("Manual password checker:\n",type(password))
+     
+        # Check if user exists and password matches
+        if doctor is None or not check_password(password, doctor.password):
+            return Response({'success': False,'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
-            # Authentication failed
-            return Response({'success': False ,'message': 'Invalid credentials'}, status=400)
+            #TODO:set an expiration date
+            token=generate_jwt_token(doctor.id)
+            print("My token: ",token)
+            return Response({'success': True,'token': token,'message': 'Login successful'})
     else:
         # Email does not exist in the database
-        return Response({'success': False, 'message': 'Email does not exist'}, status=400)
+        return Response({'success': False, 'error': 'Email does not exist'}, status=400)
 
 #===========================END BRAND NEW LOGIN=====================
 
@@ -176,8 +170,3 @@ def login(request):
 #     #Return user token and data
 #     return Response({"token": token.key, "user": serializer.data})
 #   return Response (serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view( ['POST'])
-def testToken(request):
-  return Response ({"message":"This is the doctor's testtoken Api"})

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'doctors',
+    'admins',
 ]
 
 MIDDLEWARE = [
@@ -71,7 +72,19 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'Backend.wsgi.application'
-
+#ADDED:Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'#send using gmail
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+# EMAIL_USE_TLS = False
+DEFAULT_FROM_EMAIL = 'Baheya ALNM'
+EMAIL_HOST_USER = 'alnmbaheya.backend@gmail.com'
+EMAIL_USE_SSL = False
+# EMAIL_USE_SSL = True
+# EMAIL_SSL_VERIFICATION = False
+EMAIL_HOST_PASSWORD='iaul xzaw jbmd gpps'
+# EMAIL_HOST_PASSWORD='iaulxzawjbmdgpps'
 
 # Database
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
@@ -80,7 +93,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'ALNM_Baheya',
-        'USER': 'postgres',
+        'USER': 'admin',
         'PASSWORD': 'admin',
         'HOST': 'localhost',
         'PORT': ''
