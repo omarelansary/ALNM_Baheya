@@ -94,32 +94,37 @@ def signUp(request):
         # Email already exists
         return Response({'success': False, 'message': 'Email already exists'}, status=400)
     else:
-        # # Hash the password using bcrypt
-        # hashedPassword = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        # Hash the password using Django's default hashing algorithm
-        hashedPassword = make_password(password)
-        # # Convert the hashed password to a string
-        # hashedPassword_str = hashedPassword.decode('utf-8')
-
-        # Create a new Doctor instance
-        doctor = Doctor.objects.create(
-            firstName=firstName,
-            lastName=lastName,
-            email=email,
-            password=hashedPassword
-        )
-        #send email to doctor
-        my_subject='Admin Verification for Baheya ALNM Website'
-        # my_message=f'You can now login using the following credentials:\nEmail: {email}\nPassword: {password}'
-        my_message=f'Please login with the following credentials:\nEmail: {email}\nPassword: {password}'
-        send_mail(
-            subject = my_subject,
-            message = my_message,
-            recipient_list= [email],
-            from_email = None,
+        try:
+            #send email to doctor
+            my_subject='Admin Verification for Baheya ALNM Website'
+            # my_message=f'You can now login using the following credentials:\nEmail: {email}\nPassword: {password}'
+            my_message=f'Please login with the following credentials:\nEmail: {email}\nPassword: {password}'
+            send_mail(
+                subject = my_subject,
+                message = my_message,
+                recipient_list= [email],
+                from_email = None,
             fail_silently = False)
-        # Return success response with doctor details
-        return Response({'success': True, 'doctor': {'id': doctor.id, 'firstName': doctor.firstName, 'lastName': doctor.lastName, 'email': doctor.email,'password':doctor.password}, 'message': 'Doctor created successfully'})
+            # Hash the password using bcrypt
+            # hashedPassword = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            # Hash the password using Django's default hashing algorithm
+            hashedPassword = make_password(password)
+            # # Convert the hashed password to a string
+            # hashedPassword_str = hashedPassword.decode('utf-8')
+
+            # Create a new Doctor instance
+            doctor = Doctor.objects.create(
+                firstName=firstName,
+                lastName=lastName,
+                email=email,
+                password=hashedPassword
+            )
+            
+
+            # Return success response with doctor details
+            return Response({'success': True, 'doctor': {'id': doctor.id, 'firstName': doctor.firstName, 'lastName': doctor.lastName, 'email': doctor.email,'password':doctor.password}, 'message': 'Doctor created successfully'})
+        except Exception as e:
+            return Response({'success': False, 'message': str(e)}, status=500)
 
 #=====BRAND NEW LOGIN FOR NEW MANUALLY DEFINED DOCTOR'S MODEL======
 
