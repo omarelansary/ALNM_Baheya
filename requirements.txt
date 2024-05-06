@@ -36,3 +36,4 @@ python-Levenshtein
 psycopg2-binary
 bcrypt
 PyJWT
+streamlit
