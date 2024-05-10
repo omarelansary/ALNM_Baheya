@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'doctors',
     'admins',
+    'patients',
+    'assessments',
 ]
 
 MIDDLEWARE = [
@@ -84,7 +86,7 @@ EMAIL_USE_SSL = False
 # EMAIL_USE_SSL = True
 # EMAIL_SSL_VERIFICATION = False
 EMAIL_HOST_PASSWORD='iaul xzaw jbmd gpps'
-# EMAIL_HOST_PASSWORD='iaulxzawjbmdgpps'
+
 
 # Database
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
