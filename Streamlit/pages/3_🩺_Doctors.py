@@ -1,6 +1,7 @@
 import sys
 import yaml
 import streamlit as st
+from Networking.Networking import Networking
 #from Streamlit_Authenticator_main.streamlit_authenticator.authenticate import Authenticate
 from yaml.loader import SafeLoader
 # from Streamlit_Authenticator_main.streamlit_authenticator.utilities.exceptions import (CredentialsError,
@@ -39,6 +40,7 @@ def main():
     # if st.session_state["authentication_status"]:
     #     authenticator.logout()
     #     st.write(f'Welcome *{st.session_state["name"]}*')
+        Network=Networking()
 
         st.title("Risk Assessment")
         with st.form("Risk Assessment"):
@@ -48,6 +50,7 @@ def main():
             with col_Numerical:
             # Numerical inputs
                 st.subheader("Numerical Inputs")
+                patient_MRN = st.number_input("Patient MRN", value=0, min_value=0)
                 patient_first_bmi = st.number_input("First BMI", value=0.0, min_value=0.0)
                 patient_age = st.number_input("Age", value=0, min_value=0)
                 patient_size_cm = st.number_input("size cm", value=0.0, min_value=0.0)
@@ -139,6 +142,7 @@ def main():
                     # Display results
                     st.subheader("Risk Assessment Results")
                     st.write("Numerical Inputs:")
+                    st.write(f"- Patient MRN: {patient_MRN}")
                     st.write(f"- First BMI: {patient_first_bmi}")
                     st.write(f"- Age: {patient_age}")
                     st.write(f"- Size (cm): {patient_size_cm}")
@@ -164,6 +168,32 @@ def main():
                     st.write(f"- ER: {er_choice}")
                     st.write(f"- PR: {pr_choice}")
                     st.write(f"- HER2: {her2_choice}")
+                    patient_data = {
+                                        "MRN": int(patient_MRN),
+                                        "patient_first_bmi": float(patient_first_bmi),
+                                        "patient_age": int(patient_age),
+                                        "patient_size_cm": float(patient_size_cm),
+                                        "patient_ki67": float(patient_ki67),
+                                        "patient_family_history": str(patient_family_history),
+                                        "patient_menopausal_state": str(patient_menopausal_state),
+                                        "patient_t": str(patient_t),
+                                        "patient_n": str(patient_n),
+                                        "patient_laterality": str(patient_laterality),
+                                        "patient_unilateral_bilateral": str(patient_unilateral_bilateral),
+                                        "patient_site": str(patient_site),
+                                        "patient_tumor_type": str(patient_tumor_type),
+                                        "patient_grade": str(patient_grade),
+                                        "dm_result": str(dm_choice),
+                                        "htn_result": str(htn_choice),
+                                        "vte_result": str(vte_choice),
+                                        "cvd_result": str(cvd_choice),
+                                        "lymphovascular_invasion_result": str(lymphovascular_invasion_choice),
+                                        "er_result": str(er_choice),
+                                        "pr_result": str(pr_choice),
+                                        "her2_result": str(her2_choice)
+                                    }
+                    st.write(Network.post_make_assesment(18,int(patient_MRN),patient_data))             
+                    
 
 
 css="""
