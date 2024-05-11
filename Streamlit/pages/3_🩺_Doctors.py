@@ -1,44 +1,44 @@
 import sys
 import yaml
 import streamlit as st
-from Streamlit_Authenticator_main.streamlit_authenticator.authenticate import Authenticate
+#from Streamlit_Authenticator_main.streamlit_authenticator.authenticate import Authenticate
 from yaml.loader import SafeLoader
-from Streamlit_Authenticator_main.streamlit_authenticator.utilities.exceptions import (CredentialsError,
-                                                          ForgotError,
-                                                          LoginError,
-                                                          RegisterError,
-                                                          ResetError,
-                                                          UpdateError) 
+# from Streamlit_Authenticator_main.streamlit_authenticator.utilities.exceptions import (CredentialsError,
+#                                                           ForgotError,
+#                                                           LoginError,
+#                                                           RegisterError,
+#                                                           ResetError,
+#                                                           UpdateError) 
 st.set_page_config(
         page_title="Risk Assessment",
         layout="wide",  # Set layout to wide mode
         initial_sidebar_state="collapsed",  # Collapse the sidebar initially
     )
-# Append path to ensure the custom module is found (if necessary)
-sys.path.append('..\\Streamlit-Authenticator-main')
+# # Append path to ensure the custom module is found (if necessary)
+# sys.path.append('..\\Streamlit-Authenticator-main')
 
-# Load configuration
-with open('Streamlit_Authenticator_main\\config.yaml', 'r', encoding='utf-8') as file:
-    config = yaml.load(file, Loader=SafeLoader)
+# # Load configuration
+# with open('Streamlit_Authenticator_main\\config.yaml', 'r', encoding='utf-8') as file:
+#     config = yaml.load(file, Loader=SafeLoader)
 
 # Create the authenticator object
-authenticator = Authenticate(
-    config['credentials'],
-    config['cookie']['name'],
-    config['cookie']['key'],
-    config['cookie']['expiry_days'],
-    config['pre-authorized']
-)
+# authenticator = Authenticate(
+#     config['credentials'],
+#     config['cookie']['name'],
+#     config['cookie']['key'],
+#     config['cookie']['expiry_days'],
+#     config['pre-authorized']
+# )
 
 def main():
     #Creating a login widget
-    try:
-        authenticator.login()
-    except LoginError as e:
-        st.error(e)
-    if st.session_state["authentication_status"]:
-        authenticator.logout()
-        st.write(f'Welcome *{st.session_state["name"]}*')
+    # try:
+    #     authenticator.login()
+    # except LoginError as e:
+    #     st.error(e)
+    # if st.session_state["authentication_status"]:
+    #     authenticator.logout()
+    #     st.write(f'Welcome *{st.session_state["name"]}*')
 
         st.title("Risk Assessment")
         with st.form("Risk Assessment"):

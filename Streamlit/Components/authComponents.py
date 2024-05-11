@@ -42,7 +42,8 @@ class AuthComponents:
 
     def login(self,role):
         if st.session_state['is_logged_in'] == False:
-            if self.cookie_handler.get_cookie()==None:
+            #if self.cookie_handler.get_cookie()==None:
+            if not self.check_cookie_session():
                 # Initialize the authenticator
                 authenticator = Authenticator()
                 st.title(f"{role.capitalize()} Login")
