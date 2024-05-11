@@ -26,6 +26,7 @@ from django.http import JsonResponse
 from patients.models import Patient
 from assessments.models import Assessment
 import json
+from django.utils import timezone
 
 def generate_jwt_token(user_id):
     # Define payload (claims) for the JWT token
@@ -50,9 +51,9 @@ def forgotPassword(request):
     password = request.data.get('password')
 
     # Check if both email and password are provided
-    if not email:
+    if email is None:
         return Response({'success': False, 'message': 'Please provide an email'}, status=400)
-    if not password:
+    if password is None:
         return Response({'success': False, 'message': 'Please provide a password'}, status=400)
     
     try:
@@ -92,12 +93,13 @@ def forgotPassword(request):
 #======================================================================================
 @api_view(['POST'])
 def login(request):
+    #TODO: return id , fisrat and lastname in the response -->DONE
     # Get request data
     email = request.data.get('email')
     password = request.data.get('password')
 
     # Check if both email and password are provided
-    if not email or not password:
+    if email is None or password is None:
         return Response({'success': False, 'message': 'Please provide both email and password'}, status=400)
 
     # Check if email already exists in the database
@@ -117,7 +119,7 @@ def login(request):
             #TODO:set an expiration date
             token=generate_jwt_token(doctor.id)
             print("My token: ",token)
-            return Response({'success': True,'token': token,'message': 'Login successful'})
+            return Response({'success': True,"id":doctor.id,"firstName":doctor.firstName,"lastName":doctor.lastName,'token': token,'message': 'Login successful'})
     else:
         # Email does not exist in the database
         return Response({'success': False, 'error': 'Email does not exist'}, status=400)
@@ -222,15 +224,157 @@ It allows multiple doctors to insert patients data but ONLY once each
 #         'doctors': [doc.id for doc in patient.doctors.all()]
 #     })
 #####################################
+
+#================GET STATUS BY MRN============================================
+
+@api_view(['POST'])
+def getStatusByMRN(request):
+    try:
+        MRN=request.data.get('MRN')
+     
+        if MRN is None:
+            return Response({
+            'success': False,
+            'message': 'MRN is missing.'
+        })   
+
+        try:
+            # Attempt to retrieve the assessment object based on MRN
+            assessment = Assessment.objects.get(MRN=MRN)
+        except Assessment.DoesNotExist:
+            # If the assessment doesn't exist, return error message
+            return Response({
+                'success': False,
+                'message': 'This patient doesn\'t exist.'
+            })    
+        
+        message=assessment.get_status_message(assessment.status)
+
+        return Response({
+                'success': True,
+                'status':assessment.status ,
+                'message':message,
+            })
+
+    except Exception as e:
+        # Return error response if an exception occurs
+        return Response({
+            'success': False,
+            'message': str(e),
+        })
+
+#=============================================================================
+#================GET ASSESSMENTS BY DOCTOR ID=================================
+
+
+@api_view(['GET'])
+def getAssessmentsByDocId(request):
+    try:
+        #Extract request data
+        doctor_id=request.data.get('doctor_id')
+
+        if doctor_id is None:
+            return Response({
+            'success': False,
+            'message': 'Doctor ID is missing.'
+        })
+
+        # Retrieve the doctor object by doctor_id
+        doctor = Doctor.objects.get(id=doctor_id)
+        
+        # Retrieve assessments associated with the doctor
+        assessments = doctor.assessments.all()
+        
+      
+        return Response({
+            'success': True,
+           'assessments': [assessment.id for assessment in assessments], 
+        })
+    except Doctor.DoesNotExist:
+        return Response({
+            'success': False,
+            'message': 'Doctor not found.',
+        })
+    except Exception as e:
+        # Return error response if an exception occurs
+        return Response({
+            'success': False,
+            'message': str(e),
+        })
+
+
+#=============================================================================
+#============================SET GROUND TRUTH=================================
+
+@api_view(['POST'])
+def setGroundTruth(request):
+    #Extract request information
+    MRN=request.data.get('MRN')
+    doctor_id = request.data.get('doctor_id')
+    ground_truth = request.data.get('ground_truth')
+
+    # Check if doctor_id, MRN, and ground_truth are provided
+    if doctor_id is None or MRN is None or ground_truth is None:
+        return Response({
+            'success': False,
+            'message': 'Doctor ID, MRN, or ground_truth is missing.'
+        })
+    
+
+    try:
+        # Attempt to retrieve the assessment object based on MRN
+        assessment = Assessment.objects.get(MRN=MRN)
+    except Assessment.DoesNotExist:
+        # If the assessment doesn't exist, return error message
+        return Response({
+            'success': False,
+            'message': 'This patient doesn\'t exist.'
+        })
+    
+    # Check if the doctor is not associated with the assessment
+    if not assessment.doctors.filter(id=doctor_id).exists():
+        return Response({
+            'success': False,
+            'message': 'This doctor id is not associated with this assessment.'
+        })
+    
+    isValide=assessment.validate_binary_choices(ground_truth)
+    if not isValide:
+        return Response({
+            'success': False,
+            'message': 'Please enter either 0 or 1 for ground truth.'
+        })
+
+    assessment.ground_truth=ground_truth
+    assessment.status=3
+    # Save the assessment object
+    assessment.save()
+
+    message=assessment.get_status_message(assessment.status)
+    
+    return Response({
+        'success': True,
+        'message': 'Ground truth updated successfully.',
+        'status':assessment.status,
+        'status_message':message,
+
+    })
+
+
+    
+
+
+#=================================================================================
 @api_view(['POST'])
 def makeAssessment(request):
-    
+    #TODO: add lines of code to save prediction of model to current assessement
     # Extract doctor_id and medical_info from the request
     doctor_id = request.data.get('doctor_id')
     medical_info = request.data.get('medical_info')
     MRN=request.data.get('MRN')
+
     # Check if doctor_id and medical_info are provided
-    if not doctor_id or not medical_info or not MRN:
+    if doctor_id is None or medical_info is None or MRN is None:
         return Response({
             'success': False,
             'message': 'Doctor ID, medical info or MRN is missing.'
@@ -253,12 +397,12 @@ def makeAssessment(request):
         # If the assessment doesn't exist, create a new one
         assessment = Assessment.objects.create(MRN=MRN)
 
-    # Check if the doctor is already associated with the assessment
-    if assessment.doctors.filter(id=doctor_id).exists():
-        return Response({
-            'success': False,
-            'message': 'Doctor already associated with this assessment.'
-        })
+    # # Check if the doctor is already associated with the assessment
+    # if assessment.doctors.filter(id=doctor_id).exists():
+    #     return Response({
+    #         'success': False,
+    #         'message': 'Doctor already associated with this assessment.'
+    #     })
 
     # Use the method to set medical info for the assessment
     assessment.set_medical_info(
@@ -289,15 +433,36 @@ def makeAssessment(request):
     # Add the doctor to the assessment's doctors
     assessment.doctors.add(doctor)
 
+    # Add the assessment to the doctor's assessments
+    doctor.assessments.add(assessment)
+
+    #Add status to assessment
+    assessment.status = 1
+    
+    #Add date assessment created 
+    assessment.creation_date = timezone.now().date()
+
     # Save the assessment object
     assessment.save()
+    # ###
+    # doctorss = assessment.doctors.all()
+    
+    # # Convert queryset to list of dictionaries
+    # doctorss_list = [{'id': doctor.id} for doctor in doctorss]
+    # ###
+    message=assessment.get_status_message(assessment.status)
 
     # Return the assessment object in the response
     return Response({
         'success': True,
         'id': assessment.id,
+        'MRN':MRN,
+        'status':assessment.status,
+        'status_message':message,
+        'creation_date':assessment.creation_date,
         'medical_info': assessment.medical_info,
-        'doctors': [doc.id for doc in assessment.doctors.all()]
+        'doctors': [doc.id for doc in assessment.doctors.all()],
+       
     })
 
 
