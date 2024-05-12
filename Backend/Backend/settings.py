@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'admins',
     'patients',
     'assessments',
+    'dataScientists',
 ]
 
 MIDDLEWARE = [

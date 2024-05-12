@@ -1,5 +1,7 @@
 from django.db import models
 
+
+    
 # Create your models here.
 class Doctor(models.Model):
   patients = models.ManyToManyField('patients.Patient')
@@ -9,7 +11,6 @@ class Doctor(models.Model):
   lastName = models.CharField(max_length=250)
   email = models.EmailField(max_length = 255)
   password = models.CharField(max_length=500)
-
 
   
   def __str__(self):

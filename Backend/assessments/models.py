@@ -3,6 +3,8 @@ from django.db import models
 # Create your models here.
 from django.db import models
 
+
+
 #This class works on ManyToMany relationships for data serialization
 class AssessmentManager(models.Manager):
     def serialize_assessments(self, queryset):
@@ -33,7 +35,7 @@ class AssessmentManager(models.Manager):
 
 #==================================
 class Assessment(models.Model):
-    #TODO:add data scientists foriegn key
+
     #TODO:add ground truth field(nullable) -->DONE
     #TODO:add predicted field (nullable) -->DONE
     #TODO:status(enum:[1,2,3,4,5]) -->DONE
@@ -46,7 +48,9 @@ class Assessment(models.Model):
     #TODO:Handle update that same doctor & other new doctors can edit
     #&now save the created date and status -->DONE
 
+    #TODO:Remove when refactor
     objects = AssessmentManager()
+
     #doctors are null in case doctors are deleted and no associated doctor
     doctors = models.ManyToManyField('doctors.Doctor', blank=True)
     medical_info = models.JSONField(default=dict)

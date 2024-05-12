@@ -3,8 +3,6 @@ from django.http import HttpResponse
 #edited
 from rest_framework.decorators import api_view 
 from rest_framework.response import Response
-# from serializers import UserSerializer 
-from doctors.serializers import UserSerializer
 from rest_framework import status 
 #Allows us to fetch and create users and tokens from our database
 from rest_framework.authtoken.models import Token 
@@ -28,23 +26,8 @@ from assessments.models import Assessment
 import json
 from django.utils import timezone
 from django.db.utils import OperationalError
-
-def generate_jwt_token(user_id):
-    try:
-        # Define payload (claims) for the JWT token
-        payload = {
-            'user_id': user_id,
-            'exp': datetime.utcnow() + timedelta(days=1)  # Token expiration time
-        }
-
-        # Generate JWT token
-        token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
-
-        return token
-    
-    except Exception as e:
-        # Return a generic error response for other exceptions
-        return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)
+from utils.authenticators import generate_jwt_token
+from assessments.serializers import AssessmentSerializer
 
 
 @api_view( ['GET'])
@@ -243,7 +226,53 @@ It allows multiple doctors to insert patients data but ONLY once each
 #         'doctors': [doc.id for doc in patient.doctors.all()]
 #     })
 #####################################
+#================GET ASSESSMENTS BY STATUS===================================
+@api_view(['POST'])
+def getAssessmentsByStatus(request):
+    try:
+        #Extract request data
+        doctor_id=request.data.get('doctor_id')
+        status=request.data.get('status')
 
+        if doctor_id is None:
+            return Response({
+            'success': False,
+            'message': 'Doctor ID is missing.'
+        })
+
+        if status is None:
+            return Response({
+            'success': False,
+            'message': 'Status is missing.'
+        })
+
+        # Retrieve the doctor object by doctor_id
+        doctor = Doctor.objects.get(id=doctor_id)
+        
+        # Retrieve assessments associated with the doctor
+        assessments = doctor.assessments.filter(status=status)
+
+        #serialize assessments
+        serialized_assessments=doctor.assessments.serialize_assessments(assessments)
+        
+      
+        return Response({
+            'success': True,
+           'assessments': serialized_assessments, 
+        })
+    except Doctor.DoesNotExist:
+        return Response({
+            'success': False,
+            'message': 'Doctor not found.',
+        })
+    except OperationalError as e:
+        # Return an error response for database errors
+        return Response({'success': False, 'message': f'Database error: {e}'}, status=400)
+    except Exception as e:
+        # Return a generic error response for other exceptions
+        return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)
+
+#============================================================================
 #================GET STATUS BY MRN============================================
 
 @api_view(['POST'])
@@ -306,7 +335,7 @@ def getAssessmentsByDocId(request):
         # Retrieve assessments associated with the doctor
         assessments = doctor.assessments.all()
 
-        #serialize assessments
+        # #serialize assessments
         serialized_assessments=doctor.assessments.serialize_assessments(assessments)
         
       
