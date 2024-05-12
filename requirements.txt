@@ -37,3 +37,6 @@ psycopg2-binary
 bcrypt
 PyJWT
 streamlit
+extra_streamlit_components
+redis
+redis-server

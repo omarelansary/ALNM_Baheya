@@ -8,6 +8,8 @@ class AssessmentManager(models.Manager):
     def serialize_assessments(self, queryset):
             serialized_assessments = []
             for assessment in queryset:
+                # status_message=assessment.get_status_message(assessment.status)
+                
                 serialized_assessment = {
                     'id': assessment.id,
                     'MRN':assessment.MRN,
@@ -16,8 +18,16 @@ class AssessmentManager(models.Manager):
                     'ground_truth':assessment.prediction,
                     'creation_date':assessment.creation_date,
                     'medical_info':assessment.medical_info,
+                   
                     # Add other fields as needed
                 }
+                if assessment.status is not None:
+                    status_message = assessment.get_status_message(assessment.status)
+                    serialized_assessment['status_message'] = status_message
+                else:
+                    serialized_assessment['status_message'] = None
+
+                
                 serialized_assessments.append(serialized_assessment)
             return serialized_assessments
 
