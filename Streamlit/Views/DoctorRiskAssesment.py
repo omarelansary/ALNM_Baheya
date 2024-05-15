@@ -1,50 +1,16 @@
-import sys
-#import yaml
 import streamlit as st
 from Networking.Networking import Networking
 import pandas as pd
 from ourData.cache import LocalCache
-import io
 
-# from Cache import Cache
-#from Streamlit_Authenticator_main.streamlit_authenticator.authenticate import Authenticate
-#from yaml.loader import SafeLoader
-# from Streamlit_Authenticator_main.streamlit_authenticator.utilities.exceptions import (CredentialsError,
-#                                                           ForgotError,
-#                                                           LoginError,
-#                                                           RegisterError,
-#                                                           ResetError,
-#                                                           UpdateError) 
 st.set_page_config(
         page_title="Risk Assessment",
         layout="wide",  # Set layout to wide mode
         initial_sidebar_state="collapsed",  # Collapse the sidebar initially
     )
-# # Append path to ensure the custom module is found (if necessary)
-# sys.path.append('..\\Streamlit-Authenticator-main')
 
-# # Load configuration
-# with open('Streamlit_Authenticator_main\\config.yaml', 'r', encoding='utf-8') as file:
-#     config = yaml.load(file, Loader=SafeLoader)
 
-# Create the authenticator object
-# authenticator = Authenticate(
-#     config['credentials'],
-#     config['cookie']['name'],
-#     config['cookie']['key'],
-#     config['cookie']['expiry_days'],
-#     config['pre-authorized']
-# )
-
-def main():
-    #Creating a login widget
-    # try:
-    #     authenticator.login()
-    # except LoginError as e:
-    #     st.error(e)
-    # if st.session_state["authentication_status"]:
-    #     authenticator.logout()
-    #     st.write(f'Welcome *{st.session_state["name"]}*')
+def app():
         Network=Networking()
         cacheInMemory=LocalCache()
 
@@ -166,14 +132,14 @@ def main():
                     st.write(f"- Grade: {patient_grade}")
 
                     st.write("Yes or No Inputs:")
-                    st.write(f"- DM: {dm_choice}")
-                    st.write(f"- HTN: {htn_choice}")
-                    st.write(f"- VTE: {vte_choice}")
-                    st.write(f"- CVD: {cvd_choice}")
-                    st.write(f"- Lymphovascular Invasion: {lymphovascular_invasion_choice}")
-                    st.write(f"- ER: {er_choice}")
-                    st.write(f"- PR: {pr_choice}")
-                    st.write(f"- HER2: {her2_choice}")
+                    st.write(f"- DM: {dm_result}")
+                    st.write(f"- HTN: {htn_result}")
+                    st.write(f"- VTE: {vte_result}")
+                    st.write(f"- CVD: {cvd_result}")
+                    st.write(f"- Lymphovascular Invasion: {lymphovascular_invasion_result}")
+                    st.write(f"- ER: {er_result}")
+                    st.write(f"- PR: {pr_result}")
+                    st.write(f"- HER2: {her2_result}")
                     patient_data = {
                                         "MRN": int(patient_MRN),
                                         "patient_first_bmi": float(patient_first_bmi),
@@ -256,30 +222,3 @@ css="""
 st.write(css, unsafe_allow_html=True)
 
 
-if __name__ == '__main__':
-    main()    
-        # st.subheader("Your Inputs:")
-        # st.write("patient_first_bMI:", patient_first_bMI)
-        # st.write("patient_age:", patient_age)
-        # st.write("patient_size_cm:", patient_size_cm)
-        # st.write("patient_ki67:", patient_ki67)
-        # st.write("family history:", patient_family_history)
-        # st.write("Menopausal state :", patient_menopausal_state)
-        # st.write("patient T :", patient_t)
-        # st.write("patient N :", patient_n)
-        # st.write("Laterality :", patient_laterality)
-        # st.write("Unilateral Bilateral :", patient_unilateral_bilateral)
-        # st.write("Site :", patient_site)
-        # st.write("HER2 Result:", patient_her2)
-        # st.write("patient_tumor_type :", patient_tumor_type)
-        # st.write("Grade :", patient_grade)
-        # st.write("DM Result:", dm_result)
-        # st.write("HTN Result:", htn_result)
-        # st.write("VTE Result:", vte_result)
-        # st.write("CVD Result:", cvd_result)
-        # st.write("Lymphovascular invasion Result:", lymphovascular_invasion_result)
-        # st.write("ER Result:", er_result)
-        # st.write("PR Result:", pr_result)
-        # agree = st.checkbox('I agree')
-        # if agree:
-        #     st.write('Great!'))

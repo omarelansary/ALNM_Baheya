@@ -94,6 +94,9 @@ class AuthComponents:
         else:
             # Token or expiry date does not exist
             st.write('I AM HERE')
-            return 0 
+            return 0
+
+    def logout(self):
+        self.set_user_session_state(is_logged_in=False)
 
                                               
