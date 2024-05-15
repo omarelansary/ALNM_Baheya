@@ -1,5 +1,5 @@
 import sys
-import yaml
+#import yaml
 import streamlit as st
 from Networking.Networking import Networking
 import pandas as pd
@@ -8,7 +8,7 @@ import io
 
 # from Cache import Cache
 #from Streamlit_Authenticator_main.streamlit_authenticator.authenticate import Authenticate
-from yaml.loader import SafeLoader
+#from yaml.loader import SafeLoader
 # from Streamlit_Authenticator_main.streamlit_authenticator.utilities.exceptions import (CredentialsError,
 #                                                           ForgotError,
 #                                                           LoginError,
