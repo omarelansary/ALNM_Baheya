@@ -4,7 +4,7 @@ from django.db import models
     
 # Create your models here.
 class Doctor(models.Model):
-  patients = models.ManyToManyField('patients.Patient')
+  # patients = models.ManyToManyField('patients.Patient')
   assessments = models.ManyToManyField('assessments.Assessment')
 
   firstName = models.CharField(max_length=250)
