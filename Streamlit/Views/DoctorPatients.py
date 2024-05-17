@@ -8,6 +8,7 @@ import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.graph_objects as go
+
 st.set_page_config(
     page_title="Risk Assessment",
     layout="wide",  # Set layout to wide mode
@@ -19,8 +20,55 @@ def app():
     Network = Networking()
     cacheInMemory = LocalCache()
     st.title("My patients")
+
+    # Load the data
     df = cacheInMemory.get_assessment_byDocId_version2()
-    st.write(cacheInMemory.get_assessment_byDocId_version2())
+    
+    # Display the editable table
+    edited_df = st.data_editor(df, num_rows="dynamic")
+    
+    # Initialize the session state if not already initialized
+    if 'edited_rows' not in st.session_state:
+        st.session_state['edited_rows'] = {}
+
+    # Update the session state with changes from data_editor
+    st.session_state['edited_rows'] = edited_df.to_dict('index')
+    
+    # Find the changed rows by comparing session state with the original data
+    changes = {}
+    for index, row in edited_df.iterrows():
+        if not row.equals(df.loc[index]):
+            changes[index] = row.to_dict()
+
+    if changes:
+        st.write("Changes detected:")
+        st.write(changes)
+        
+        # Extract the row indices of the changes
+        changed_rows = list(changes.keys())
+        
+        # Extract the modified data as a dictionary
+        ground_true = changes
+        
+        # Display the changed rows
+        st.write("Changed rows data:")
+        st.write(ground_true)
+        #  el new grung truth wa el id wa mrn ahomat @omar
+        # Get the IDs of the changed rows
+        new_id_values = df.loc[changed_rows, 'id'] 
+        st.write("IDs of changed rows:")
+        st.write(new_id_values.tolist())
+        new_MRN_values = df.loc[changed_rows, 'MRN']
+        st.write("MRN of changed rows:")
+        st.write(new_MRN_values.tolist())
+        new_ground_truth_values = df.loc[changed_rows, 'ground_truth']
+        st.write("ground_truth:")
+        st.write(new_id_values.tolist())
+
+    else:
+        st.write("No changes detected.")
+
+
     # col1, col2 = st.columns(2)
 
     columns = df.columns.tolist()
