@@ -8,8 +8,8 @@ class AuthComponents:
         self.cookie_handler = CookieHandler('user_auth_token')
         if 'initialized' not in st.session_state:
             st.session_state['initialized'] = False      
-            # self.set_user_session_state(is_logged_in=True)
-            self.set_user_session_state(is_logged_in=True, role="Admin")
+            self.set_user_session_state(is_logged_in=True,role='Admin')
+            
     def set_user_session_state(self, is_logged_in=None, role=None, fname=None, lname=None, token=None, token_expiry_date=None):
         # Initialize only once per session if not already done
         if st.session_state['initialized']== False:

@@ -39,8 +39,10 @@ PyJWT
 streamlit
 extra_streamlit_components
 streamlit_option_menu
-redis
-redis-server
+plotly
 pandas
 openpyxl
 numpy
+redis
+matplotlib
+seaborn
