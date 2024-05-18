@@ -3,11 +3,11 @@ from Networking.Networking import Networking
 import pandas as pd
 from ourData.cache import LocalCache
 
-st.set_page_config(
-        page_title="Risk Assessment",
-        layout="wide",  # Set layout to wide mode
-        initial_sidebar_state="collapsed",  # Collapse the sidebar initially
-    )
+# st.set_page_config(
+#         page_title="Risk Assessment",
+#         layout="wide" # Set layout to wide mode
+#         # Collapse the sidebar initially
+#     )
 
 
 def app():

@@ -3,6 +3,7 @@ from streamlit_option_menu import option_menu
 from Components.authComponents import AuthComponents
 from Authentication.Authenticator import AuthExceptions
 import Views.AdminDashboard, Views.AdminPatientsView
+import Views.AdminAddAnalyst, Views.AdminAddDoctor
 import Views.AnalystDashboard, Views.AnalystReview
 import Views.DoctorDashboard, Views.DoctorPatients, Views.DoctorRiskAssesment
 import  Views.Home, Views.Login
@@ -42,8 +43,8 @@ def main():
         elif st.session_state['role']=='Admin': 
             app = option_menu(
             menu_title='Welcome Admin. Hassan',
-            options=['Home', 'Panel', 'Risk','All Patients','Analysis', 'Review','Logout'],
-            icons=['house-fill', 'graph-up','exclamation-triangle-fill', 'heart-fill','bar-chart-line','binoculars','door-open'],
+            options=['Home', 'Panel', 'Risk','All Patients','Analysis', 'Review', 'Add Doctor','Add Analyst','Logout'],
+            icons=['house-fill', 'graph-up','exclamation-triangle-fill', 'heart-fill','bar-chart-line','binoculars','person-plus','person-plus-fill','door-open'],
             menu_icon=['person-fill'],
             default_index=0,
             orientation='horizontal',
@@ -74,7 +75,11 @@ def main():
     if app== 'Panel':
        Views.AdminDashboard.app()
     if app== 'All Patients':
-       Views.AdminPatientsView.app()  
+       Views.AdminPatientsView.app() 
+    if app=='Add Doctor':
+        Views.AdminAddDoctor.app() 
+    if app=='Add Analyst':
+       Views.AdminAddAnalyst.app()     
     if app=='Analysis':
        Views.AnalystDashboard.app()
     if app=='Review':

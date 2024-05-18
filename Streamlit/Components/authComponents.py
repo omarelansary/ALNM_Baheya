@@ -9,7 +9,7 @@ class AuthComponents:
         if 'initialized' not in st.session_state:
             st.session_state['initialized'] = False      
             self.set_user_session_state(is_logged_in=False)
-
+            
     def set_user_session_state(self, is_logged_in=None, role=None, fname=None, lname=None, token=None, token_expiry_date=None):
         # Initialize only once per session if not already done
         if st.session_state['initialized']== False:

@@ -38,45 +38,6 @@ from assessments.models import Assessment
 
 
 
-# Create your views here.
-#============Get Admins list==================================
-@api_view(['GET'])
-def admins(request):
-    try:
-        # Retrieve all records from the Admin model
-        admins = Admin.objects.all()
-
-        # Check if admins are found
-        if admins:
-            # Create a list to hold admin data
-            admin_data = []
-            # Iterate over the admins and populate the admin data list
-            for admin in admins:
-                admin_data.append({
-                    'id': admin.id,
-                    "firstName":admin.firstName,
-                    "lastName":admin.lastName,
-                    'email': admin.email,
-                    'password':admin.password,
-                    # Add other fields as needed
-                })
-            #=====
-            assessments=Assessment.objects.all()
-
-            serializedAssessments=AssessmentSerializer(assessments, many=True)
-            #=======
-            # Return a success response with the admin data
-            return Response({'success': True, 'admins': serializedAssessments.data})
-        else:
-            # Return an error response indicating no admins found
-            return Response({'success': False, 'message': 'No admins found'}, status=404)
-    except OperationalError as e:
-        # Return an error response for database errors
-        return Response({'success': False, 'message': f'Database error: {e}'}, status=400)
-    except Exception as e:
-        # Return a generic error response for other exceptions
-        return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)
-#===============End===========================================
 #=========BRAND NEW SIGN UP========================================
 #Steps:
 #1-chek mail exists or new 
@@ -251,7 +212,7 @@ def getDoctors(request):
         serializedDoctors = DoctorSerializer(doctors, many=True)
 
 
-        return Response({'success':False,'doctors':serializedDoctors.data})
+        return Response({'success':True,'doctors':serializedDoctors.data})
     except OperationalError as e:
         # Return an error response for database errors 
         return Response({'success': False, 'message': f'Database error: {e}'}, status=400)
@@ -269,7 +230,7 @@ def getDataScientists(request):
         serializedDataScientists = DataScientistSerializer(DataScientists, many=True)
 
 
-        return Response({'success':False,'doctors':serializedDataScientists.data})
+        return Response({'success':True,'dataScientists':serializedDataScientists.data})
     except OperationalError as e:
         # Return an error response for database errors 
         return Response({'success': False, 'message': f'Database error: {e}'}, status=400)

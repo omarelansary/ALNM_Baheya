@@ -26,42 +26,45 @@ import json
 from django.utils import timezone
 from django.db.utils import OperationalError
 from utils.authenticators import generate_jwt_token
-
-
+# import pandas lib as pd
+import pandas as pd
+import numpy as np
 # Create your views here.
-#============Get Admins list==================================
 @api_view(['GET'])
-def dataScientists(request):
+def getDashboardData(request):
     try:
-        # Retrieve all records from the Admin model
-        dataScientists = DataScientist.objects.all()
-
-        # Check if admins are found
-        if dataScientists:
-            # Create a list to hold admin data
-            scientist_data = []
-            # Iterate over the admins and populate the admin data list
-            for scientist in dataScientists:
-                scientist_data.append({
-                    'id': scientist.id,
-                    "firstName":scientist.firstName,
-                    "lastName":scientist.lastName,
-                    'email': scientist.email,
-                    'password':scientist.password,
-                    # Add other fields as needed
-                })
-            # Return a success response with the admin data
-            return Response({'success': True, 'data': scientist_data})
-        else:
-            # Return an error response indicating no admins found
-            return Response({'success': False, 'message': 'No data scientists found'}, status=404)
+        dataFrame = pd.read_excel('cairouniversity_march_known_nooutliers.xlsx')
+        print("hENAAAAA\n")
+        print(dataFrame)
+        #TODO:Uncomment trial & try again
+        # # Convert DataFrame to JSON
+        # # Loop over each column in the DataFrame
+        # for col in dataFrame.columns:
+        #     # Check if the column contains numeric data
+        #     if np.issubdtype(dataFrame[col].dtype, np.number):
+        #         # Replace out-of-range float values with a placeholder (np.nan)
+        #         dataFrame[col] = dataFrame[col].replace([np.inf, -np.inf], np.nan)
+        #         dataFrame[col] = dataFrame[col].astype(str)
+        # json_data = dataFrame.to_json(orient='records')
+        # Iterate over each row in the DataFrame
+        json_objects = []
+        for index, row in dataFrame.iterrows():
+            # Convert the row to a dictionary
+            row_dict = row.to_dict()
+            # Append the dictionary to the list
+            json_objects.append(row_dict)
+        return Response({'success': True, 'data': json_objects})
+        # return Response({'success': True,'message':'I\'m happy!'})
+    except FileNotFoundError as e:
+        # Return an error response if the file is not found
+        return Response({'success': False, 'message': f'File not found: {e}'}, status=404)
     except OperationalError as e:
         # Return an error response for database errors
         return Response({'success': False, 'message': f'Database error: {e}'}, status=400)
     except Exception as e:
         # Return a generic error response for other exceptions
         return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)
-#===============End===========================================
+
 
 #======================================================================================
 @api_view(['POST'])

@@ -30,10 +30,6 @@ from utils.authenticators import generate_jwt_token
 from assessments.serializers import AssessmentSerializer
 
 
-@api_view( ['GET'])
-def doctors(request):
-    return Response({"message":"This is the doctor's Api"})
-
 @api_view(['POST'])
 def forgotPassword(request):
     try:    
@@ -60,15 +56,17 @@ def forgotPassword(request):
             # Save the doctor object to update the password in the database
             doctor.save()
 
-            #send email to doctor
-            my_subject='Password notification for Baheya ALNM Website'
-            my_message='Your password is restored successfully. You can now login with your credentials.'
-            send_mail(
-                subject=my_subject,
-                message=my_message,
-                recipient_list=[email],
-                from_email=None,
-                fail_silently=False)
+            #TODO:Uncomment later
+            
+            # #send email to doctor
+            # my_subject='Password notification for Baheya ALNM Website'
+            # my_message='Your password is restored successfully. You can now login with your credentials.'
+            # send_mail(
+            #     subject=my_subject,
+            #     message=my_message,
+            #     recipient_list=[email],
+            #     from_email=None,
+            #     fail_silently=False)
 
             return Response({'success': True,'message': 'Password restored successfully.'})
         
@@ -301,7 +299,7 @@ def getStatusByMRN(request):
         return Response({
                 'success': True,
                 'status':assessment.status ,
-                'message':message,
+                'status_message':message,
             })
 
     except OperationalError as e:
