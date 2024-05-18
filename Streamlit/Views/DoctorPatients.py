@@ -20,13 +20,45 @@ def app():
     Network = Networking()
     cacheInMemory = LocalCache()
     st.title("My patients")
-
+    
     # Load the data
     df = cacheInMemory.get_assessment_byDocId_version2()
-    
-    # Display the editable table
-    edited_df = st.data_editor(df, num_rows="dynamic")
-    
+    st.dataframe(df)
+    # Initialize the session state if not already initialized
+    if 'edit_mode' not in st.session_state:
+        st.session_state['edit_mode'] = False
+    if 'selected_mrn' not in st.session_state:
+        st.session_state['selected_mrn'] = None
+
+    # Select MRN before enabling editing
+    st.write("Select MRN to edit ground_truth:")
+    selected_mrn = st.selectbox(
+        "Select MRN",
+        df['MRN'].unique()
+    )
+    st.write(f"Editing ground_truth for MRN: {selected_mrn}")
+
+    # Create an "Edit" button to enable editing
+    if st.button("Edit"):
+        st.session_state['edit_mode'] = True
+
+    if st.session_state['edit_mode']:
+        # Make only the ground_truth column editable for the selected MRN
+        edited_df = df.copy()
+        mask = edited_df['MRN'] == selected_mrn
+        st.write("Selected Row:")
+        st.write(edited_df[mask])
+        
+        # Allow the user to select the new ground truth value from a dropdown menu
+        new_ground_truth = st.selectbox("Select New Ground Truth", ["0", "1"])
+
+        # Update the ground_truth column with the new value
+        edited_df.loc[mask, 'ground_truth'] = new_ground_truth
+        # Display the entire row corresponding to the selected MRN
+
+    else:
+        edited_df = df.copy()
+
     # Initialize the session state if not already initialized
     if 'edited_rows' not in st.session_state:
         st.session_state['edited_rows'] = {}
@@ -41,32 +73,43 @@ def app():
             changes[index] = row.to_dict()
 
     if changes:
-        st.write("Changes detected:")
-        st.write(changes)
-        
         # Extract the row indices of the changes
-        changed_rows = list(changes.keys())
-        
-        # Extract the modified data as a dictionary
-        ground_true = changes
-        
-        # Display the changed rows
-        st.write("Changed rows data:")
-        st.write(ground_true)
-        #  el new grung truth wa el id wa mrn ahomat @omar
-        # Get the IDs of the changed rows
-        new_id_values = df.loc[changed_rows, 'id'] 
-        st.write("IDs of changed rows:")
-        st.write(new_id_values.tolist())
-        new_MRN_values = df.loc[changed_rows, 'MRN']
-        st.write("MRN of changed rows:")
-        st.write(new_MRN_values.tolist())
-        new_ground_truth_values = df.loc[changed_rows, 'ground_truth']
-        st.write("ground_truth:")
-        st.write(new_id_values.tolist())
+        if st.button("Save New Ground truth"):
+            changed_rows = list(changes.keys())
+            
+            # Extract the IDs, MRNs, and new ground_truth values from the changed rows
+            new_id_values = df.loc[changed_rows, 'id']
+            new_MRN_values = df.loc[changed_rows, 'MRN']
+            new_ground_truth_values = [changes[index]['ground_truth'] for index in changed_rows]
+
+            # Create a DataFrame with the extracted values
+            omr_change = pd.DataFrame({
+                'id': new_id_values,
+                'MRN': new_MRN_values,
+                'ground_truth': new_ground_truth_values
+            })
+
+            # Display the new DataFrame
+            st.write("Done")
 
     else:
         st.write("No changes detected.")
+
+# Run the app
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Call the app function to run the Streamlit app
 
 
     # col1, col2 = st.columns(2)
