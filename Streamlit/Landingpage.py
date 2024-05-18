@@ -1,3 +1,4 @@
+import Views.DoctorGantChart
 import streamlit as st
 from streamlit_option_menu import option_menu
 from Components.authComponents import AuthComponents
@@ -15,8 +16,8 @@ def main():
         if st.session_state['role']=='Doctor':
             app = option_menu(
             menu_title='Welcome Dr. Omar',
-            options=['Home', 'Dashboard', 'Risk','My Patients','Logout'],
-            icons=['house-fill', 'graph-up','exclamation-triangle-fill', 'heart-fill','door-open'],
+            options=['Home', 'Follow Up', 'My Patients','Dashboard', 'Risk','Logout'],
+            icons=['house-fill', 'bar-chart-steps','heart-fill','graph-up','exclamation-triangle-fill', 'door-open'],
             menu_icon=['person-fill'],
             default_index=0,
             orientation='horizontal',
@@ -90,6 +91,8 @@ def main():
         Views.DoctorRiskAssesment.app()
     if app=='My Patients':
         Views.DoctorPatients.app()    
+    if app=='Follow Up':
+        Views.DoctorGantChart.app()        
     if app== 'Logout':
         authComponents.logout()    
 
