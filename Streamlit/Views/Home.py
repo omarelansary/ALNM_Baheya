@@ -3,6 +3,8 @@ import pandas as pd
 import plotly.express as px
 import matplotlib.pyplot as plt
 def app():
+    
+
     st.write('Home')
     st.title("SLNB Cancer Awareness WebSite")
     st.sidebar.title("Menu")
@@ -118,11 +120,25 @@ def app():
         st.write("Present visualizations that illustrate common risk factors associated with breast cancer, such as age, family history, genetic mutations (BRCA1 and BRCA2), hormone replacement therapy, alcohol consumption, and obesity. This can help users understand their risk profile and take preventive measures accordingly.")
         st.image("C:/Users/BOOTCAMP/Desktop/signup/n.jpg", use_column_width=True)
 
-        st.subheader("3. Breast Cancer Prevention Tips")
-        st.write("Provide visual guides on lifestyle changes and preventive measures that can reduce the risk of breast cancer, such as maintaining a healthy diet, exercising regularly, limiting alcohol intake, avoiding smoking, and conducting regular breast self-exams.")
-        st.image("breast_cancer_prevention_tips.jpg", use_column_width=True)
+        # st.subheader("3. Breast Cancer Prevention Tips")
+        # st.write("Provide visual guides on lifestyle changes and preventive measures that can reduce the risk of breast cancer, such as maintaining a healthy diet, exercising regularly, limiting alcohol intake, avoiding smoking, and conducting regular breast self-exams.")
+        # st.image("breast_cancer_prevention_tips.jpg", use_column_width=True)
 
     if "Frequently Asked Questions" in st.session_state:
+       with st.expander('**<span style="font-size:50px; font-weight:bold;">What are signs and symptoms of MBC?</span>**', expanded=True):
+        st.markdown('''
+        <div style="font-size:50px; font-weight:bold;">
+        - Severe and persistent headache<br>
+        - Bone pain and fracture<br>
+        - Shortness of breath<br>
+        - Abdominal bloating, pain, or swelling<br>
+        - Constant nausea, vomiting, or weight loss<br>
+        - Numbness or weakness anywhere in your body and confusion<br>
+        - Loss of appetite<br>
+        - Vision problems (blurry vision, double vision, loss of vision)<br>
+        - Loss of balance<br>
+        </div>
+        ''', unsafe_allow_html=True)
         st.header("Frequently Asked Questions")
         st.write("### What are signs and symptoms of MBC?") 
         st.write("• Sever and persistent headache")

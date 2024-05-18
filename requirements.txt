@@ -46,3 +46,4 @@ numpy
 redis
 matplotlib
 seaborn
+openpyxl

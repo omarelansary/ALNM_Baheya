@@ -30,42 +30,67 @@ from utils.authenticators import generate_jwt_token
 import pandas as pd
 import numpy as np
 # Create your views here.
+# @api_view(['GET'])
+# def getDashboardData(request):
+#     try:
+#         dataFrame = pd.read_excel('cairouniversity_march_known_nooutliers.xlsx')
+#         print("hENAAAAA\n")
+#         print(dataFrame)
+#         #TODO:Uncomment trial & try again
+#         # # Convert DataFrame to JSON
+#         # # Loop over each column in the DataFrame
+#         # for col in dataFrame.columns:
+#         #     # Check if the column contains numeric data
+#         #     if np.issubdtype(dataFrame[col].dtype, np.number):
+#         #         # Replace out-of-range float values with a placeholder (np.nan)
+#         #         dataFrame[col] = dataFrame[col].replace([np.inf, -np.inf], np.nan)
+#         #         dataFrame[col] = dataFrame[col].astype(str)
+#         # json_data = dataFrame.to_json(orient='records')
+#         # Iterate over each row in the DataFrame
+#         json_objects = []
+#         for index, row in dataFrame.iterrows():
+#             # Convert the row to a dictionary
+#             row_dict = row.to_dict()
+#             # Append the dictionary to the list
+#             json_objects.append(row_dict)
+#         return Response({'success': True, 'data': json_objects})
+#         # return Response({'success': True,'message':'I\'m happy!'})
+#     except FileNotFoundError as e:
+#         # Return an error response if the file is not found
+#         return Response({'success': False, 'message': f'File not found: {e}'}, status=404)
+#     except OperationalError as e:
+#         # Return an error response for database errors
+#         return Response({'success': False, 'message': f'Database error: {e}'}, status=400)
+#     except Exception as e:
+#         # Return a generic error response for other exceptions
+#         return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)
+
+###Trial========================================
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
+import os
+
 @api_view(['GET'])
 def getDashboardData(request):
+
+    # Read the Excel file
     try:
-        dataFrame = pd.read_excel('cairouniversity_march_known_nooutliers.xlsx')
-        print("hENAAAAA\n")
-        print(dataFrame)
-        #TODO:Uncomment trial & try again
-        # # Convert DataFrame to JSON
-        # # Loop over each column in the DataFrame
-        # for col in dataFrame.columns:
-        #     # Check if the column contains numeric data
-        #     if np.issubdtype(dataFrame[col].dtype, np.number):
-        #         # Replace out-of-range float values with a placeholder (np.nan)
-        #         dataFrame[col] = dataFrame[col].replace([np.inf, -np.inf], np.nan)
-        #         dataFrame[col] = dataFrame[col].astype(str)
-        # json_data = dataFrame.to_json(orient='records')
-        # Iterate over each row in the DataFrame
-        json_objects = []
-        for index, row in dataFrame.iterrows():
-            # Convert the row to a dictionary
-            row_dict = row.to_dict()
-            # Append the dictionary to the list
-            json_objects.append(row_dict)
-        return Response({'success': True, 'data': json_objects})
-        # return Response({'success': True,'message':'I\'m happy!'})
-    except FileNotFoundError as e:
-        # Return an error response if the file is not found
-        return Response({'success': False, 'message': f'File not found: {e}'}, status=404)
-    except OperationalError as e:
-        # Return an error response for database errors
-        return Response({'success': False, 'message': f'Database error: {e}'}, status=400)
+        data = pd.read_excel('cairouniversity_march_known_nooutliers.xlsx')
+    except FileNotFoundError:
+        return JsonResponse({"error": "File not found"}, status=404)
     except Exception as e:
-        # Return a generic error response for other exceptions
-        return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)
+        return JsonResponse({"error": str(e)}, status=500)
+    # Replace NaN values with empty strings
+    data = data.fillna('')
+    # Convert the data to JSON format
+    data_json = data.to_dict(orient='records')
+
+    # Return the data as a JSON response
+    return JsonResponse(data_json, safe=False)
 
 
+
+#####
 #======================================================================================
 @api_view(['POST'])
 def login(request):
@@ -160,4 +185,166 @@ def forgotPassword(request):
         return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)
 
 
-#======================================================================================
+# #======================================================================================
+# @api_view(['GET'])
+# def export_assessments_to_excel(request):
+#     try:
+#         # Retrieve all Assessment records
+#         assessments = Assessment.objects.all()
+
+#         # Convert the QuerySet to a list of dictionaries
+#         data_list = []
+#         for assessment in assessments:
+#             data_list.append({
+#                 'id': assessment.id,
+#                 'MRN': assessment.MRN,
+#                 'status': assessment.status,
+#                 'prediction': assessment.prediction,
+#                 'ground_truth': assessment.ground_truth,
+#                 'creation_date': assessment.creation_date,
+#                 'medical_info': assessment.medical_info,
+#             })
+
+#         # Convert the list of dictionaries to a DataFrame
+#         df = pd.DataFrame(data_list)
+
+#         # Define the path to save the Excel file
+#         file_path = 'assessments.xlsx'
+
+#         # Use ExcelWriter to create the Excel file
+#         with pd.ExcelWriter(file_path, engine='openpyxl') as writer:
+#             df.to_excel(writer, index=False, sheet_name='Assessments')
+
+#         return JsonResponse({'message': 'Assessments exported successfully', 'file_path': file_path}, status=200)
+#     except Exception as e:
+#         return JsonResponse({'error': str(e)}, status=500)
+    
+
+import pandas as pd
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
+from assessments.models import Assessment
+
+# @api_view(['GET'])
+# def export_assessments_to_excel(request):
+#     try:
+#         # Retrieve all Assessment records
+#         assessments = Assessment.objects.all()
+
+#         # Convert the QuerySet to a list of dictionaries
+#         data_list = []
+#         for assessment in assessments:
+#             # Flatten the medical_info field into the main dictionary
+#             assessment_dict = {
+#                 'id': assessment.id,
+#                 'MRN': assessment.MRN,
+#                 'status': assessment.status,
+#                 'prediction': assessment.prediction,
+#                 'ground_truth': assessment.ground_truth,
+               
+#             }
+
+#             # Include medical_info fields
+#             medical_info = assessment.medical_info
+#             if medical_info:
+#                 for key, value in medical_info.items():
+#                     assessment_dict[key] = value
+
+#             data_list.append(assessment_dict)
+
+#         # Convert the list of dictionaries to a DataFrame
+#         df = pd.DataFrame(data_list)
+
+#         # Define the path to save the Excel file
+#         file_path = 'assessmentsMona.xlsx'
+
+#         # Use ExcelWriter to create the Excel file
+#         with pd.ExcelWriter(file_path, engine='openpyxl') as writer:
+#             df.to_excel(writer, index=False, sheet_name='assessmentsMona')
+
+#         return JsonResponse({'message': 'Assessments exported successfully', 'file_path': file_path}, status=200)
+#     except Exception as e:
+#         return JsonResponse({'error': str(e)}, status=500)
+
+
+#TODO:Data Scientist will make a trial to see if these new rassessments addde to old excek are giving high accuracy and if so make status retrained(4)
+#TODO:Noww(get assessments that have status (reviewed))
+import os
+# from openpyxl import load_workbook
+import openpyxl
+from openpyxl.utils.dataframe import dataframe_to_rows
+
+@api_view(['GET'])
+def export_assessments_to_excel(request):
+    try:
+
+        # Retrieve all Assessment records with status=1
+        assessments = Assessment.objects.filter(status=1)
+
+
+        # Convert the QuerySet to a list of dictionaries
+        data_list = []
+        for assessment in assessments:
+            # Flatten the medical_info field into the main dictionary
+            assessment_dict = {
+                'ground_truth': assessment.ground_truth,
+            }
+
+            # Include medical_info fields
+            medical_info = assessment.medical_info
+            if medical_info:
+                for key, value in medical_info.items():
+                    assessment_dict[key] = value
+
+            data_list.append(assessment_dict)
+
+        
+        # Convert the list of dictionaries to a DataFrame
+        df = pd.DataFrame(data_list)
+
+        # Specify the order of columns
+        ordered_columns = [ 
+                           'patient_first_bmi', 'patient_age', 'dm_result', 
+                           'htn_result', 'vte_result', 'cvd_result', 
+                           'Others', 'patient_family_history', 'patient_menopausal_state', 
+                           'Hormonal_Contraception', 'patient_t', 
+                           'patient_n', 'patient_size_cm', 'lymphovascular_invasion_result',
+                           'patient_laterality','er_result','pr_result',
+                           'her2_result','patient_ki67',
+                           'patient_unilateral_bilateral','patient_site',
+                           'patient_tumor_type','patient_grade','ground_truth']
+
+        df = df[ordered_columns]
+
+        # Define the path to save the Excel file
+        file_path = 'cairouniversity_march_known_nooutliers copy.xlsx'
+        sheet_name = 'Sheet1'
+
+        # Check if the file exists
+        if os.path.exists(file_path):
+            # Load the workbook and the sheet
+            book = openpyxl.load_workbook(file_path)
+
+            if sheet_name in book.sheetnames:
+                sheet = book[sheet_name]
+            else:
+                sheet = book.create_sheet(sheet_name)
+
+            # Convert DataFrame to rows
+            rows = dataframe_to_rows(df, index=False, header=False)
+
+            # Append rows to the worksheet
+            for row in rows:
+                sheet.append(row)
+
+        else:
+            # If the file does not exist, create a new file
+            df.to_excel(file_path, index=False, sheet_name=sheet_name)
+
+        # Save the workbook
+        book.save(file_path)
+
+        return JsonResponse({'message': 'Assessments exported successfully', 'file_path': file_path}, status=200)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
