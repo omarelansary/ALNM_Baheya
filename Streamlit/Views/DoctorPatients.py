@@ -9,11 +9,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.graph_objects as go
 
-st.set_page_config(
-    page_title="Risk Assessment",
-    layout="wide",  # Set layout to wide mode
-    initial_sidebar_state="collapsed",  # Collapse the sidebar initially
-)
+# st.set_page_config(
+#     page_title="Risk Assessment",
+#     layout="wide",  # Set layout to wide mode
+#     initial_sidebar_state="collapsed",  # Collapse the sidebar initially
+# )
 
 def app():
     st.write('ALL Your Patients Doctor')

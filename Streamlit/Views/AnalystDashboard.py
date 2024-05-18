@@ -3,16 +3,82 @@ import pandas as pd
 import plotly.express as px
 import matplotlib.pyplot as plt
 import seaborn as sns
+import streamlit as st
+import pandas as pd
+import altair as alt
+
+
+def make_donut(input_response, input_text,color):
+    chart_color = color
+    source = pd.DataFrame({
+        "Topic": ['', input_text],
+        "% value": [100-input_response, input_response]
+    })
+    source_bg = pd.DataFrame({
+        "Topic": ['', input_text],
+        "% value": [100, 0]
+    })
+    
+    plot = alt.Chart(source).mark_arc(innerRadius=45, cornerRadius=25).encode(
+        theta="% value",
+        color= alt.Color("Topic:N",
+                        scale=alt.Scale(
+                            domain=[input_text, ''],
+                            range=chart_color),
+                        legend=None),
+    ).properties(width=130, height=130)
+    
+    text = plot.mark_text(align='center', color="#29b5e8", font="Lato", fontSize=32, fontWeight=700, fontStyle="italic").encode(text=alt.value(f'{input_response} %'))
+    
+    plot_bg = alt.Chart(source_bg).mark_arc(innerRadius=45, cornerRadius=20).encode(
+        theta="% value",
+        color= alt.Color("Topic:N",
+                        scale=alt.Scale(
+                            domain=[input_text, ''],
+                            range=chart_color),
+                        legend=None),
+    ).properties(width=130, height=130)
+    
+    return plot_bg + plot + text
+
+
 
 def app():
-    st.write('Analyst DashBoard')
+    st.title('Analyst DashBoard')
         # Load your data
     data = pd.read_excel('ourData/cairouniversity_march_known_nooutliers.xlsx')
 
     # Clean and prepare your data
     data_clean = data[['Age', 'First_BMI', 'size_cm', 'Tumor_Type']].dropna()
-
-    # Create a bubble chart using Plotly
+    AUC=79
+    accurcy=83
+    macro=82
+    micro=82
+    weighted=82
+    
+    color = ['#E74C3C', '#781F16']
+    donut_chart_Accuracy = make_donut(accurcy, 'Accuracy',color)
+    donut_chart_weighted = make_donut(weighted, 'Outbound Migration',color)
+    donut_chart_Macro = make_donut(macro, 'Accuracy',color)
+    donut_chart_Micro = make_donut(micro, 'Outbound Migration',color)
+    donut_chart_Auc = make_donut(AUC, 'Accuracy',color)
+    st.markdown('Machine learning')
+    col1,col2,col3,col4,col5=st.columns(5)
+    with col1:
+        st.write('Accuracy')
+        st.altair_chart(donut_chart_Accuracy)
+    with col2:
+        st.write('F1 weighted')
+        st.altair_chart(donut_chart_weighted)
+    with col3:
+        st.write('F1 Micro')
+        st.altair_chart(donut_chart_Macro)
+    with col4:
+        st.write('F1 Macro')
+        st.altair_chart(donut_chart_Micro)
+    with col5:
+        st.write('Auc Score')
+        st.altair_chart(donut_chart_Auc)                
     fig = px.scatter(
         data_clean,
         x='Age',
