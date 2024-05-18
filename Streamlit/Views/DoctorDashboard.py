@@ -215,8 +215,8 @@ def app():
     st.write('Doctor DashBoard')
     st.title("Dashboard")
     
-    file_path = "D:/gp/admin/data/cairouniversity_march_known_nooutliers (1).xlsx"
-    file_site_path="D:/gp/admin/data/ourdata.xlsx"
+    file_path = "ourData/cairouniversity_march_known_nooutliers.xlsx"
+    file_site_path="ourData/mohraData.xlsx"
 
     try:
         df = pd.read_excel(file_path)
