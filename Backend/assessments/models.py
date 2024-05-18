@@ -16,6 +16,7 @@ class AssessmentManager(models.Manager):
                     'id': assessment.id,
                     'MRN':assessment.MRN,
                     'status':assessment.status,
+                    'status_message': assessment.get_status_message(assessment.status) if assessment.status is not None else None,
                     'prediction':assessment.prediction,
                     'ground_truth':assessment.prediction,
                     'creation_date':assessment.creation_date,
@@ -23,13 +24,7 @@ class AssessmentManager(models.Manager):
                    
                     # Add other fields as needed
                 }
-                if assessment.status is not None:
-                    status_message = assessment.get_status_message(assessment.status)
-                    serialized_assessment['status_message'] = status_message
-                else:
-                    serialized_assessment['status_message'] = None
-
-                
+                               
                 serialized_assessments.append(serialized_assessment)
             return serialized_assessments
 
@@ -89,34 +84,67 @@ class Assessment(models.Model):
                      patient_tumor_type, patient_grade, dm_result,
                      htn_result,vte_result,cvd_result,
                      lymphovascular_invasion_result,er_result,
-                     pr_result,her2_result):
+                     pr_result,her2_result,Others,Hormonal_Contraception):
 
+        
         self.medical_info = {
             "MRN": MRN,
             "patient_first_bmi": patient_first_bmi,
             "patient_age": patient_age,
-            "patient_size_cm": patient_size_cm,
-            "patient_ki67": patient_ki67,
-            "patient_family_history": patient_family_history,
-            "patient_menopausal_state": patient_menopausal_state,
-            "patient_t": patient_t,
-            "patient_n": patient_n,
-            "patient_laterality": patient_laterality,
-            "patient_unilateral_bilateral": patient_unilateral_bilateral,
-            "patient_site": patient_site,
-            "patient_tumor_type": patient_tumor_type,
-            "patient_grade": patient_grade,
             "dm_result":dm_result,
             "htn_result":htn_result,
             "vte_result":vte_result,
             "cvd_result":cvd_result,
+            "Others":Others,
+            "patient_family_history": patient_family_history,
+            "patient_menopausal_state": patient_menopausal_state,
+            "Hormonal_Contraception":Hormonal_Contraception,
+            "patient_t": patient_t,
+            "patient_n": patient_n,
+            "patient_size_cm": patient_size_cm,
             "lymphovascular_invasion_result":lymphovascular_invasion_result,
+            "patient_laterality": patient_laterality,
             "er_result":er_result,
             "pr_result":pr_result,
             "her2_result":her2_result,
+            "patient_ki67": patient_ki67,
+            "patient_unilateral_bilateral": patient_unilateral_bilateral,
+            "patient_site":patient_site,
+            "patient_tumor_type": patient_tumor_type,
+            "patient_grade": patient_grade,
+            
 
-        }
-    
+            }
+        
+        #Old model
+        # self.medical_info = {
+        #     "MRN": MRN,
+        #     "patient_first_bmi": patient_first_bmi,
+        #     "patient_age": patient_age,
+        #     "patient_size_cm": patient_size_cm,
+        #     "patient_ki67": patient_ki67,
+        #     "patient_family_history": patient_family_history,
+        #     "patient_menopausal_state": patient_menopausal_state,
+        #     "patient_t": patient_t,
+        #     "patient_n": patient_n,
+        #     "patient_laterality": patient_laterality,
+        #     "patient_unilateral_bilateral": patient_unilateral_bilateral,
+        #     "patient_site": patient_site,
+        #     "patient_tumor_type": patient_tumor_type,
+        #     "patient_grade": patient_grade,
+        #     "dm_result":dm_result,
+        #     "htn_result":htn_result,
+        #     "vte_result":vte_result,
+        #     "cvd_result":cvd_result,
+        #     "lymphovascular_invasion_result":lymphovascular_invasion_result,
+        #     "er_result":er_result,
+        #     "pr_result":pr_result,
+        #     "her2_result":her2_result,
+        #     "Others":Others,
+        #     "Hormonal_Contraception":Hormonal_Contraception,
+
+        # }
+        
     def is_MRN_matching(self,MRN):
         if self.medical_info.MRN==MRN:
             return True
