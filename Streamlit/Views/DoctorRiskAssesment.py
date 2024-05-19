@@ -27,7 +27,7 @@ def app():
                 patient_age = st.number_input("Age", value=0, min_value=0)
                 patient_size_cm = st.number_input("size cm", value=0.0, min_value=0.0)
                 patient_ki67 = st.number_input("KI67", value=0.0, min_value=0.0)
-                patient_other = st.text_input("Other")
+                patient_other=st.text_input("Other")
             with col_Categorical:
             # Categorical inputs
                 st.subheader("Categorical Inputs")

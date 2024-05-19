@@ -32,11 +32,65 @@ def app():
 
     # Display content based on selected option
     if "home" in st.session_state:
-        st.write("Welcome to the Metastatic Breast Cancer Awareness App!")
-        st.write("Use the sidebar to navigate to different sections.")
+         if "home" in st.session_state:
+            st.markdown("""
+            <style>
+            .home-header {
+                font-size: 30px;
+                font-weight: bold;
+                color: #FF8EE9;  /* Change to your desired color */
+            }
+            .home-content {
+                font-size: 30px;
+                color: #333333;  /* Change to your desired color */
+            }
+            .home-section {
+                margin-bottom: 20px;
+            }
+            .custom-expander .streamlit-expanderHeader {
+                font-size: 50px;
+                color: #FF6347; /* Change the color to your preference */
+            }
+            .custom-expander .streamlit-expanderContent {
+                font-size: 16px;
+                color: #333333; /* Change the color to your preference */
+            }
+            </style>
+            """, unsafe_allow_html=True)
+
+            st.markdown('<div class="home-header">About This Site</div>', unsafe_allow_html=True)
+            with st.expander("Learn more"):
+                st.write("""
+                This website is dedicated to raising awareness about metastatic breast cancer.
+                Here, you will find educational content, general statistics, ongoing awareness campaigns,
+                and answers to frequently asked questions. Our goal is to provide reliable information and support
+                to those affected by metastatic breast cancer.
+            """)
+
+            st.markdown('<div class="home-header">Featured Content</div>', unsafe_allow_html=True)
+            with st.expander("Explore more"):
+                st.write("""
+                - **Educational Content**: Learn about the causes, symptoms, and treatment options for metastatic breast cancer.
+                - **General Statistics**: Explore the latest statistics and data on metastatic breast cancer.
+                - **Awareness Campaigns**: Join us in our ongoing efforts to raise awareness and support research.
+                - **Frequently Asked Questions**: Find answers to common questions about metastatic breast cancer.
+            """)
+
+            st.markdown('<div class="home-header">Get Involved</div>', unsafe_allow_html=True)
+            with st.expander("Join us",):
+                st.write("""
+                Join us in our mission to spread awareness about metastatic breast cancer.
+                Participate in our campaigns, share your story, or sign up for our newsletter to stay updated on the latest news and events.
+            """)
+
+            st.markdown('<div class="home-header">Join Our Awareness Campaign</div>', unsafe_allow_html=True)
+            image_url = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/DALL%C2%B7E%202024-05-19%2020.22.33%20-%20A%20visually%20appealing%20homepage%20for%20a%20cancer%20awareness%20website%20focusing%20on%20metastatic%20breast%20cancer.%20The%20design%20should%20include%20a%20warm%20and%20welcoming%20feel.ong.webp"
+            st.image(image_url, caption='Join Our Awareness Campaign')
 
     if "educational" in st.session_state:
         st.header("Educational Content")
+        st.write("### Intro about Metastatic Breast Cancer")
+        st.write("Metastatic breast cancer, often referred to as stage IV or advanced breast cancer, is a formidable adversary in the realm of oncology. This aggressive form of cancer occurs when breast cancer cells spread beyond the breast and nearby lymph nodes to other organs in the body, such as the bones, lungs, liver, or brain. Unlike localized breast cancer, where the disease is confined to the breast or nearby lymph nodes, metastatic breast cancer poses significant challenges in terms of diagnosis, treatment, and management. Despite advancements in medical science, metastatic breast cancer remains incurable, emphasizing the critical need for ongoing research, improved treatment modalities, and enhanced support systems for those living with this chronic condition.")
         st.write("### Sentinel Lymph Node Biopsy (SLNB) in Breast Cancer")
         st.write("Sentinel Lymph Node Biopsy (SLNB) is a surgical procedure used to determine if cancer has spread beyond the breast to nearby lymph nodes. During SLNB, the surgeon identifies and removes the sentinel lymph node(s), which are the first lymph nodes to which cancer cells are likely to spread from the primary tumor.")
         st.write("#### Why is SLNB performed?")
@@ -114,48 +168,85 @@ def app():
         # Include visualizations and informative content for awareness campaigns
         st.subheader("1. Breast Cancer Infographics")
         st.write("Create visually appealing infographics highlighting key statistics about breast cancer incidence, mortality rates, and survival rates. Include information about the benefits of early detection and the role of screening tests like mammograms.")
-        st.image("C:/Users/BOOTCAMP/Desktop/signup/c.jpg", use_column_width=True)
+        image_url_0 = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/GBT.webp"
+        st.image(image_url_0, caption='Join Our Awareness Campaign')
+
 
         st.subheader("2. Breast Cancer Risk Factors Visualization")
         st.write("Present visualizations that illustrate common risk factors associated with breast cancer, such as age, family history, genetic mutations (BRCA1 and BRCA2), hormone replacement therapy, alcohol consumption, and obesity. This can help users understand their risk profile and take preventive measures accordingly.")
-        st.image("C:/Users/BOOTCAMP/Desktop/signup/n.jpg", use_column_width=True)
+        image_url_1 = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/n.jpg"
+        st.image(image_url_1, caption='Join Our Awareness Campaign')
 
-        # st.subheader("3. Breast Cancer Prevention Tips")
-        # st.write("Provide visual guides on lifestyle changes and preventive measures that can reduce the risk of breast cancer, such as maintaining a healthy diet, exercising regularly, limiting alcohol intake, avoiding smoking, and conducting regular breast self-exams.")
-        # st.image("breast_cancer_prevention_tips.jpg", use_column_width=True)
+        st.subheader("3. Breast Cancer Prevention Tips")
+        st.write("Provide visual guides on lifestyle changes and preventive measures that can reduce the risk of breast cancer, such as maintaining a healthy diet, exercising regularly, limiting alcohol intake, avoiding smoking, and conducting regular breast self-exams.")
+        image_url_2 = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/GBT1.webp"
+        st.image(image_url_2, caption='Join Our Awareness Campaign')
 
     if "Frequently Asked Questions" in st.session_state:
-       with st.expander('**<span style="font-size:50px; font-weight:bold;">What are signs and symptoms of MBC?</span>**', expanded=True):
-        st.markdown('''
-        <div style="font-size:50px; font-weight:bold;">
-        - Severe and persistent headache<br>
-        - Bone pain and fracture<br>
-        - Shortness of breath<br>
-        - Abdominal bloating, pain, or swelling<br>
-        - Constant nausea, vomiting, or weight loss<br>
-        - Numbness or weakness anywhere in your body and confusion<br>
-        - Loss of appetite<br>
-        - Vision problems (blurry vision, double vision, loss of vision)<br>
-        - Loss of balance<br>
-        </div>
-        ''', unsafe_allow_html=True)
-        st.header("Frequently Asked Questions")
-        st.write("### What are signs and symptoms of MBC?") 
-        st.write("• Sever and persistent headache")
-        st.write("• Bone pain and fracture")
-        st.write("• Shortness of breath")
-        st.write("• abdominal bloating, pain, or swelling")
-        st.write("• constant nausea, vomiting, or weight loss")
-        st.write("• numbness or weakness anywhere in your body and confusion")
-        st.write("• loss of appetite")
-        st.write("• vision problems (blurry vision, double vision, loss of vision)")
-        st.write("• loss of balance")
-        st.write("### How is MBC found?")
-        st.write("If breast cancer is found in the lymph nodes, tests are done to check for metastasis. If symptoms suchas shortness of breath, chronic cough, weight loss or bone pain occur, they may be signs of MBC. Tests are then needed to confirm or rule out metastases.")
-        st.write("The three main tests are")
-        st.write("• A blood test to check for spread to the liver or bones")
-        st.write("• Bone scans to test for spread to the bone")
-        st.write("• X-ray/CT scans to test for spread to the chest, abdomen and liver")
+       st.header("Frequently Asked Questions")
+
+        # Define the FAQ list
+       faq_list = {
+            "What are signs and symptoms of MBC?": [
+                "• Severe and persistent headache",
+                "• Bone pain and fracture",
+                "• Shortness of breath",
+                "• Abdominal bloating, pain, or swelling",
+                "• Constant nausea, vomiting, or weight loss",
+                "• Numbness or weakness anywhere in your body and confusion",
+                "• Loss of appetite",
+                "• Vision problems (blurry vision, double vision, loss of vision)",
+                "• Loss of balance"
+            ],
+            "How is MBC found?": [
+                "If breast cancer is found in the lymph nodes, tests are done to check for metastasis. If symptoms such as shortness of breath, chronic cough, weight loss, or bone pain occur, they may be signs of MBC. Tests are then needed to confirm or rule out metastases.",
+                "The three main tests are:",
+                "• A blood test to check for spread to the liver or bones",
+                "• Bone scans to test for spread to the bone",
+                "• X-ray/CT scans to test for spread to the chest, abdomen, and liver"
+            ],
+            "Seeking Physicians Help": [
+                "If you notice any of the above symptoms, it's crucial to seek medical attention promptly. Physicians can provide an accurate diagnosis and recommend appropriate treatment options."
+            ],
+            "Common Treatment Options": [
+                "Treatment options for metastatic breast cancer may include systemic therapies such as chemotherapy, hormonal therapy, targeted therapy, and immunotherapy. Treatment plans are personalized based on the individual's specific condition and medical history."
+            ]
+        }
+
+        # Custom CSS for modern FAQ section
+       st.markdown("""
+            <style>
+            .faq-header {
+                font-size: 30px;
+                font-weight: bold;
+                color: #FF8EE9;  /* Change to your desired color */
+            }
+            .faq-content {
+                font-size: 16px;
+                color: #333333;  /* Change to your desired color */
+            }
+            .faq-question {
+                font-size: 20px;  /* Increase font size for questions */
+                font-weight: bold;
+                color: #FF6347;
+            }
+            .custom-expander .streamlit-expanderHeader {
+                font-size: 59px;
+                color: blue; /* Change the color to your preference */
+            }
+            .custom-expander .streamlit-expanderContent {
+                font-size: 16px;
+                color: red; /* Change the color to your preference */
+            }
+            </style>
+            """, unsafe_allow_html=True)
+
+        # Display FAQs with headers and expandable answers with custom styling
+       for question, answers in faq_list.items():
+                st.markdown(f'<div class="faq-header">{question}</div>', unsafe_allow_html=True)
+                with st.expander("Show Answer", expanded=False):
+                    for answer in answers:
+                        st.markdown(f'<div class="faq-content">{answer}</div>', unsafe_allow_html=True)
 
 
 def set_session_state(options, selected_option):
