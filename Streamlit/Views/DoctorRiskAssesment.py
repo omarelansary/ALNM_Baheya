@@ -27,6 +27,7 @@ def app():
                 patient_age = st.number_input("Age", value=0, min_value=0)
                 patient_size_cm = st.number_input("size cm", value=0.0, min_value=0.0)
                 patient_ki67 = st.number_input("KI67", value=0.0, min_value=0.0)
+                patient_other = st.text_input("Other")
             with col_Categorical:
             # Categorical inputs
                 st.subheader("Categorical Inputs")
@@ -42,14 +43,16 @@ def app():
                 patient_grade = st.selectbox("Grade", options=["I", "II","III"],index=None, placeholder="Select grade...")
             with col_YesorNo:
                 st.subheader("Yes or No Inputs")
-                dm_choice = st.radio("DM", options=["Yes", "No"],index=None, horizontal=True)
-                dm_result = dm_choice.split()[0] if dm_choice else "Not selected"
-                htn_choice = st.radio("HTN", options=["Yes", "No"],index=None,horizontal=True)   
-                htn_result = htn_choice.split()[0] if htn_choice else "Not selected"
+                Hormonal_Contraception_choice = st.radio("Hormonal Contraception", options=["Yes", "No"],index=None, horizontal=True)
+                Hormonal_Contraception_result = Hormonal_Contraception_choice.split()[0] if Hormonal_Contraception_choice else "Not selected"
+                # dm_choice = st.radio("DM", options=["Yes", "No"],index=None, horizontal=True)
+                # dm_result = dm_choice.split()[0] if dm_choice else "Not selected"
+                # htn_choice = st.radio("HTN", options=["Yes", "No"],index=None,horizontal=True)   
+                # htn_result = htn_choice.split()[0] if htn_choice else "Not selected"
                 vte_choice = st.radio("VTE", options=["Yes", "No"],index=None,horizontal=True)
                 vte_result = vte_choice.split()[0] if vte_choice else "Not selected"
-                cvd_choice = st.radio("CVD", options=["Yes", "No"],index=None,horizontal=True)    
-                cvd_result = cvd_choice.split()[0] if cvd_choice else "Not selected"
+                # cvd_choice = st.radio("CVD", options=["Yes", "No"],index=None,horizontal=True)    
+                # cvd_result = cvd_choice.split()[0] if cvd_choice else "Not selected"
                 lymphovascular_invasion_choice = st.radio("Lymphovascular Invasion", options=["Yes", "No"],index=None,horizontal=True)
                 lymphovascular_invasion_result = lymphovascular_invasion_choice.split()[0] if lymphovascular_invasion_choice else "Not selected"
                 st.subheader("Positive or No Negative")
@@ -73,6 +76,8 @@ def app():
                     missing_fields.append("Size (cm)")
                 if patient_ki67 == 0.0:
                     missing_fields.append("KI67")
+                if not patient_other:
+                    missing_fields.append("Other")    
                 if not patient_family_history:
                     missing_fields.append("Family History")
                 if not patient_menopausal_state:
@@ -91,14 +96,16 @@ def app():
                     missing_fields.append("Tumor Type")
                 if not patient_grade:
                     missing_fields.append("Grade")
-                if not dm_choice:
-                    missing_fields.append("DM")
-                if not htn_choice:
-                    missing_fields.append("HTN")
+                if not Hormonal_Contraception_choice:
+                    missing_fields.append("Hormonal Contraception")    
+                # if not dm_choice:
+                #     missing_fields.append("DM")
+                # if not htn_choice:
+                #     missing_fields.append("HTN")
                 if not vte_choice:
                     missing_fields.append("VTE")
-                if not cvd_choice:
-                    missing_fields.append("CVD")
+                # if not cvd_choice:
+                #     missing_fields.append("CVD")
                 if not lymphovascular_invasion_choice:
                     missing_fields.append("Lymphovascular Invasion")
                 if not er_choice:
@@ -107,7 +114,6 @@ def app():
                     missing_fields.append("PR")
                 if not her2_choice:
                     missing_fields.append("HER2")
-
                 if missing_fields:
                     st.error(f"Please fill in the following fields: {', '.join(missing_fields)}")
                 else:
@@ -132,10 +138,10 @@ def app():
                     st.write(f"- Grade: {patient_grade}")
 
                     st.write("Yes or No Inputs:")
-                    st.write(f"- DM: {dm_result}")
-                    st.write(f"- HTN: {htn_result}")
+                    # st.write(f"- DM: {dm_result}")
+                    # st.write(f"- HTN: {htn_result}")
                     st.write(f"- VTE: {vte_result}")
-                    st.write(f"- CVD: {cvd_result}")
+                    # st.write(f"- CVD: {cvd_result}")
                     st.write(f"- Lymphovascular Invasion: {lymphovascular_invasion_result}")
                     st.write(f"- ER: {er_result}")
                     st.write(f"- PR: {pr_result}")
@@ -146,6 +152,7 @@ def app():
                                         "patient_age": int(patient_age),
                                         "patient_size_cm": float(patient_size_cm),
                                         "patient_ki67": float(patient_ki67),
+                                        "Others:":str(patient_other),
                                         "patient_family_history": str(patient_family_history),
                                         "patient_menopausal_state": str(patient_menopausal_state),
                                         "patient_t": str(patient_t),
@@ -155,15 +162,15 @@ def app():
                                         "patient_site": str(patient_site),
                                         "patient_tumor_type": str(patient_tumor_type),
                                         "patient_grade": str(patient_grade),
-                                        "dm_result": str(dm_choice),
-                                        "htn_result": str(htn_choice),
+                                        "Hormonal_Contraception":str(Hormonal_Contraception_result),
+                                        # "dm_result": str(dm_choice),
+                                        # "htn_result": str(htn_choice),
                                         "vte_result": str(vte_choice),
-                                        "cvd_result": str(cvd_choice),
+                                        # "cvd_result": str(cvd_choice),
                                         "lymphovascular_invasion_result": str(lymphovascular_invasion_choice),
                                         "er_result": str(er_choice),
                                         "pr_result": str(pr_choice),
-                                        "her2_result": str(her2_choice)
-                                    }
+                                        "her2_result": str(her2_choice)                                    }
                     st.write(Network.post_make_assesment(18,int(patient_MRN),patient_data))             
                     
         if st.button("Get Assesment by Doc Id"):
