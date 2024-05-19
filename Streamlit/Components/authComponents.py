@@ -37,44 +37,68 @@ class AuthComponents:
             if token_expiry_date is not None:
                 st.session_state['token_expiry_date'] = token_expiry_date
  
-       
 
 
-    def login(self,role):
-        if st.session_state['is_logged_in'] == False:
-            #if self.cookie_handler.get_cookie()==None:
+    def login(self, role):
+        if not st.session_state.get('is_logged_in'):
             if not self.check_cookie_session():
                 # Initialize the authenticator
                 authenticator = Authenticator()
                 st.title(f"{role.capitalize()} Login")
-                with st.form("login"):
-                    st.subheader("Please enter your credentials")
+                form_mode = st.radio("State", options=["Login", "Forgot Password"],index=None, horizontal=True)
+                if form_mode == "Login":
+                    with st.form("login"):
+                        st.subheader("Please enter your credentials")
 
-                    # Form inputs
-                    email = st.text_input("Email")
-                    password = st.text_input("Enter a password", type="password")
+                        # Form inputs
+                        email = st.text_input("Email")
+                        password = st.text_input("Enter a password", type="password")
 
-                    # Submission button
-                    submit_button = st.form_submit_button("Submit")
+                        # Submission button
+                        submit_button = st.form_submit_button("Submit")
 
-                    # Process form submission
-                    if submit_button:
-                        response = authenticator.login(role, email, password)
-                        if 'token' in response:
-                            st.success("Login successful!")
-                            st.session_state['is_logged_in']=True
-                            st.session_state['token'] = response.get('token')
-                            st.session_state['role'] = role
-                            st.write(st.session_state['token'])
-                            st.write(st.session_state['role']) 
-                            self.set_user_session_state(is_logged_in= True, token_expiry_date=datetime.datetime.now()+datetime.timedelta(seconds=30))
-                            self.cookie_handler.set_cookie(st.session_state['token'], datetime.datetime.now() + datetime.timedelta(days=30))
-                        else:
-                            st.session_state['is_logged_in']=False
-                            st.error("Login failed!")
-                            st.write(response.get("details", "No additional information available."))      
+                        # Process form submission
+                        if submit_button:
+                            response = authenticator.login(role, email, password)
+                            if 'token' in response:
+                                st.success("Login successful!")
+                                st.session_state['is_logged_in'] = True
+                                st.session_state['token'] = response.get('token')
+                                st.session_state['role'] = role
+                                st.write(st.session_state['token'])
+                                st.write(st.session_state['role'])
+                                self.set_user_session_state(is_logged_in=True, token_expiry_date=datetime.datetime.now() + datetime.timedelta(seconds=30))
+                                self.cookie_handler.set_cookie(st.session_state['token'], datetime.datetime.now() + datetime.timedelta(days=30))
+                            else:
+                                st.session_state['is_logged_in'] = False
+                                st.error("Login failed!")
+                                st.write(response.get("details", "No additional information available."))
+
+                elif form_mode == "Forgot Password":
+                    with st.form("forgot_password"):
+                        st.subheader("Reset your password")
+
+                        # Form inputs
+                        email = st.text_input("Email")
+                        new_password = st.text_input("New Password", type="password")
+                        confirm_password = st.text_input("Confirm Password", type="password")
+
+                        # Submission button
+                        submit_button = st.form_submit_button("Submit")
+
+                        # Process form submission
+                        if submit_button:
+                            if new_password != confirm_password:
+                                st.error("Passwords do not match!")
+                            else:
+                                response = authenticator.reset_password(email, new_password)
+                                if response.get('status') == 'success':
+                                    st.success("Password reset successful!")
+                                else:
+                                    st.error("Password reset failed!")
+                                    st.write(response.get("details", "No additional information available."))
         else:
-            st.write(self.cookie_handler.get_cookie())                         
+            st.write(self.cookie_handler.get_cookie())
 
     def check_cookie_session(self):
         # Check if token and expiry date exist and are valid

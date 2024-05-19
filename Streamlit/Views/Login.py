@@ -12,14 +12,14 @@ def app(authComponents):
         ('Doctor', 'Data Analyst', 'Admin')
     )
 
-
     try:
         authComponents.login(role=role)
     except AuthExceptions as e:
         st.error(e)
 
-    if st.session_state['is_logged_in']==True:
-        st.write('Welcome *Doctor*')
+    if st.session_state['is_logged_in']:
+        st.write(f'Welcome *{st.session_state["role"]}*')
         st.title('Some content')
     else:
-        st.write('Please login')  
+        st.write('Please login')
+
