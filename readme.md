@@ -49,7 +49,37 @@ echo $VIRTUAL_ENV
 pip install -r ALNM_BAHEYA\\requirements.txt
 ```
 
-### 4. Run migrations
+### 4. Install PostgreSQL: If it's not already installed, you can install PostgreSQL on Ubuntu by running:
+
+```bash
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+```
+#### 1. Start the PostgreSQL Service: Make sure the PostgreSQL service is running:
+
+```bash
+sudo service postgresql start
+```
+#### 2. Switch to the PostgreSQL User: PostgreSQL creates a user named postgres by default for handling the database tasks. Switch to this user:
+
+```bash
+sudo -i -u postgres
+```
+##### [sudo] password for vboxuser: 
+##### postgres@Ubuntu:~$
+
+#### Open the PostgreSQL Command Line Interface (psql): Once you're the postgres user, you can open the PostgreSQL command line interface by typing:
+
+```bash
+psql
+```
+### 5. Run migrations
+
+#### Check the django:
+
+```bash
+python manage.py check
+```
 
 #### Initialize the database and prepare it for use by running:
 
