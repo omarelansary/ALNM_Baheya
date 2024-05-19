@@ -1,21 +1,22 @@
 import streamlit as st
 import pandas as pd
-def add_user(username, email, password):
-    # Here you would typically add the user to your database or perform some backend operation
-    # For this example, let's just return the user details
-    return {"Username": username, "Email": email, "password": password}
+from Networking.Networking import Networking
 
 def app():
     st.title('Add Doctor')
-# Function to add user to the system
-    new_doctor_username = st.text_input("Username")
+    # Function to add user to the system
+    Network = Networking()
+    new_doctor_fname = st.text_input("First Name")
+    new_doctor_lname = st.text_input("Last Name")
     new_doctor_email = st.text_input("Email")
     new_doctor_password = st.text_input("Password",type="password")
-    add_button = st.button("Add doctor")
+    add_button = st.button("Add Doctor")
     if add_button:
         missing_fields = []
-        if not new_doctor_username:
-                missing_fields.append("Username")
+        if not new_doctor_fname:
+                missing_fields.append("First Name")
+        if not new_doctor_lname:
+                missing_fields.append("Last Name")
         if not new_doctor_email:
                 missing_fields.append("Email")
         if not new_doctor_password:
@@ -23,19 +24,18 @@ def app():
         if missing_fields:
                 st.error(f"Please fill in the following fields: {', '.join(missing_fields)}")
         else:
-            new_user = add_user(new_doctor_username, new_doctor_email,new_doctor_password)
-            st.success("User added successfully!")
+            new_user = Network.post_signup('Doctor',new_doctor_fname,new_doctor_lname, new_doctor_email,new_doctor_password)
+            st.success("Doctor added successfully!")
             # Display added user
             st.write(new_user)# DH EL VIRABLE EL FIH HGT EL USER @OMAR
             # Add user to session state
-            doctors = st.session_state.get('doctors', [])
-            doctors.append(new_user)
-            st.session_state.doctors = doctors
+            doctor = st.session_state.get('doctor', [])
+            doctor.append(new_user)
+            st.session_state.doctor = doctor
     st.subheader('View Doctors')
-    doctors = st.session_state.get('doctors', [])
-    if doctors:
-        df = pd.DataFrame(doctors)
+    df = Network.get_table('Doctor')
+    if df:
         st.write(df)
     else:
-        st.write("No doctors added yet.")
+        st.write("No Doctors added yet.")
 

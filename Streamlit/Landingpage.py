@@ -1,5 +1,5 @@
-import Views.DoctorGantChart
 import streamlit as st
+st.set_page_config(layout="wide")
 from streamlit_option_menu import option_menu
 from Components.authComponents import AuthComponents
 from Authentication.Authenticator import AuthExceptions
@@ -7,6 +7,7 @@ import Views.AdminDashboard, Views.AdminPatientsView
 import Views.AdminAddAnalyst, Views.AdminAddDoctor
 import Views.AnalystDashboard, Views.AnalystReview
 import Views.DoctorDashboard, Views.DoctorPatients, Views.DoctorRiskAssesment
+import Views.DoctorGantChart
 import  Views.Home, Views.Login
 def main():
     # Perform login if not logged in

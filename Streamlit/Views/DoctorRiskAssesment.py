@@ -16,7 +16,7 @@ def app():
 
         st.title("Risk Assessment")
         with st.form("Risk Assessment"):
-            col_Numerical, col_Categorical, col_YesorNo = st.columns(3)
+            col_Numerical, col_Categorical1, col_Categorical2, col_YesorNo,col_PositiveAndNegative = st.columns(5)
 
             # DM selection
             with col_Numerical:
@@ -27,35 +27,41 @@ def app():
                 patient_age = st.number_input("Age", value=0, min_value=0)
                 patient_size_cm = st.number_input("size cm", value=0.0, min_value=0.0)
                 patient_ki67 = st.number_input("KI67", value=0.0, min_value=0.0)
-                patient_other=st.text_input("Other")
-            with col_Categorical:
+            with col_Categorical1:
             # Categorical inputs
-                st.subheader("Categorical Inputs")
+                st.subheader("Categorical Inputs Part 1 ")
 
                 patient_family_history = st.selectbox("Family History", options=["Yes - BC","Yes - both","Yes - other cancers", "No","Unrecorded"],index=None, placeholder="Select family history...")
-                patient_menopausal_state = st.selectbox("Menopausal State", options=["Post-M", "Pre-M", "Unrecorded"],index=None, placeholder="Select menopausal state...")
-                patient_t = st.selectbox("T", options=["T1", "T2", "T3","T4","Tis"], index=None,placeholder="Select T...")
-                patient_n = st.selectbox("N", options=["N0", "N1","N2", "Nx"],index=None, placeholder="Select N...")
-                patient_laterality = st.selectbox("Laterality", options=["Left", "Right", "Bilateral"],index=None, placeholder="Select laterality...")
+                patient_other=st.text_input("Other")
                 patient_unilateral_bilateral = st.selectbox("Unilateral Bilateral", options=["Unilateral", "Bilateral"],index=None, placeholder="Select unilateral or bilateral...")
-                patient_site = st.selectbox("Site", options=["Upper outer quadrant","Upper inner quadrant","Lower outer quadrant", "Lower inner quadrant","Para areolar", "Other"],index=None, placeholder="Select site...")
+                patient_laterality = st.selectbox("Laterality", options=["Left", "Right", "Bilateral"],index=None, placeholder="Select laterality...")
+                patient_menopausal_state = st.selectbox("Menopausal State", options=["Post-M", "Pre-M", "Unrecorded"],index=None, placeholder="Select menopausal state...")
+            with col_Categorical2:
+
+                st.subheader("Categorical Inputs Part 2 ")
+                patient_n = st.selectbox("N", options=["N0", "N1","N2", "Nx"],index=None, placeholder="Select N...")
+                patient_t = st.selectbox("T", options=["T1", "T2", "T3","T4","Tis"], index=None,placeholder="Select T...")
+                patient_grade = st.selectbox("Grade", options=["I", "II","III"],index=None, placeholder="Select grade...") 
                 patient_tumor_type = st.selectbox("Tumor Type", options=["Invasive duct carcinoma (NST)","Invasive Lobular carcinoma NOS ","Ductal carcinoma in situ, DCIS", "Invasive tubular/cribriform carcinoma","Mixed Tumor", "Other"], index=None,placeholder="Select tumor type...")
-                patient_grade = st.selectbox("Grade", options=["I", "II","III"],index=None, placeholder="Select grade...")
+                patient_site = st.selectbox("Site", options=["Upper outer quadrant","Upper inner quadrant","Lower outer quadrant", "Lower inner quadrant","Para areolar", "Other"],index=None, placeholder="Select site...")
+    
             with col_YesorNo:
                 st.subheader("Yes or No Inputs")
+                vte_choice = st.radio("VTE", options=["Yes", "No"],index=None,horizontal=True)
+                vte_result = vte_choice.split()[0] if vte_choice else "Not selected"
                 Hormonal_Contraception_choice = st.radio("Hormonal Contraception", options=["Yes", "No"],index=None, horizontal=True)
                 Hormonal_Contraception_result = Hormonal_Contraception_choice.split()[0] if Hormonal_Contraception_choice else "Not selected"
                 # dm_choice = st.radio("DM", options=["Yes", "No"],index=None, horizontal=True)
                 # dm_result = dm_choice.split()[0] if dm_choice else "Not selected"
                 # htn_choice = st.radio("HTN", options=["Yes", "No"],index=None,horizontal=True)   
                 # htn_result = htn_choice.split()[0] if htn_choice else "Not selected"
-                vte_choice = st.radio("VTE", options=["Yes", "No"],index=None,horizontal=True)
-                vte_result = vte_choice.split()[0] if vte_choice else "Not selected"
+
                 # cvd_choice = st.radio("CVD", options=["Yes", "No"],index=None,horizontal=True)    
                 # cvd_result = cvd_choice.split()[0] if cvd_choice else "Not selected"
                 lymphovascular_invasion_choice = st.radio("Lymphovascular Invasion", options=["Yes", "No"],index=None,horizontal=True)
                 lymphovascular_invasion_result = lymphovascular_invasion_choice.split()[0] if lymphovascular_invasion_choice else "Not selected"
-                st.subheader("Positive or No Negative")
+            with col_PositiveAndNegative:    
+                st.subheader("Positive or Negative")
                 er_choice = st.radio("ER", options=["Positive", "Negative"],index=None,horizontal=True)
                 er_result = er_choice.split()[0] if er_choice else "Not selected"
                 pr_choice = st.radio("PR", options=["Positive", "Negative"],index=None,horizontal=True)   

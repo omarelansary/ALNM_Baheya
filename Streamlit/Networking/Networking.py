@@ -25,4 +25,35 @@ class Networking():
             return response.json()
         else:
             return response.json()['message']
+    
+    def post_signup(self,role,fname,lname,email,password):
+        """Send login request to API and return the response."""
+        payload = {
+            "firstName":fname,
+            "lastName": lname,
+            "email": email,
+            "password": password
+        }
+        response = ''
+        # Adjust the URLs as necessary
+        if role == "Doctor":
+            response = requests.post('http://127.0.0.1:8000/api/admins/signUp', json=payload)
+        elif role == "Data Analyst":
+            response = requests.post('http://127.0.0.1:8000/api/admins/signUpDataScientists', json=payload)
             
+        if response.status_code == 200:
+            data = response.json()
+            return data
+        else:
+            raise KeyError ##TODO: Change it ya Omar
+    
+    def get_table(self,role):
+        response=None
+        if role=="Doctor":
+            response = requests.get('http://127.0.0.1:8000/api/admins/getDoctors')
+        if role=="Data Analyst":
+            response = requests.get('http://127.0.0.1:8000/api/admins/getDataScientists')
+        if response.json()['success']:    
+            return response.json()
+        else:
+            return response.json()['message']
