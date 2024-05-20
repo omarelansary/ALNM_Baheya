@@ -5,8 +5,8 @@ import plotly.express as px
 # Sample data for doctors' appointments spanning multiple days
 data = {
     'Patient': ['Patient A', 'Patient B', 'Patient C', 'Patient D', 'Patient E', 'Patient F'],
-    'Start': ['2024-05-01', '2024-05-03', '2024-05-02', '2024-05-03', '2024-05-01', '2024-05-02'],
-    'End': ['2024-05-02', '2024-05-05', '2024-05-05', '2024-05-06', '2024-05-03', '2024-05-06']
+    'Start': ['2024-05-01', '2024-05-02', '2024-05-04', '2024-05-06', '2024-05-10', '2024-05-13'],
+    'End': ['2024-05-8', '2024-05-9', '2024-05-11', '2024-05-13', '2024-05-17', '2024-05-20'],
 }
 
 # Create a DataFrame
