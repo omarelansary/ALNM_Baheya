@@ -3,7 +3,7 @@ import pandas as pd
 from Networking.Networking import Networking
 
 def app():
-    st.title('Add Doctor')
+    st.title('Add Physician')
     # Function to add user to the system
     Network = Networking()
     new_doctor_fname = st.text_input("First Name")
@@ -25,17 +25,17 @@ def app():
                 st.error(f"Please fill in the following fields: {', '.join(missing_fields)}")
         else:
             new_user = Network.post_signup('Doctor',new_doctor_fname,new_doctor_lname, new_doctor_email,new_doctor_password)
-            st.success("Doctor added successfully!")
+            st.success("Physician added successfully!")
             # Display added user
             st.write(new_user)# DH EL VIRABLE EL FIH HGT EL USER @OMAR
             # Add user to session state
             doctor = st.session_state.get('doctor', [])
             doctor.append(new_user)
             st.session_state.doctor = doctor
-    st.subheader('View Doctors')
-    df = Network.get_table('Doctor')
+    st.subheader('View Physicians')
+    df = Network.get_table('Physician')
     if df:
         st.write(df)
     else:
-        st.write("No Doctors added yet.")
+        st.write("No Physicians added yet.")
 

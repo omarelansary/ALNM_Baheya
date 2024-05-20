@@ -2,6 +2,7 @@ import streamlit as st
 from Networking.Networking import Networking
 import pandas as pd
 from ourData.cache import LocalCache
+from streamlit_modal import Modal
 
 # st.set_page_config(
 #         page_title="Risk Assessment",
@@ -177,7 +178,41 @@ def app():
                                         "er_result": str(er_choice),
                                         "pr_result": str(pr_choice),
                                         "her2_result": str(her2_choice)                                    }
-                    st.write(Network.post_make_assesment(18,int(patient_MRN),patient_data))             
+                    st.write(Network.post_make_assesment(18,int(patient_MRN),patient_data))      
+        # el mfrood @@ omar trg3 el risk assement result hnh fy variable asmo case
+        modal = Modal("Risk Assessment Result", key="result-modal", padding=10, max_width=430)
+
+        # Button to open the modal
+        
+
+        # Generate a random value for 'case'
+        case = 0
+
+        # Check if modal is open
+        if modal.is_open():
+            # Content inside the modal based on the value of 'case'
+            with modal.container():
+                if case == 0:
+                    content = """
+                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                            <h1 style="color: red; font-size: 28px; font-family: 'Open Sans', sans-serif;">No</h1>
+                            <h2 style="font-size: 16px; font-family: 'Open Sans', sans-serif;">Patient will not have metastasis</h2>
+                        </div>
+                    """
+                else:
+                    content = """
+                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                            <h1 style="color: green; font-size: 28px; font-family: 'Open Sans', sans-serif;">Yes</h1>
+                            <h2 style="font-size: 16px; font-family: 'Open Sans', sans-serif;">Patient might have metastasis</h2>
+                        </div>
+                    """
+                st.markdown(content, unsafe_allow_html=True)
+
+                # Set the height of the modal dynamically
+                st.markdown(
+                    f"<style>.streamlit-modal .element-container{{height: auto}}</style>",
+                    unsafe_allow_html=True
+                )                   
                     
         if st.button("Get Assesment by Doc Id"):
             # st.write(Network.get_assesment_byDocId(18))

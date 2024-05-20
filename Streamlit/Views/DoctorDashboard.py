@@ -212,7 +212,7 @@ def plot_histogram(df, col_name):
     ax.set_ylabel('Frequency')
     st.pyplot(fig)    
 def app():
-    st.title("Doctor Dashboard")
+    st.title("Physician Dashboard")
     
     file_path = "ourData/cairouniversity_march_known_nooutliers.xlsx"
     file_site_path="ourData/mohraData.xlsx"

@@ -16,7 +16,7 @@ import plotly.graph_objects as go
 # )
 
 def app():
-    st.write('ALL Your Patients Doctor')
+    st.write('ALL Your Patients')
     Network = Networking()
     cacheInMemory = LocalCache()
     st.title("My patients")

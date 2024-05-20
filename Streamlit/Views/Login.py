@@ -18,7 +18,7 @@ def app(authComponents):
         # Radio button widget
         role = st.radio(
             "Select your role:",
-            ('Doctor', 'Data Analyst', 'Admin'),horizontal=True
+            ('Physician', 'Data Analyst', 'Admin'),horizontal=True
         )
 
         try:
