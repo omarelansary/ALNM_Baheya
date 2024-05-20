@@ -16,7 +16,7 @@ def app():
 
         st.title("Risk Assessment")
         with st.form("Risk Assessment"):
-            col_Numerical, col_Categorical1, col_Categorical2, col_YesorNo,col_PositiveAndNegative = st.columns(5)
+            col_Numerical, col_Categorical1, col_Categorical2, col_YesorNo = st.columns(4)
 
             # DM selection
             with col_Numerical:
@@ -60,7 +60,7 @@ def app():
                 # cvd_result = cvd_choice.split()[0] if cvd_choice else "Not selected"
                 lymphovascular_invasion_choice = st.radio("Lymphovascular Invasion", options=["Yes", "No"],index=None,horizontal=True)
                 lymphovascular_invasion_result = lymphovascular_invasion_choice.split()[0] if lymphovascular_invasion_choice else "Not selected"
-            with col_PositiveAndNegative:    
+            # with col_PositiveAndNegative:    
                 st.subheader("Positive or Negative")
                 er_choice = st.radio("ER", options=["Positive", "Negative"],index=None,horizontal=True)
                 er_result = er_choice.split()[0] if er_choice else "Not selected"

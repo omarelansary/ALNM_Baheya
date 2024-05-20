@@ -10,7 +10,7 @@ import seaborn as sns
 import plotly.graph_objects as go
 
 def app():
-    st.title('ALL Patients with Set Ground Truth')
+    st.title('ALL Patients with Setted Ground Truth')
     
     # Instantiate networking and cache objects
     Network = Networking()
