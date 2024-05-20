@@ -61,8 +61,10 @@ class AuthComponents:
                         email = st.text_input("Email")
                         password = st.text_input("Password", type="password")
 
-                        # Submission button
-                        submit_button = st.form_submit_button("Login")
+                        # Create columns to center the submit button
+                        col1, col2, col3 = st.columns([2, 4, 2])
+                        with col2:
+                            submit_button = st.form_submit_button("Login", use_container_width=True)
 
                         # Process form submission
                         if submit_button:
@@ -73,7 +75,7 @@ class AuthComponents:
                                 st.session_state['token'] = response.get('token')
                                 st.session_state['role'] = role
                                 self.set_user_session_state(is_logged_in=True, token_expiry_date=datetime.datetime.now() + datetime.timedelta(seconds=30))
-                                self.cookie_handler.set_cookie(st.session_state['token'], datetime.datetime.now() + datetime.timedelta(days=30))
+                                self.cookie_handler().set_cookie(st.session_state['token'], datetime.datetime.now() + datetime.timedelta(days=30))
                             else:
                                 st.session_state['is_logged_in'] = False
                                 st.error("Login failed! Please check your email and password.")
@@ -92,8 +94,10 @@ class AuthComponents:
                         new_password = st.text_input("New Password", type="password")
                         confirm_password = st.text_input("Confirm Password", type="password")
 
-                        # Submission button
-                        submit_button = st.form_submit_button("Reset Password")
+                        # Create columns to center the submit button
+                        col1, col2, col3 = st.columns([2,4, 2])
+                        with col2:
+                            submit_button = st.form_submit_button("Reset Password", use_container_width=True)
 
                         # Process form submission
                         if submit_button:
@@ -114,6 +118,8 @@ class AuthComponents:
             st.write("You are already logged in.")
             st.write(f"Role: {st.session_state['role']}")
             st.write(f"Token: {st.session_state['token']}")
+    # Dummy methods for the example
+   
 
     def check_cookie_session(self):
         # Check if token and expiry date exist and are valid
@@ -132,7 +138,7 @@ class AuthComponents:
                 return 0
         else:
             # Token or expiry date does not exist
-            st.write('I AM HERE')
+            st.write('')
             return 0
 
     def logout(self):
