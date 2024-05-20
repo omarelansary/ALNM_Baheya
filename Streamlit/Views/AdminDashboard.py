@@ -42,11 +42,23 @@ def app():
             ),
         },
         hide_index=True,
+        width=1200
     )
     st.dataframe(
         dfdoc,
         column_config={
             "name": "Doctors",
+            "working_days": st.column_config.LineChartColumn(
+                "Working Days", y_min=0, y_max=40
+            ),
+        },
+        hide_index=True,
+        width=1200  # Adjust the width as needed
+    )
+    st.dataframe(
+        dfdoc,
+        column_config={
+            "name": "Data Analyst",
             "working_days": st.column_config.LineChartColumn(
                 "Working Days", y_min=0, y_max=40
             ),
