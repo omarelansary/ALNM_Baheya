@@ -141,7 +141,7 @@ class LocalCache:
         medical_infos = []
         exclude_keys = ["id", "status","MRN"]
         for assessment in assessments_json_data["assessments"]:
-            medical_info = assessment.pop("medical_info")
+            medical_info = assessment["medical_info"]
             medical_infos.append(medical_info)
             assessment_filtered = self.extract_and_exclude_assessment_info(assessment, exclude_keys)
             assessments.append(assessment_filtered)
