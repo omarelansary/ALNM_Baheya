@@ -98,3 +98,7 @@ def app():
         hide_index=True,
         width=1200  # Adjust the width as needed
     )
+    st.subheader("Performance Ratings")
+    for i, row in dfperformane.iterrows():
+        st.write(f"{row['name']}:")
+        st.progress(row['stars'] / 5)  # Assuming the stars are out of 5
