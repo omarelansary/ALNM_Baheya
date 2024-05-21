@@ -116,7 +116,7 @@ def app():
 
     columns = df.columns.tolist()
     # Drop the 'id' column
-    df = df.drop(columns=['id','MRN'])
+    # df = df.drop(columns=['id','MRN'])
 
     columns = df.columns.tolist()
 
@@ -124,10 +124,40 @@ def app():
     col1, col2 = st.columns(2)
 
     with col1:
+        plot_list = ['Bar Chart', 'Scatter Plot', 'Distribution Plot', 'Count Plot', 'Histogram']
+        plot_type = st.selectbox('Select the type of plot', options=plot_list)
         x_axis = st.selectbox('Select the X-axis', options=columns + ["None"])
         y_axis = st.selectbox('Select the Y-axis', options=columns + ["None"])
-        plot_list = ['Line Plot', 'Bar Chart', 'Scatter Plot', 'Distribution Plot', 'Count Plot', 'Histogram']
-        plot_type = st.selectbox('Select the type of plot', options=plot_list)
+
+        # # Assuming columns contains the list of column names from your dataset
+        # columns = ['age', 'tumor_size', 'bmi', 'ki67', 'column1', 'column2']  # example columns
+
+        # # Dropdown menu for selecting plot type
+        # plot_list = ['Bar Chart', 'Scatter Plot', 'Distribution Plot', 'Count Plot', 'Histogram']
+        # plot_type = st.selectbox('Select the type of plot', options=plot_list)
+
+        # # Conditional options for x_axis and y_axis based on selected plot type
+        # if plot_type == 'Count Plot':
+        #     x_axis = st.selectbox('Select the X-axis', options=columns)
+        #     y_axis = None
+        # elif plot_type == 'Scatter Plot':
+        #     numeric_columns = ['age', 'tumor_size', 'bmi', 'ki67']
+        #     x_axis = st.selectbox('Select the X-axis', options=numeric_columns)
+        #     y_axis = st.selectbox('Select the Y-axis', options=numeric_columns)
+        # elif plot_type == 'Histogram':
+        #     numeric_columns = ['age', 'tumor_size', 'bmi', 'ki67']
+        #     x_axis = st.selectbox('Select the X-axis', options=numeric_columns)
+        #     y_axis = None
+        # else:
+        #     x_axis = st.selectbox('Select the X-axis', options=columns + ["None"])
+        #     y_axis = st.selectbox('Select the Y-axis', options=columns + ["None"])
+
+        # # Output selected options for debugging purposes
+        # st.write('Selected plot type:', plot_type)
+        # st.write('Selected X-axis:', x_axis)
+        # if y_axis:
+        #     st.write('Selected Y-axis:', y_axis)
+ 
 
     # Generate the plot based on user selection
     if st.button('Generate Plot'):
