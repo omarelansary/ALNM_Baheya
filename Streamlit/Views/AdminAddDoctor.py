@@ -50,7 +50,7 @@ def app():
                         st.warning("Password must be at least 7 characters long.")
          st.write("Password:", new_doctor_password)   
     st.subheader('View Physicians')
-    df = Network.get_table('Physician')
+    df = Network.get_users_table('Physician')
     if df:
         st.write(df)
     else:

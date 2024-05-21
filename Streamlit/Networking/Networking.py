@@ -47,11 +47,11 @@ class Networking():
         else:
             raise KeyError ##TODO: Change it ya Omar
     
-    def get_table(self,role):
+    def get_users_table(self,role):
         response=None
         if role=="Doctor":
             response = requests.get('http://127.0.0.1:8000/api/admins/getDoctors')
-        if role=="Data Analyst":
+        if role=="Physician":
             response = requests.get('http://127.0.0.1:8000/api/admins/getDataScientists')
         if response.json()['success']:    
             return response.json()

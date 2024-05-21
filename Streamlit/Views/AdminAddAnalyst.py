@@ -101,7 +101,7 @@ def app():
 
     st.subheader('View Analysts')
     # analysts = st.session_state.get('analysts', [])
-    df = Network.get_table('Data Analyst')
+    df = Network.get_users_table('Data Analyst')
     if df:
         st.write(df)
     else:
