@@ -36,11 +36,13 @@ def app():
         "Select MRN",
         df['MRN'].unique()
     )
-    st.write(f"Editing ground_truth for MRN: {selected_mrn}")
-
+    st.session_state['selected_mrn'] = selected_mrn
+    # st.write(f"Editing ground_truth for MRN: {selected_mrn}")
+    if selected_mrn:
+            st.write(f"Editing ground_truth for MRN: {selected_mrn}")
+            # Enable edit mode if MRN is selected
+            st.session_state['edit_mode'] = True
     # Create an "Edit" button to enable editing
-    if st.button("Edit"):
-        st.session_state['edit_mode'] = True
 
     if st.session_state['edit_mode']:
         # Make only the ground_truth column editable for the selected MRN
@@ -78,13 +80,11 @@ def app():
             changed_rows = list(changes.keys())
             
             # Extract the IDs, MRNs, and new ground_truth values from the changed rows
-            new_id_values = df.loc[changed_rows, 'id']
             new_MRN_values = df.loc[changed_rows, 'MRN']
             new_ground_truth_values = [changes[index]['ground_truth'] for index in changed_rows]
 
             # Create a DataFrame with the extracted values
             omr_change = pd.DataFrame({
-                'id': new_id_values,
                 'MRN': new_MRN_values,
                 'ground_truth': new_ground_truth_values
             })

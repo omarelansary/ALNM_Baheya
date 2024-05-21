@@ -52,10 +52,17 @@ def app():
     data_clean = data[['Age', 'First_BMI', 'size_cm', 'Tumor_Type']].dropna()
     AUC=79
     accurcy=83
-    macro=82
-    micro=82
-    weighted=82
-    
+    macro=80
+    micro=83
+    weighted=80
+    image_url_PCA_Analysis = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/PCA_Analysis.png"
+    image_url_Numerical_Features_Distribution = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/Numerical_Features_Distribution.png"
+    image_url_Mean_ROC_AUC_Curve2 = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/Mean_ROC_AUC_Curve2.png"
+    image_url_Mean_ROC_AUC_Curve1 = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/Mean_ROC_AUC_Curve1.png"
+    image_url_HMAP_NEW= "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/HMAP_NEW.png"
+    image_url_confusion_matrix_last = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/confusion_matrix_last.png"
+
+    # st.image(image_url_HMAP_NEW)
     color = ['#E74C3C', '#781F16']
     donut_chart_Accuracy = make_donut(accurcy, 'Accuracy',color)
     donut_chart_weighted = make_donut(weighted, 'Outbound Migration',color)
@@ -78,7 +85,21 @@ def app():
         st.altair_chart(donut_chart_Micro)
     with col5:
         st.write('Auc Score')
-        st.altair_chart(donut_chart_Auc)                
+        st.altair_chart(donut_chart_Auc) 
+    col11,col22=st.columns(2)  
+    with col11:    
+        st.image(image_url_Mean_ROC_AUC_Curve1)
+        st.markdown("<br><br><br><br>", unsafe_allow_html=True)
+
+        st.image(image_url_PCA_Analysis)                 
+        
+    with col22:    
+        st.image(image_url_Mean_ROC_AUC_Curve2) 
+        st.image(image_url_Numerical_Features_Distribution) 
+    
+    st.image(image_url_HMAP_NEW)
+    
+    #     st.image(image_url_PCA_Analysis)                 
     fig = px.scatter(
         data_clean,
         x='Age',
@@ -109,7 +130,7 @@ def app():
 
     # Show the box plot in Streamlit
     st.plotly_chart(fig, use_container_width=True)
-
+    
 
 
     # Create a pair plot using Seaborn
@@ -117,3 +138,5 @@ def app():
 
     # Show the pair plot in Streamlit
     st.pyplot(pairplot)
+
+    st.image(image_url_confusion_matrix_last) 
