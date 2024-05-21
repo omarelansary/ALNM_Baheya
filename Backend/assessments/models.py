@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-from django.db import models
+from collections import OrderedDict
 
 #TODO:Rga3y kol l json response ll assessments b tarteb l excel 
 
@@ -10,20 +10,41 @@ class AssessmentManager(models.Manager):
     def serialize_assessments(self, queryset):
             serialized_assessments = []
             for assessment in queryset:
-                # status_message=assessment.get_status_message(assessment.status)
-                
-                serialized_assessment = {
-                    'id': assessment.id,
-                    'MRN':assessment.MRN,
-                    'status':assessment.status,
-                    'status_message': assessment.get_status_message(assessment.status) if assessment.status is not None else None,
-                    'prediction':assessment.prediction,
-                    'ground_truth':assessment.prediction,
-                    'creation_date':assessment.creation_date,
-                    'medical_info':assessment.medical_info,
-                   
-                    # Add other fields as needed
-                }
+                serialized_assessment = OrderedDict([
+                    ('id', assessment.id),
+                    ('MRN', assessment.MRN),
+                    ('status', assessment.status),
+                    ('status_message', assessment.get_status_message(assessment.status) if assessment.status is not None else None),
+                    ('prediction', assessment.prediction),
+                    ('ground_truth', assessment.ground_truth),
+                    ('creation_date', assessment.creation_date),
+                    ('medical_info', OrderedDict([
+                        ('MRN', assessment.medical_info.get('MRN')),
+                        ('patient_first_bmi', assessment.medical_info.get('patient_first_bmi')),
+                        ('patient_age', assessment.medical_info.get('patient_age')),
+                        ('dm_result', assessment.medical_info.get('dm_result')),
+                        ('htn_result', assessment.medical_info.get('htn_result')),
+                        ('vte_result', assessment.medical_info.get('vte_result')),
+                        ('cvd_result', assessment.medical_info.get('cvd_result')),
+                        ('Others', assessment.medical_info.get('Others')),
+                        ('patient_family_history', assessment.medical_info.get('patient_family_history')),
+                        ('patient_menopausal_state', assessment.medical_info.get('patient_menopausal_state')),
+                        ('Hormonal_Contraception', assessment.medical_info.get('Hormonal_Contraception')),
+                        ('patient_t', assessment.medical_info.get('patient_t')),
+                        ('patient_n', assessment.medical_info.get('patient_n')),
+                        ('patient_size_cm', assessment.medical_info.get('patient_size_cm')),
+                        ('lymphovascular_invasion_result', assessment.medical_info.get('lymphovascular_invasion_result')),
+                        ('patient_laterality', assessment.medical_info.get('patient_laterality')),
+                        ('er_result', assessment.medical_info.get('er_result')),
+                        ('pr_result', assessment.medical_info.get('pr_result')),
+                        ('her2_result', assessment.medical_info.get('her2_result')),
+                        ('patient_ki67', assessment.medical_info.get('patient_ki67')),
+                        ('patient_unilateral_bilateral', assessment.medical_info.get('patient_unilateral_bilateral')),
+                        ('patient_site', assessment.medical_info.get('patient_site')),
+                        ('patient_tumor_type', assessment.medical_info.get('patient_tumor_type')),
+                        ('patient_grade', assessment.medical_info.get('patient_grade'))
+                    ]))
+                ])
                                
                 serialized_assessments.append(serialized_assessment)
             return serialized_assessments
@@ -87,34 +108,32 @@ class Assessment(models.Model):
                      pr_result,her2_result,Others,Hormonal_Contraception):
 
         
-        self.medical_info = {
-            "MRN": MRN,
-            "patient_first_bmi": patient_first_bmi,
-            "patient_age": patient_age,
-            "dm_result":dm_result,
-            "htn_result":htn_result,
-            "vte_result":vte_result,
-            "cvd_result":cvd_result,
-            "Others":Others,
-            "patient_family_history": patient_family_history,
-            "patient_menopausal_state": patient_menopausal_state,
-            "Hormonal_Contraception":Hormonal_Contraception,
-            "patient_t": patient_t,
-            "patient_n": patient_n,
-            "patient_size_cm": patient_size_cm,
-            "lymphovascular_invasion_result":lymphovascular_invasion_result,
-            "patient_laterality": patient_laterality,
-            "er_result":er_result,
-            "pr_result":pr_result,
-            "her2_result":her2_result,
-            "patient_ki67": patient_ki67,
-            "patient_unilateral_bilateral": patient_unilateral_bilateral,
-            "patient_site":patient_site,
-            "patient_tumor_type": patient_tumor_type,
-            "patient_grade": patient_grade,
-            
-
-            }
+        self.medical_info = OrderedDict([
+            ("MRN", MRN),
+            ("patient_first_bmi", patient_first_bmi),
+            ("patient_age", patient_age),
+            ("dm_result", dm_result),
+            ("htn_result", htn_result),
+            ("vte_result", vte_result),
+            ("cvd_result", cvd_result),
+            ("Others", Others),
+            ("patient_family_history", patient_family_history),
+            ("patient_menopausal_state", patient_menopausal_state),
+            ("Hormonal_Contraception", Hormonal_Contraception),
+            ("patient_t", patient_t),
+            ("patient_n", patient_n),
+            ("patient_size_cm", patient_size_cm),
+            ("lymphovascular_invasion_result", lymphovascular_invasion_result),
+            ("patient_laterality", patient_laterality),
+            ("er_result", er_result),
+            ("pr_result", pr_result),
+            ("her2_result", her2_result),
+            ("patient_ki67", patient_ki67),
+            ("patient_unilateral_bilateral", patient_unilateral_bilateral),
+            ("patient_site", patient_site),
+            ("patient_tumor_type", patient_tumor_type),
+            ("patient_grade", patient_grade)
+        ])
         
         #Old model
         # self.medical_info = {

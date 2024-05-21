@@ -28,6 +28,49 @@ from django.utils import timezone
 from django.db.utils import OperationalError
 from utils.authenticators import generate_jwt_token
 from assessments.serializers import AssessmentSerializer
+from collections import defaultdict 
+
+
+@api_view(['POST'])
+def getAssessmentsCreationDate(request):
+    try: 
+        doctor_id = request.data.get('doctor_id')
+
+        # Check if both email and password are provided
+        if doctor_id is None:
+            return Response({'success': False, 'message': 'Doctor id is missing.'}, status=400)
+        try:
+            # Retrieve the doctor object based on the ID
+            doctor = Doctor.objects.get(id=doctor_id)
+        except ObjectDoesNotExist:
+            # Return failure response if doctor does not exist
+            return Response({
+                'success': False,
+                'message': 'Doctor does not exist.'
+            })
+        #concatenate to get full names
+        fullName=doctor.firstName+' '+doctor.lastName
+        # Get all assessments related to the doctor
+        assessments = doctor.assessments.all()
+
+        # Count the number of assessments
+        assessmentsCount = assessments.count()
+        
+        # Create a dictionary to count the occurrences of each creation date
+        assessmentsCountByDate = defaultdict(int)
+        for assessment in assessments:
+            if assessment.creation_date:
+                assessmentsCountByDate[str(assessment.creation_date)] += 1
+
+        
+
+        return Response({'success': True,'doctor_id':doctor.id,'fullName':fullName,'numberOfAssessments':assessmentsCount,'assessmentsCountByDate':assessmentsCountByDate,'message': 'Success.'})
+    except OperationalError as e:
+            # Return an error response for database errors
+            return Response({'success': False, 'message': f'Database error: {e}'}, status=400)
+    except Exception as e:
+            # Return a generic error response for other exceptions
+            return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)
 
 
 @api_view(['POST'])

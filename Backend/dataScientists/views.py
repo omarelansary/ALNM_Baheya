@@ -29,6 +29,13 @@ from utils.authenticators import generate_jwt_token
 # import pandas lib as pd
 import pandas as pd
 import numpy as np
+import os
+# from openpyxl import load_workbook
+import openpyxl
+from openpyxl.utils.dataframe import dataframe_to_rows
+
+
+
 # Create your views here.
 # @api_view(['GET'])
 # def getDashboardData(request):
@@ -80,11 +87,12 @@ def getDashboardData(request):
         return JsonResponse({"error": "File not found"}, status=404)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+    
     # Replace NaN values with empty strings
     data = data.fillna('')
     # Convert the data to JSON format
     data_json = data.to_dict(orient='records')
-
+    
     # Return the data as a JSON response
     return JsonResponse(data_json, safe=False)
 
@@ -268,18 +276,14 @@ from assessments.models import Assessment
 
 
 #TODO:Data Scientist will make a trial to see if these new rassessments addde to old excek are giving high accuracy and if so make status retrained(4)
-#TODO:Noww(get assessments that have status (reviewed))
-import os
-# from openpyxl import load_workbook
-import openpyxl
-from openpyxl.utils.dataframe import dataframe_to_rows
+#TODO:Noww(get assessments that have status (reviewed))-->rightttt?????status=3???????
 
 @api_view(['GET'])
 def export_assessments_to_excel(request):
     try:
 
-        # Retrieve all Assessment records with status=1
-        assessments = Assessment.objects.filter(status=1)
+        # Retrieve all Assessment records with status ="Reviewed"
+        assessments = Assessment.objects.filter(status=3)
 
 
         # Convert the QuerySet to a list of dictionaries
@@ -349,7 +353,7 @@ def export_assessments_to_excel(request):
         return JsonResponse({'error': str(e)}, status=500)
     
 #================================================================================
-#TODO: konty hatakhdelo dictionary{MRN:VALUR}
+
 @api_view(['POST'])
 def updateAssessmentToReviewed(request):
     try:
@@ -368,9 +372,16 @@ def updateAssessmentToReviewed(request):
                 assessment.save()
                 results[MRN] = 'Assessment status updated successfully.'
             except Assessment.DoesNotExist:
-                results[MRN] = 'This patient doesn\'t exist.'
+                return Response({
+                'success': False,
+                'message': 'Some patients doesn\'t exist.'
+            })
             except Exception as e:
-                results[MRN] = f'An error occurred: {e}'
+                return Response({
+                'success': False,
+                'message': f'An error occurred: {e}'
+            })
+                
 
         return Response({
             'success': True,

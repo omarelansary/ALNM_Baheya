@@ -10,6 +10,8 @@ urlpatterns = [
     path( 'doctors/getAssessmentsByDocId', views.getAssessmentsByDocId), 
     path( 'doctors/getStatusByMRN', views.getStatusByMRN), 
     path( 'doctors/getAssessmentsByStatus', views.getAssessmentsByStatus), 
+    path( 'doctors/getAssessmentsCreationDate', views.getAssessmentsCreationDate), 
+    
     
     
 
