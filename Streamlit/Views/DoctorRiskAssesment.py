@@ -15,14 +15,14 @@ def app():
         Network=Networking()
         cacheInMemory=LocalCache()
 
-        st.title("Risk Assessment")
+        st.title("Risk Assessment :clipboard:")
         with st.form("Risk Assessment"):
-            col_Numerical, col_Categorical1, col_Categorical2, col_YesorNo = st.columns(4)
+            col_Numerical, col_Categorical1, col_YesorNo = st.columns(3)
 
             # DM selection
             with col_Numerical:
             # Numerical inputs
-                st.subheader("Numerical Inputs")
+                st.subheader("Numerical Inputs :abacus:")
                 patient_MRN = st.number_input("Patient MRN", value=0, min_value=0, format="%d")
                 patient_first_bmi = st.number_input("First BMI", value=None, min_value=0.0,max_value=100.0, format="%.2f")
                 patient_age = st.number_input("Age", value=None, min_value=0, max_value=150, format="%d")
@@ -30,24 +30,28 @@ def app():
                 patient_ki67 = st.number_input("KI67", value=None, min_value=0, max_value=100, format="%d")
             with col_Categorical1:
             # Categorical inputs
-                st.subheader("Categorical Inputs Part 1 ")
+                st.subheader("Categorical Inputs:page_facing_up: ")
+                col_11, col_22 = st.columns(2)
+                with col_11:
+                    patient_family_history = st.selectbox("Family History", options=["Yes - BC","Yes - both","Yes - other cancers", "No","Unrecorded"],index=None, placeholder="Select family history...")
+                    patient_other=st.text_input("Other")
+                    patient_unilateral_bilateral = st.selectbox("Unilateral Bilateral", options=["Unilateral", "Bilateral","Unrecorded"],index=None, placeholder="Select unilateral or bilateral...")
+                    patient_laterality = st.selectbox("Laterality", options=["Left", "Right", "Bilateral","Unrecorded"],index=None, placeholder="Select laterality...")
+                    patient_menopausal_state = st.selectbox("Menopausal State", options=["Post-M", "Pre-M", "Unrecorded"],index=None, placeholder="Select menopausal state...")
+                with col_22:
 
-                patient_family_history = st.selectbox("Family History", options=["Yes - BC","Yes - both","Yes - other cancers", "No","Unrecorded"],index=None, placeholder="Select family history...")
-                patient_other=st.text_input("Other")
-                patient_unilateral_bilateral = st.selectbox("Unilateral Bilateral", options=["Unilateral", "Bilateral"],index=None, placeholder="Select unilateral or bilateral...")
-                patient_laterality = st.selectbox("Laterality", options=["Left", "Right", "Bilateral"],index=None, placeholder="Select laterality...")
-                patient_menopausal_state = st.selectbox("Menopausal State", options=["Post-M", "Pre-M", "Unrecorded"],index=None, placeholder="Select menopausal state...")
-            with col_Categorical2:
+                    # st.subheader("Categorical Inputs Part 2 ")
+                    patient_n = st.selectbox("N", options=["N0", "N1","N2","N3", "Nx","Urecorded"],index=None, placeholder="Select N...")
+                    patient_t = st.selectbox("T", options=["T1", "T2", "T3","T4","Tis","To","Urecorded"], index=None,placeholder="Select T...")
+                    patient_grade = st.selectbox("Grade", options=["I", "II","III"],index=None, placeholder="Select grade...") 
+                    patient_tumor_type=st.text_input("Tumor Type")
+                    patient_site=st.text_input("Site")
 
-                st.subheader("Categorical Inputs Part 2 ")
-                patient_n = st.selectbox("N", options=["N0", "N1","N2", "Nx"],index=None, placeholder="Select N...")
-                patient_t = st.selectbox("T", options=["T1", "T2", "T3","T4","Tis"], index=None,placeholder="Select T...")
-                patient_grade = st.selectbox("Grade", options=["I", "II","III"],index=None, placeholder="Select grade...") 
-                patient_tumor_type = st.selectbox("Tumor Type", options=["Invasive duct carcinoma (NST)","Invasive Lobular carcinoma NOS ","Ductal carcinoma in situ, DCIS", "Invasive tubular/cribriform carcinoma","Mixed Tumor", "Other"], index=None,placeholder="Select tumor type...")
-                patient_site = st.selectbox("Site", options=["Upper outer quadrant","Upper inner quadrant","Lower outer quadrant", "Lower inner quadrant","Para areolar", "Other"],index=None, placeholder="Select site...")
+                    # patient_tumor_type = st.selectbox("Tumor Type", options=["Invasive duct carcinoma (NST)","Invasive Lobular carcinoma NOS ","Ductal carcinoma in situ, DCIS", "Invasive tubular/cribriform carcinoma","Mixed Tumor", "Other"], index=None,placeholder="Select tumor type...")
+                    # patient_site = st.selectbox("Site", options=["Upper outer quadrant","Upper inner quadrant","Lower outer quadrant", "Lower inner quadrant","Para areolar", "Other"],index=None, placeholder="Select site...")
     
             with col_YesorNo:
-                st.subheader("Yes or No Inputs")
+                st.subheader("Yes :heavy_check_mark: or No :heavy_multiplication_x: Inputs")
                 vte_choice = st.radio("VTE", options=["Yes", "No"],index=None,horizontal=True)
                 vte_result = vte_choice.split()[0] if vte_choice else "Not selected"
                 Hormonal_Contraception_choice = st.radio("Hormonal Contraception", options=["Yes", "No"],index=None, horizontal=True)
@@ -62,14 +66,16 @@ def app():
                 lymphovascular_invasion_choice = st.radio("Lymphovascular Invasion", options=["Yes", "No"],index=None,horizontal=True)
                 lymphovascular_invasion_result = lymphovascular_invasion_choice.split()[0] if lymphovascular_invasion_choice else "Not selected"
             # with col_PositiveAndNegative:    
-                st.subheader("Positive or Negative")
+                st.subheader("Positive :heavy_plus_sign: or Negative :heavy_minus_sign: Inputs")
                 er_choice = st.radio("ER", options=["Positive", "Negative"],index=None,horizontal=True)
                 er_result = er_choice.split()[0] if er_choice else "Not selected"
                 pr_choice = st.radio("PR", options=["Positive", "Negative"],index=None,horizontal=True)   
                 pr_result = pr_choice.split()[0] if pr_choice else "Not selected"
                 her2_choice = st.radio("HER2", options=["Positive", "Negative","Equivocal"],index=None,horizontal=True)   
                 her2_result = her2_choice.split()[0] if her2_choice else "Not selected"
-            submit_button = st.form_submit_button("Submit")
+            col1, col2, col3 = st.columns([2, 4, 2])
+            with col2:
+                submit_button = st.form_submit_button("Submit", use_container_width=True)    
 
             # Process form submission
             if submit_button:
@@ -214,49 +220,49 @@ def app():
                     unsafe_allow_html=True
                 )                   
                     
-        if st.button("Get Assesment by Doc Id"):
-            # st.write(Network.get_assesment_byDocId(18))
+        # if st.button("Get Assesment by Doc Id"):
+        #     # st.write(Network.get_assesment_byDocId(18))
 
-            response = Network.get_assesment_byDocId(20)
-            all_data = []
+        #     response = Network.get_assesment_byDocId(20)
+        #     all_data = []
 
-            # Iterate through each assessment
-            for assessment in response['assessments']:
-                # Convert medical_info dictionary directly to Series
-                assessment_data = pd.Series(assessment['medical_info'])
-                # Add other scalar values directly to the Series
-                assessment_data['prediction'] = assessment['prediction']
-                # Assuming status_message is not in your data. If it is, uncomment the next line
-                # assessment_data['status_message'] = assessment['status_message']
-                assessment_data['ground_truth'] = assessment['ground_truth']
-                assessment_data['creation_date'] = assessment['creation_date']
-                # Append the Series to the list
-                all_data.append(assessment_data)
+        #     # Iterate through each assessment
+        #     for assessment in response['assessments']:
+        #         # Convert medical_info dictionary directly to Series
+        #         assessment_data = pd.Series(assessment['medical_info'])
+        #         # Add other scalar values directly to the Series
+        #         assessment_data['prediction'] = assessment['prediction']
+        #         # Assuming status_message is not in your data. If it is, uncomment the next line
+        #         # assessment_data['status_message'] = assessment['status_message']
+        #         assessment_data['ground_truth'] = assessment['ground_truth']
+        #         assessment_data['creation_date'] = assessment['creation_date']
+        #         # Append the Series to the list
+        #         all_data.append(assessment_data)
 
-            # Convert the list of Series to a DataFrame
-            full_data_frame = pd.DataFrame(all_data)
+        #     # Convert the list of Series to a DataFrame
+        #     full_data_frame = pd.DataFrame(all_data)
 
-            #convert dataframe to bytes                     
-            cacheInMemory.save_assesment_byDocId(full_data_frame.to_json())
+        #     #convert dataframe to bytes                     
+        #     cacheInMemory.save_assesment_byDocId(full_data_frame.to_json())
             
-            result=cacheInMemory.get_assessment_byDocId().decode('utf-8')
-            retrieved_dataframe = pd.read_json(result)
+        #     result=cacheInMemory.get_assessment_byDocId().decode('utf-8')
+        #     retrieved_dataframe = pd.read_json(result)
          
 
-            st.write(retrieved_dataframe)
+        #     st.write(retrieved_dataframe)
             
-        #TODO:Uncomment later @omarelansary
+        # #TODO:Uncomment later @omarelansary
+
+        # # if st.button("Getter"):
+        # #     st.write(pd.read_json(cacheInMemory.get_assessment_byDocId().decode('utf-8')))
+
+        # #TODO:Comment later @omarelansary
+        # #@mohra
 
         # if st.button("Getter"):
-        #     st.write(pd.read_json(cacheInMemory.get_assessment_byDocId().decode('utf-8')))
+        #     st.write(cacheInMemory.get_assessment_byDocId_version2())
 
-        #TODO:Comment later @omarelansary
-        #@mohra
-
-        if st.button("Getter"):
-            st.write(cacheInMemory.get_assessment_byDocId_version2())
-
-            # st.table(cache.get_data(1))
+        #     # st.table(cache.get_data(1))
             
 
 
