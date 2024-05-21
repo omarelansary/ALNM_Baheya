@@ -347,4 +347,36 @@ def export_assessments_to_excel(request):
         return JsonResponse({'message': 'Assessments exported successfully', 'file_path': file_path}, status=200)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+    
+#================================================================================
+#TODO: konty hatakhdelo dictionary{MRN:VALUR}
+@api_view(['POST'])
+def updateAssessmentToReviewed(request):
+    try:
+        data = request.data.get('MRNS', [])
+        if not isinstance(data, list):
+            return Response({
+                'success': False,
+                'message': 'Invalid input format. Expected a list of MRNs.'
+            }, status=400)
 
+        results = {}
+        for MRN in data:
+            try:
+                assessment = Assessment.objects.get(MRN=MRN)
+                assessment.status = 3
+                assessment.save()
+                results[MRN] = 'Assessment status updated successfully.'
+            except Assessment.DoesNotExist:
+                results[MRN] = 'This patient doesn\'t exist.'
+            except Exception as e:
+                results[MRN] = f'An error occurred: {e}'
+
+        return Response({
+            'success': True,
+            'results': results
+        })
+    except OperationalError as e:
+        return Response({'success': False, 'message': f'Database error: {e}'}, status=400)
+    except Exception as e:
+        return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)

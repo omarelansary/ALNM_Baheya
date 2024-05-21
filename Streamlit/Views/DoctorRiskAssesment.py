@@ -23,11 +23,11 @@ def app():
             with col_Numerical:
             # Numerical inputs
                 st.subheader("Numerical Inputs")
-                patient_MRN = st.number_input("Patient MRN", value=0, min_value=0)
-                patient_first_bmi = st.number_input("First BMI", value=0.0, min_value=0.0)
-                patient_age = st.number_input("Age", value=0, min_value=0)
-                patient_size_cm = st.number_input("size cm", value=0.0, min_value=0.0)
-                patient_ki67 = st.number_input("KI67", value=0.0, min_value=0.0)
+                patient_MRN = st.number_input("Patient MRN", value=0, min_value=0, format="%d")
+                patient_first_bmi = st.number_input("First BMI", value=None, min_value=0.0,max_value=100.0, format="%.2f")
+                patient_age = st.number_input("Age", value=None, min_value=0, max_value=150, format="%d")
+                patient_size_cm = st.number_input("size cm", value=None, min_value=0.0,max_value=20.0,format="%.2f")
+                patient_ki67 = st.number_input("KI67", value=None, min_value=0, max_value=100, format="%d")
             with col_Categorical1:
             # Categorical inputs
                 st.subheader("Categorical Inputs Part 1 ")
@@ -268,5 +268,3 @@ css="""
     </style>
     """
 st.write(css, unsafe_allow_html=True)
-
-
