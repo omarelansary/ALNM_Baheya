@@ -41,8 +41,8 @@ def app():
                 with col_22:
 
                     # st.subheader("Categorical Inputs Part 2 ")
-                    patient_n = st.selectbox("N", options=["N0", "N1","N2","N3", "Nx","Urecorded"],index=None, placeholder="Select N...")
-                    patient_t = st.selectbox("T", options=["T1", "T2", "T3","T4","Tis","To","Urecorded"], index=None,placeholder="Select T...")
+                    patient_n = st.selectbox("N", options=["N0", "N1","N2","N3", "Nx","Unrecorded"],index=None, placeholder="Select N...")
+                    patient_t = st.selectbox("T", options=["T1", "T2", "T3","T4","Tis","To","Unrecorded"], index=None,placeholder="Select T...")
                     patient_grade = st.selectbox("Grade", options=["I", "II","III"],index=None, placeholder="Select grade...") 
                     patient_tumor_type=st.text_input("Tumor Type")
                     patient_site=st.text_input("Site")
@@ -178,12 +178,12 @@ def app():
                                         "Hormonal_Contraception":str(Hormonal_Contraception_result),
                                         # "dm_result": str(dm_choice),
                                         # "htn_result": str(htn_choice),
-                                        "vte_result": str(vte_choice),
+                                        "vte_result": str(vte_result),
                                         # "cvd_result": str(cvd_choice),
-                                        "lymphovascular_invasion_result": str(lymphovascular_invasion_choice),
-                                        "er_result": str(er_choice),
-                                        "pr_result": str(pr_choice),
-                                        "her2_result": str(her2_choice)                                    }
+                                        "lymphovascular_invasion_result": str(lymphovascular_invasion_result),
+                                        "er_result": str(er_result),
+                                        "pr_result": str(pr_result),
+                                        "her2_result": str(her2_result)                                    }
                     st.write(Network.post_make_assesment(18,int(patient_MRN),patient_data))      
         # el mfrood @@ omar trg3 el risk assement result hnh fy variable asmo case
         modal = Modal("Risk Assessment Result", key="result-modal", padding=10, max_width=430)

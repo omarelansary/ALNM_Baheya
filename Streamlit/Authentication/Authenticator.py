@@ -28,7 +28,7 @@ class Authenticator:
         }
         response = ''
         # Adjust the URLs as necessary
-        if role == "Doctor":
+        if role == "Physician":
             response = requests.post('http://127.0.0.1:8000/api/doctors/login', json=payload)
         elif role == "Data Analyst":
             response = requests.post('http://127.0.0.1:8000/api/dataScientists/login', json=payload) 

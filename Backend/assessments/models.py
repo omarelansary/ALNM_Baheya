@@ -22,10 +22,10 @@ class AssessmentManager(models.Manager):
                         ('MRN', assessment.medical_info.get('MRN')),
                         ('patient_first_bmi', assessment.medical_info.get('patient_first_bmi')),
                         ('patient_age', assessment.medical_info.get('patient_age')),
-                        ('dm_result', assessment.medical_info.get('dm_result')),
-                        ('htn_result', assessment.medical_info.get('htn_result')),
+                       
+                        
                         ('vte_result', assessment.medical_info.get('vte_result')),
-                        ('cvd_result', assessment.medical_info.get('cvd_result')),
+                        
                         ('Others', assessment.medical_info.get('Others')),
                         ('patient_family_history', assessment.medical_info.get('patient_family_history')),
                         ('patient_menopausal_state', assessment.medical_info.get('patient_menopausal_state')),
@@ -102,20 +102,16 @@ class Assessment(models.Model):
                      patient_ki67, patient_family_history, patient_menopausal_state, 
                      patient_t, patient_n, patient_laterality, 
                      patient_unilateral_bilateral, patient_site, 
-                     patient_tumor_type, patient_grade, dm_result,
-                     htn_result,vte_result,cvd_result,
-                     lymphovascular_invasion_result,er_result,
+                     patient_tumor_type, patient_grade,
+                     vte_result,lymphovascular_invasion_result,er_result,
                      pr_result,her2_result,Others,Hormonal_Contraception):
 
         
         self.medical_info = OrderedDict([
             ("MRN", MRN),
             ("patient_first_bmi", patient_first_bmi),
-            ("patient_age", patient_age),
-            ("dm_result", dm_result),
-            ("htn_result", htn_result),
-            ("vte_result", vte_result),
-            ("cvd_result", cvd_result),
+            ("patient_age", patient_age),           
+            ("vte_result", vte_result),            
             ("Others", Others),
             ("patient_family_history", patient_family_history),
             ("patient_menopausal_state", patient_menopausal_state),

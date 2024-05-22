@@ -94,7 +94,7 @@ def getDashboardData(request):
     data_json = data.to_dict(orient='records')
     
     # Return the data as a JSON response
-    return JsonResponse(data_json, safe=False)
+    return Response({'success':True,'data':data_json})
 
 
 
@@ -276,8 +276,8 @@ from assessments.models import Assessment
 
 
 #TODO:Data Scientist will make a trial to see if these new rassessments addde to old excek are giving high accuracy and if so make status retrained(4)
-#TODO:Noww(get assessments that have status (reviewed))-->rightttt?????status=3???????
-
+#TODO:Noww(get assessments that have status (reviewed))-->rightttt?????status=3???????donee
+#TODO:Add export MRN to EXCEL and remove DM,HTN&CVD
 @api_view(['GET'])
 def export_assessments_to_excel(request):
     try:

@@ -49,11 +49,11 @@ class Networking():
     
     def get_users_table(self,role):
         response=None
-        if role=="Doctor":
-            response = requests.get('http://127.0.0.1:8000/api/admins/getDoctors')
         if role=="Physician":
+            response = requests.get('http://127.0.0.1:8000/api/admins/getDoctors')
+        if role=="Data Analyst":
             response = requests.get('http://127.0.0.1:8000/api/admins/getDataScientists')
-        if response.json()['success']:    
+        if response.json()['success']:     
             return response.json()
         else:
             return response.json()['message']

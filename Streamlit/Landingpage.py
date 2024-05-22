@@ -14,7 +14,7 @@ def main():
     authComponents=AuthComponents()
     app=None
     if st.session_state['is_logged_in']:
-        if st.session_state['role']=='Doctor':
+        if st.session_state['role']=='Physician':
             app = option_menu(
             menu_title='Welcome Dr. Omar',
             options=['Home', 'Follow Up', 'My Patients','Dashboard', 'Risk','Logout'],

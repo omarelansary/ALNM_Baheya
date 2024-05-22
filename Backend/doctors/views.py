@@ -29,6 +29,8 @@ from django.db.utils import OperationalError
 from utils.authenticators import generate_jwt_token
 from assessments.serializers import AssessmentSerializer
 from collections import defaultdict 
+import pandas as pd
+from machineLearningModel.model import ALNM_Model
 
 
 @api_view(['POST'])
@@ -508,16 +510,50 @@ def makeAssessment(request):
         #         'success': False,
         #         'message': 'Doctor already associated with this assessment.'
         #     })
+        #=====================Newly added for pickle & predictiont====================
+        try:
+            dataForPickle = {
+            "MRN":[medical_info.get('MRN')],
+            "First_BMI": [medical_info.get('patient_first_bmi')],
+            "Age": [medical_info.get('patient_age')],
+            "VTE": [medical_info.get('patient_famivte_resultly_history')],
+            "Others": [medical_info.get('Others')],
+            "family_history": [medical_info.get('patient_family_history')],
+            "Menopausal_state": [medical_info.get('patient_menopausal_state')],
+            "Hormonal_Contraception": [medical_info.get('Hormonal_Contraception')],
+            "T": [medical_info.get('patient_t')],
+            "N": [medical_info.get('patient_n')],
+            "size_cm": [medical_info.get('patient_size_cm')],
+            "Lymphovascular_Invasion": [medical_info.get('lymphovascular_invasion_result')],
+            "Laterality": [medical_info.get('patient_laterality')],
+            "ER": [medical_info.get('er_result')],
+            "PR": [medical_info.get('pr_result')],
+            "HER2": [medical_info.get('her2_result')],
+            "KI67": [medical_info.get('patient_ki67')],
+            "Unilateral_Bilateral": [medical_info.get('patient_unilateral_bilateral')],
+            "Site": [medical_info.get('patient_site')],
+            "Tumor_Type": [medical_info.get('patient_tumor_type')],
+            "Grade": [medical_info.get('patient_grade')]
+        }
 
+            # Create a DataFrame
+            dataFramePickle = pd.DataFrame(dataForPickle)
+            prediction=ALNM_Model(dataFramePickle)
+
+        except Exception as e:
+            # Return a generic error response for other exceptions
+            return Response({'success': False, 'message': 'Error in pickle'}, status=500)
+
+        #==================================================
         # Use the method to set medical info for the assessment
         assessment.set_medical_info(
             MRN=MRN,
             patient_first_bmi=medical_info.get('patient_first_bmi'),
             patient_age=medical_info.get('patient_age'),
-            dm_result=medical_info.get('patientdm_result_size_cm'),
-            htn_result=medical_info.get('patienhtn_resultt_ki67'),
+            # dm_result=medical_info.get('patientdm_result_size_cm'),#
+            # htn_result=medical_info.get('patienhtn_resultt_ki67'),#
             vte_result=medical_info.get('patient_famivte_resultly_history'),
-            cvd_result=medical_info.get('cvd_result'),
+            # cvd_result=medical_info.get('cvd_result'),#
             Others=medical_info.get('Others'),
             patient_family_history=medical_info.get('patient_family_history'),
             patient_menopausal_state=medical_info.get('patient_menopausal_state'),
@@ -558,17 +594,18 @@ def makeAssessment(request):
         # doctorss_list = [{'id': doctor.id} for doctor in doctorss]
         # ###
         message=assessment.get_status_message(assessment.status)
-
+        #TODO:try & except for pick;e
         # Return the assessment object in the response
         return Response({
             'success': True,
-            'id': assessment.id,
-            'MRN':MRN,
-            'status':assessment.status,
-            'status_message':message,
-            'creation_date':assessment.creation_date,
-            'medical_info': assessment.medical_info,
-            'doctors': [doc.id for doc in assessment.doctors.all()],
+            'prediction':prediction[0],
+            # 'id': assessment.id,
+            # 'MRN':MRN,
+            # 'status':assessment.status,
+            # 'status_message':message,
+            # 'creation_date':assessment.creation_date,
+            # 'medical_info': assessment.medical_info,
+            # 'doctors': [doc.id for doc in assessment.doctors.all()],
         
         })
     

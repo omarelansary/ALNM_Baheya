@@ -1,7 +1,8 @@
 import redis
 import pandas as pd
 from pandas import json_normalize
-
+#NEW
+from Networking.Networking import Networking
 assessments_json_data = {
     "success": True,
     "assessments": [
@@ -107,7 +108,7 @@ assessments_json_data = {
         }
     ]
 }
-
+Network=Networking()
 class LocalCache:
     def __init__(self):
         # Initialize the Redis connection using default settings
@@ -130,7 +131,35 @@ class LocalCache:
         # Normalize the JSON data and create a DataFrame
        # df = json_normalize(assesssments_json_data['assessments'][''])
         return self.dataframeTest()
-    
+    #=========================================ADMIN===============================================
+    #=============================NEW=========================
+    def get_doctors_for_admins(self):
+        data_json=Network.get_table('Doctor')
+        # Convert the dictionary to a DataFrame
+        # Convert the dictionary to a DataFrame
+        doctors_df = pd.DataFrame(data_json["doctors"])       
+        return doctors_df
+        
+    #=========================================================
+    #=============================NEW=========================@Mona
+    def get_dataAnalysts_for_admins(self):
+        data_json=Network.get_table('Data Analyst')
+        # Convert the dictionary to a DataFrame
+        # Convert the dictionary to a DataFrame
+        doctors_df = pd.DataFrame(data_json["dataScientists"])
+        
+        return doctors_df
+        
+    #=========================================================
+    def get_dashBoardData_forAnalysts(self):
+        data_json=Network.get_dashBoardData_forAnalysts()
+        doctors_df = pd.DataFrame(data_json["data"])
+        return doctors_df
+
+    #======================DATA ANALYSTS===================================
+    #==========================NEW====================@Mona
+
+    #======================================================
     def extract_and_exclude_assessment_info(self, assessment, exclude_keys):
         assessment_filtered = {key: value for key, value in assessment.items() if key not in exclude_keys}
         return assessment_filtered
