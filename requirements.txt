@@ -39,6 +39,7 @@ PyJWT
 streamlit
 extra_streamlit_components
 streamlit_option_menu
+streamlit_modal
 plotly
 pandas
 openpyxl
@@ -47,3 +48,12 @@ redis
 matplotlib
 seaborn
 openpyxl
+category_encoders
+impyute
+catboost
+statsmodels
+scikit-learn==1.2.2
+imblearn
+imbalanced-learn==0.10.1
+lightgbm
+delayed
