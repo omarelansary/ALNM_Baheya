@@ -4,192 +4,100 @@ import pandas as pd
 from ourData.cache import LocalCache
 from streamlit_modal import Modal
 
-# st.set_page_config(
-#         page_title="Risk Assessment",
-#         layout="wide" # Set layout to wide mode
-#         # Collapse the sidebar initially
-#     )
-
-
 def app():
-        Network=Networking()
-        cacheInMemory=LocalCache()
+    Network = Networking()
+    cacheInMemory = LocalCache()
 
-        st.title("Risk Assessment :clipboard:")
-        with st.form("Risk Assessment"):
-            col_Numerical, col_Categorical1, col_YesorNo = st.columns(3)
+    st.title("Risk Assessment :clipboard:")
+    with st.form("Risk Assessment"):
+        col_Numerical, col_Categorical1, col_YesorNo = st.columns(3)
 
-            # DM selection
-            with col_Numerical:
-            # Numerical inputs
-                st.subheader("Numerical Inputs :abacus:")
-                patient_MRN = st.number_input("Patient MRN", value=0, min_value=0, format="%d")
-                patient_first_bmi = st.number_input("First BMI", value=None, min_value=0.0,max_value=100.0, format="%.2f")
-                patient_age = st.number_input("Age", value=None, min_value=0, max_value=150, format="%d")
-                patient_size_cm = st.number_input("size cm", value=None, min_value=0.0,max_value=20.0,format="%.2f")
-                patient_ki67 = st.number_input("KI67", value=None, min_value=0, max_value=100, format="%d")
-            with col_Categorical1:
-            # Categorical inputs
-                st.subheader("Categorical Inputs:page_facing_up: ")
-                col_11, col_22 = st.columns(2)
-                with col_11:
-                    patient_family_history = st.selectbox("Family History", options=["Yes - BC","Yes - both","Yes - other cancers", "No","Unrecorded"],index=None, placeholder="Select family history...")
-                    patient_other=st.text_input("Other")
-                    patient_unilateral_bilateral = st.selectbox("Unilateral Bilateral", options=["Unilateral", "Bilateral","Unrecorded"],index=None, placeholder="Select unilateral or bilateral...")
-                    patient_laterality = st.selectbox("Laterality", options=["Left", "Right", "Bilateral","Unrecorded"],index=None, placeholder="Select laterality...")
-                    patient_menopausal_state = st.selectbox("Menopausal State", options=["Post-M", "Pre-M", "Unrecorded"],index=None, placeholder="Select menopausal state...")
-                with col_22:
+        # Numerical inputs
+        with col_Numerical:
+            st.subheader("Numerical Inputs :abacus:")
+            patient_MRN = st.number_input("Patient MRN", value=0, min_value=0, format="%d")
+            patient_first_bmi = st.number_input("First BMI", value=None, min_value=0.0, max_value=100.0, format="%.2f")
+            patient_age = st.number_input("Age", value=None, min_value=0, max_value=150, format="%d")
+            patient_size_cm = st.number_input("Size cm", value=None, min_value=0.0, max_value=20.0, format="%.2f")
+            patient_ki67 = st.number_input("KI67", value=None, min_value=0, max_value=100, format="%d")
 
-                    # st.subheader("Categorical Inputs Part 2 ")
-                    patient_n = st.selectbox("N", options=["N0", "N1","N2","N3", "Nx","Unrecorded"],index=None, placeholder="Select N...")
-                    patient_t = st.selectbox("T", options=["T1", "T2", "T3","T4","Tis","To","Unrecorded"], index=None,placeholder="Select T...")
-                    patient_grade = st.selectbox("Grade", options=["I", "II","III"],index=None, placeholder="Select grade...") 
-                    patient_tumor_type=st.text_input("Tumor Type")
-                    patient_site=st.text_input("Site")
+        # Categorical inputs
+        with col_Categorical1:
+            st.subheader("Categorical Inputs :page_facing_up: ")
+            col_11, col_22 = st.columns(2)
+            with col_11:
+                patient_family_history = st.selectbox("Family History", options=["Yes - BC", "Yes - both", "Yes - other cancers", "No", "Unrecorded"], index=None, placeholder="Select family history...")
+                patient_other = st.text_input("Other")
+                patient_unilateral_bilateral = st.selectbox("Unilateral Bilateral", options=["Unilateral", "Bilateral", "Unrecorded"], index=None, placeholder="Select unilateral or bilateral...")
+                patient_laterality = st.selectbox("Laterality", options=["Left", "Right", "Bilateral", "Unrecorded"], index=None, placeholder="Select laterality...")
+                patient_menopausal_state = st.selectbox("Menopausal State", options=["Post-M", "Pre-M", "Unrecorded"], index=None, placeholder="Select menopausal state...")
+            with col_22:
+                patient_n = st.selectbox("N", options=["N0", "N1", "N2", "N3", "Nx", "Unrecorded"], index=None, placeholder="Select N...")
+                patient_t = st.selectbox("T", options=["T1", "T2", "T3", "T4", "Tis", "To", "Unrecorded"], index=None, placeholder="Select T...")
+                patient_grade = st.selectbox("Grade", options=["I", "II", "III", "Unrecorded"], index=None, placeholder="Select grade...")
+                patient_tumor_type = st.text_input("Tumor Type")
+                patient_site = st.text_input("Site")
 
-                    # patient_tumor_type = st.selectbox("Tumor Type", options=["Invasive duct carcinoma (NST)","Invasive Lobular carcinoma NOS ","Ductal carcinoma in situ, DCIS", "Invasive tubular/cribriform carcinoma","Mixed Tumor", "Other"], index=None,placeholder="Select tumor type...")
-                    # patient_site = st.selectbox("Site", options=["Upper outer quadrant","Upper inner quadrant","Lower outer quadrant", "Lower inner quadrant","Para areolar", "Other"],index=None, placeholder="Select site...")
-    
-            with col_YesorNo:
-                st.subheader("Yes :heavy_check_mark: or No :heavy_multiplication_x: Inputs")
-                vte_choice = st.radio("VTE", options=["Yes", "No"],index=None,horizontal=True)
-                vte_result = vte_choice.split()[0] if vte_choice else "Not selected"
-                Hormonal_Contraception_choice = st.radio("Hormonal Contraception", options=["Yes", "No"],index=None, horizontal=True)
-                Hormonal_Contraception_result = Hormonal_Contraception_choice.split()[0] if Hormonal_Contraception_choice else "Not selected"
-                # dm_choice = st.radio("DM", options=["Yes", "No"],index=None, horizontal=True)
-                # dm_result = dm_choice.split()[0] if dm_choice else "Not selected"
-                # htn_choice = st.radio("HTN", options=["Yes", "No"],index=None,horizontal=True)   
-                # htn_result = htn_choice.split()[0] if htn_choice else "Not selected"
+        # Yes or No inputs
+        with col_YesorNo:
+            st.subheader("Yes :heavy_check_mark: or No :heavy_multiplication_x: Inputs")
+            vte_choice = st.radio("VTE", options=["Yes", "No"], index=None, horizontal=True)
+            Hormonal_Contraception_choice = st.radio("Hormonal Contraception", options=["Yes", "No"], index=None, horizontal=True)
+            lymphovascular_invasion_choice = st.radio("Lymphovascular Invasion", options=["Yes", "No"], index=None, horizontal=True)
+            st.subheader("Positive :heavy_plus_sign: or Negative :heavy_minus_sign: Inputs")
+            er_choice = st.radio("ER", options=["Positive", "Negative"], index=None, horizontal=True)
+            pr_choice = st.radio("PR", options=["Positive", "Negative"], index=None, horizontal=True)
+            her2_choice = st.radio("HER2", options=["Positive", "Negative", "Equivocal"], index=None, horizontal=True)
 
-                # cvd_choice = st.radio("CVD", options=["Yes", "No"],index=None,horizontal=True)    
-                # cvd_result = cvd_choice.split()[0] if cvd_choice else "Not selected"
-                lymphovascular_invasion_choice = st.radio("Lymphovascular Invasion", options=["Yes", "No"],index=None,horizontal=True)
-                lymphovascular_invasion_result = lymphovascular_invasion_choice.split()[0] if lymphovascular_invasion_choice else "Not selected"
-            # with col_PositiveAndNegative:    
-                st.subheader("Positive :heavy_plus_sign: or Negative :heavy_minus_sign: Inputs")
-                er_choice = st.radio("ER", options=["Positive", "Negative"],index=None,horizontal=True)
-                er_result = er_choice.split()[0] if er_choice else "Not selected"
-                pr_choice = st.radio("PR", options=["Positive", "Negative"],index=None,horizontal=True)   
-                pr_result = pr_choice.split()[0] if pr_choice else "Not selected"
-                her2_choice = st.radio("HER2", options=["Positive", "Negative","Equivocal"],index=None,horizontal=True)   
-                her2_result = her2_choice.split()[0] if her2_choice else "Not selected"
-            col1, col2, col3 = st.columns([2, 4, 2])
-            with col2:
-                submit_button = st.form_submit_button("Submit", use_container_width=True)    
+        col1, col2, col3 = st.columns([2, 4, 2])
+        with col2:
+            submit_button = st.form_submit_button("Submit", use_container_width=True)
 
-            # Process form submission
-            if submit_button:
-                # Check for missing fields
-                missing_fields = []
-                if patient_first_bmi == 0.0:
-                    missing_fields.append("First BMI")
-                if patient_age == 0:
-                    missing_fields.append("Age")
-                if patient_size_cm == 0.0:
-                    missing_fields.append("Size (cm)")
-                if patient_ki67 == 0.0:
-                    missing_fields.append("KI67")
-                if not patient_other:
-                    missing_fields.append("Other")    
-                if not patient_family_history:
-                    missing_fields.append("Family History")
-                if not patient_menopausal_state:
-                    missing_fields.append("Menopausal State")
-                if not patient_t:
-                    missing_fields.append("T")
-                if not patient_n:
-                    missing_fields.append("N")
-                if not patient_laterality:
-                    missing_fields.append("Laterality")
-                if not patient_unilateral_bilateral:
-                    missing_fields.append("Unilateral Bilateral")
-                if not patient_site:
-                    missing_fields.append("Site")
-                if not patient_tumor_type:
-                    missing_fields.append("Tumor Type")
-                if not patient_grade:
-                    missing_fields.append("Grade")
-                if not Hormonal_Contraception_choice:
-                    missing_fields.append("Hormonal Contraception")    
-                # if not dm_choice:
-                #     missing_fields.append("DM")
-                # if not htn_choice:
-                #     missing_fields.append("HTN")
-                if not vte_choice:
-                    missing_fields.append("VTE")
-                # if not cvd_choice:
-                #     missing_fields.append("CVD")
-                if not lymphovascular_invasion_choice:
-                    missing_fields.append("Lymphovascular Invasion")
-                if not er_choice:
-                    missing_fields.append("ER")
-                if not pr_choice:
-                    missing_fields.append("PR")
-                if not her2_choice:
-                    missing_fields.append("HER2")
-                if missing_fields:
-                    st.error(f"Please fill in the following fields: {', '.join(missing_fields)}")
+        # Process form submission
+        if submit_button:
+            missing_or_unrecorded_fields = []
+
+            if patient_MRN == 0:
+                st.error("Please enter Patient MRN.")
+            else:
+                # Check for missing or unrecorded fields and default them to "Unrecorded" if necessary
+                patient_data = {
+                    "MRN": int(patient_MRN),
+                    "patient_first_bmi": float(patient_first_bmi) if patient_first_bmi is not None and patient_first_bmi != 0.0 else "Unrecorded",
+                    "patient_age": int(patient_age) if patient_age is not None and patient_age != 0 else "Unrecorded",
+                    "patient_size_cm": float(patient_size_cm) if patient_size_cm is not None and patient_size_cm != 0.0 else "Unrecorded",
+                    "patient_ki67": float(patient_ki67) if patient_ki67 is not None and patient_ki67 != 0 else "Unrecorded",
+                    "Others": patient_other if patient_other else "Unrecorded",
+                    "patient_family_history": patient_family_history if patient_family_history != "Unrecorded" else "Unrecorded",
+                    "patient_menopausal_state": patient_menopausal_state if patient_menopausal_state != "Unrecorded" else "Unrecorded",
+                    "patient_t": patient_t if patient_t != "Unrecorded" else "Unrecorded",
+                    "patient_n": patient_n if patient_n != "Unrecorded" else "Unrecorded",
+                    "patient_laterality": patient_laterality if patient_laterality != "Unrecorded" else "Unrecorded",
+                    "patient_unilateral_bilateral": patient_unilateral_bilateral if patient_unilateral_bilateral != "Unrecorded" else "Unrecorded",
+                    "patient_site": patient_site if patient_site else "Unrecorded",
+                    "patient_tumor_type": patient_tumor_type if patient_tumor_type else "Unrecorded",
+                    "patient_grade": patient_grade if patient_grade != "Unrecorded" else "Unrecorded",
+                    "Hormonal_Contraception": Hormonal_Contraception_choice if Hormonal_Contraception_choice else "Unrecorded",
+                    "vte_result": vte_choice if vte_choice else "Unrecorded",
+                    "lymphovascular_invasion_result": lymphovascular_invasion_choice if lymphovascular_invasion_choice else "Unrecorded",
+                    "er_result": er_choice if er_choice else "Unrecorded",
+                    "pr_result": pr_choice if pr_choice else "Unrecorded",
+                    "her2_result": her2_choice if her2_choice else "Unrecorded"
+                }
+
+                # Check for the number of unrecorded fields
+                unrecorded_count = sum(value == "Unrecorded" for value in patient_data.values())
+                if unrecorded_count > 5:
+                    st.error(f"Please fill in the following fields or reduce 'Unrecorded' selections: {', '.join([k for k, v in patient_data.items() if v == 'Unrecorded'])}")
                 else:
                     # Display results
                     st.subheader("Risk Assessment Results")
-                    st.write("Numerical Inputs:")
-                    st.write(f"- Patient MRN: {patient_MRN}")
-                    st.write(f"- First BMI: {patient_first_bmi}")
-                    st.write(f"- Age: {patient_age}")
-                    st.write(f"- Size (cm): {patient_size_cm}")
-                    st.write(f"- KI67: {patient_ki67}")
+                    for key, value in patient_data.items():
+                        st.write(f"- {key.replace('_', ' ').title()}: {value}")
 
-                    st.write("Categorical Inputs:")
-                    st.write(f"- Family History: {patient_family_history}")
-                    st.write(f"- Menopausal State: {patient_menopausal_state}")
-                    st.write(f"- T: {patient_t}")
-                    st.write(f"- N: {patient_n}")
-                    st.write(f"- Laterality: {patient_laterality}")
-                    st.write(f"- Unilateral Bilateral: {patient_unilateral_bilateral}")
-                    st.write(f"- Site: {patient_site}")
-                    st.write(f"- Tumor Type: {patient_tumor_type}")
-                    st.write(f"- Grade: {patient_grade}")
+                    st.write(Network.post_make_assesment(18, int(patient_MRN), patient_data))
 
-                    st.write("Yes or No Inputs:")
-                    # st.write(f"- DM: {dm_result}")
-                    # st.write(f"- HTN: {htn_result}")
-                    st.write(f"- VTE: {vte_result}")
-                    # st.write(f"- CVD: {cvd_result}")
-                    st.write(f"- Lymphovascular Invasion: {lymphovascular_invasion_result}")
-                    st.write(f"- ER: {er_result}")
-                    st.write(f"- PR: {pr_result}")
-                    st.write(f"- HER2: {her2_result}")
-                    patient_data = {
-                                        "MRN": int(patient_MRN),
-                                        "patient_first_bmi": float(patient_first_bmi),
-                                        "patient_age": int(patient_age),
-                                        "patient_size_cm": float(patient_size_cm),
-                                        "patient_ki67": float(patient_ki67),
-                                        "Others:":str(patient_other),
-                                        "patient_family_history": str(patient_family_history),
-                                        "patient_menopausal_state": str(patient_menopausal_state),
-                                        "patient_t": str(patient_t),
-                                        "patient_n": str(patient_n),
-                                        "patient_laterality": str(patient_laterality),
-                                        "patient_unilateral_bilateral": str(patient_unilateral_bilateral),
-                                        "patient_site": str(patient_site),
-                                        "patient_tumor_type": str(patient_tumor_type),
-                                        "patient_grade": str(patient_grade),
-                                        "Hormonal_Contraception":str(Hormonal_Contraception_result),
-                                        # "dm_result": str(dm_choice),
-                                        # "htn_result": str(htn_choice),
-                                        "vte_result": str(vte_result),
-                                        # "cvd_result": str(cvd_choice),
-                                        "lymphovascular_invasion_result": str(lymphovascular_invasion_result),
-                                        "er_result": str(er_result),
-                                        "pr_result": str(pr_result),
-                                        "her2_result": str(her2_result)                                    }
-                    st.write(Network.post_make_assesment(18,int(patient_MRN),patient_data))      
-        # el mfrood @@ omar trg3 el risk assement result hnh fy variable asmo case
         modal = Modal("Risk Assessment Result", key="result-modal", padding=10, max_width=430)
-
-        # Button to open the modal
-        
 
         # Generate a random value for 'case'
         case = 0
@@ -216,53 +124,7 @@ def app():
                 st.markdown(
                     f"<style>.streamlit-modal .element-container{{height: auto}}</style>",
                     unsafe_allow_html=True
-                )                   
-                    
-        # if st.button("Get Assesment by Doc Id"):
-        #     # st.write(Network.get_assesment_byDocId(18))
-
-        #     response = Network.get_assesment_byDocId(20)
-        #     all_data = []
-
-        #     # Iterate through each assessment
-        #     for assessment in response['assessments']:
-        #         # Convert medical_info dictionary directly to Series
-        #         assessment_data = pd.Series(assessment['medical_info'])
-        #         # Add other scalar values directly to the Series
-        #         assessment_data['prediction'] = assessment['prediction']
-        #         # Assuming status_message is not in your data. If it is, uncomment the next line
-        #         # assessment_data['status_message'] = assessment['status_message']
-        #         assessment_data['ground_truth'] = assessment['ground_truth']
-        #         assessment_data['creation_date'] = assessment['creation_date']
-        #         # Append the Series to the list
-        #         all_data.append(assessment_data)
-
-        #     # Convert the list of Series to a DataFrame
-        #     full_data_frame = pd.DataFrame(all_data)
-
-        #     #convert dataframe to bytes                     
-        #     cacheInMemory.save_assesment_byDocId(full_data_frame.to_json())
-            
-        #     result=cacheInMemory.get_assessment_byDocId().decode('utf-8')
-        #     retrieved_dataframe = pd.read_json(result)
-         
-
-        #     st.write(retrieved_dataframe)
-            
-        # #TODO:Uncomment later @omarelansary
-
-        # # if st.button("Getter"):
-        # #     st.write(pd.read_json(cacheInMemory.get_assessment_byDocId().decode('utf-8')))
-
-        # #TODO:Comment later @omarelansary
-        # #@mohra
-
-        # if st.button("Getter"):
-        #     st.write(cacheInMemory.get_assessment_byDocId_version2())
-
-        #     # st.table(cache.get_data(1))
-            
-
+                )
 
 css="""
     <style>
