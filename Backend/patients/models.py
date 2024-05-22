@@ -7,7 +7,7 @@ from django.db import models
 
 class Patient(models.Model):
     #doctors are null in case doctors are deleted and no associated doctor
-    doctors = models.ManyToManyField('doctors.Doctor', blank=True)
+    # doctors = models.ManyToManyField('doctors.Doctor', blank=True)
     medical_info = models.JSONField(default=dict)
     MRN = models.BigIntegerField()
 

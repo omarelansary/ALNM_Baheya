@@ -32,6 +32,41 @@ from collections import defaultdict
 import pandas as pd
 from machineLearningModel.model import ALNM_Model
 
+@api_view(['POST'])
+def delete(request):
+    try: 
+        doctor_id = request.data.get('doctor_id')
+
+        # Check if both email and password are provided
+        if doctor_id is None:
+            return Response({'success': False, 'message': 'Doctor id is missing.'}, status=400)
+        try:
+            # Retrieve the doctor object based on the ID
+            doctor = Doctor.objects.get(id=doctor_id)
+        except ObjectDoesNotExist:
+            # Return failure response if doctor does not exist
+            return Response({
+                'success': False,
+                'message': 'Doctor does not exist.'
+            })
+        
+        # Check if the doctor is associated with any assessments
+        if doctor.assessments.exists():
+            # Disassociate the doctor from assessments
+            doctor.assessments.clear()
+
+        # Proceed with deleting the doctor
+        doctor.delete()
+
+        return Response({'success': True, 'message': 'Doctor deleted successfully.'}, status=200)
+        
+    except OperationalError as e:
+            # Return an error response for database errors
+            return Response({'success': False, 'message': f'Database error: {e}'}, status=400)
+    except Exception as e:
+            # Return a generic error response for other exceptions
+            return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)
+
 
 @api_view(['POST'])
 def getAssessmentsCreationDate(request):
