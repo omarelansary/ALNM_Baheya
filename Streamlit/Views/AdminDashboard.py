@@ -56,26 +56,56 @@ def check_service_status(service_name):
     except Exception as e:
         return {"error": str(e)}
 
-
+def format_number(num):
+    if num > 1000000:
+        if not num % 1000000:
+            return f'{num // 1000000} M'
+        return f'{round(num / 1000000, 1)} M'
+    return f'{num // 1000} K'
 
 
 def app():
-    st.title('Admin DashBoard')
+    st.title(':bookmark_tabs: Admin DashBoard')
     # Create a new column for star ratings in visual format
-    dfperformane['star_visual'] = dfperformane['stars'].apply(lambda x: '⭐' * x)
+    # dfperformane['star_visual'] = dfperformane['stars'].apply(lambda x: '⭐' * x)
     st.write(check_service_status('postgresql'))
     # Display the DataFrame in Streamlit
-    st.dataframe(
-        dfperformane[['name', 'star_visual']],  # Select the columns to display
-        column_config={
-            "name": "Ratings",
-            "star_visual": st.column_config.TextColumn(
-                "Stars (1 to 5)",
-            ),
-        },
-        hide_index=True,
-        width=1200
-    )
+    # st.dataframe(
+    #     dfperformane[['name', 'star_visual']],  # Select the columns to display
+    #     column_config={
+    #         "name": "Ratings",
+    #         "star_visual": st.column_config.TextColumn(
+    #             "Stars (1 to 5)",
+    #         ),
+    #     },
+    #     hide_index=True,
+    #     width=1200
+    # )
+    st.markdown("##")
+
+# TOP KPI's (example KPIs, update with relevant columns)
+    Tolal_doctors_num=len(dfdoc['name'])
+    Tolal_analyst_num=len(dfdoc['name'])
+    Total_total=Tolal_doctors_num+Tolal_analyst_num+1
+    left_column, middle_column, right_column = st.columns(3)
+    with left_column:
+        st.subheader("Total Physicians:")
+        st.subheader(f"{Tolal_doctors_num}")
+    with middle_column:
+        st.subheader("Total Data Analyst:")
+        st.subheader(f"{Tolal_analyst_num} years")
+    with right_column:
+        st.subheader("Total Website Users:")
+        st.subheader(f"{Total_total}")
+
+    st.markdown("""---""")
+
+    # col = st.columns((1.5, 4.5, 2), gap='medium')
+    # with col[0]:
+    #     docs_name="Doctors"
+    #     Tolal_doctors_num=len(dfdoc['name'])
+    #     Tolal_analyst_num=len(dfdoc['name'])
+    #     st.metric(label=docs_name, value=Tolal_analyst_num)
     st.dataframe(
         dfdoc,
         column_config={
@@ -100,5 +130,5 @@ def app():
     )
     st.subheader("Performance Ratings")
     for i, row in dfperformane.iterrows():
-        st.write(f"{row['name']}:")
+        st.write(f"{row['name']}:",f"{row['stars']}")
         st.progress(row['stars'] / 5)  # Assuming the stars are out of 5
