@@ -1,6 +1,9 @@
 import requests
 import streamlit as st
 
+
+
+
 class Networking():
     def __init__(self, api_url='http://127.0.0.1:8000/api'):
         self.api_url = api_url
@@ -57,3 +60,25 @@ class Networking():
             return response.json()
         else:
             return response.json()['message']
+        
+    def get_table(self,role):
+        response=None
+        if role=="Doctor":
+            response = requests.get('http://127.0.0.1:8000/api/admins/getDoctors')
+        if role=="Data Analyst":
+            response = requests.get('http://127.0.0.1:8000/api/admins/getDataScientists')
+        if response.json()['success']:    
+            return response.json()
+        else:
+            return response.json()['message']
+    
+    #==========================NEW===========================@Mona
+    def get_dashBoardData_forAnalysts(self):
+        response = requests.get('http://127.0.0.1:8000/api/dataScientists/getDashboardData')
+        if response.json()['success']:    
+            return response.json()
+        else:
+            return response.json()['message']
+    #==========================================================
+
+

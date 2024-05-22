@@ -18,11 +18,11 @@ import plotly.graph_objects as go
 def app():
     st.write('ALL Your Patients')
     Network = Networking()
-    cacheInMemory = LocalCache()
+    Cache = LocalCache()
     st.title("My patients")
     
     # Load the data
-    df = cacheInMemory.get_assessment_byDocId_version2()
+    df=Cache.get_assessment_byDocId()
     st.dataframe(df)
     # Initialize the session state if not already initialized
     if 'edit_mode' not in st.session_state:

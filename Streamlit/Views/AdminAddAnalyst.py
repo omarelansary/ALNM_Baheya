@@ -50,12 +50,14 @@ import streamlit as st
 import re
 from Networking.Networking import Networking
 import Components.vaildation
+from ourData.cache import LocalCache
 
 
 def app():
     st.title('Add Analyst')
     # Function to add user to the system
     Network = Networking()
+    Cache=LocalCache()
     new_analyst_fname = st.text_input("First Name")
     new_analyst_lname = st.text_input("Last Name")
     new_analyst_email = st.text_input("Email")
@@ -101,8 +103,9 @@ def app():
 
     st.subheader('View Analysts')
     # analysts = st.session_state.get('analysts', [])
-    df = Network.get_users_table('Data Analyst')
-    if df:
+    df=Cache.get_dashBoardData_forAnalysts()
+
+    if not df.empty:
         st.write(df)
     else:
         st.write("No Analysts added yet.")

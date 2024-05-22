@@ -6,7 +6,7 @@ import seaborn as sns
 import streamlit as st
 import pandas as pd
 import altair as alt
-
+from ourData.cache import LocalCache
 
 def make_donut(input_response, input_text,color):
     chart_color = color
@@ -42,11 +42,14 @@ def make_donut(input_response, input_text,color):
     return plot_bg + plot + text
 
 
+Cache=LocalCache()
 
 def app():
     st.title('Analyst DashBoard')
         # Load your data
-    data = pd.read_excel('ourData/cairouniversity_march_known_nooutliers.xlsx')
+    # data = pd.read_excel('ourData/cairouniversity_march_known_nooutliers.xlsx')
+    data=Cache.get_dashBoardData_forAnalysts()
+
 
     # Clean and prepare your data
     data_clean = data[['Age', 'First_BMI', 'size_cm', 'Tumor_Type']].dropna()

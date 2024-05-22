@@ -114,6 +114,14 @@ class LocalCache:
         # Initialize the Redis connection using default settings
         self.redisobj = redis.Redis(host='localhost', port=6379, db=0)
 
+    '''Nerbotha b2a b networking :
+    ya3ny lma user ye3mel sign up asagel l id l7ad l session ma tekhlas'''
+    def save_id(self,id):
+        self.redisobj.set("docId", id)
+
+    def get_id(self):
+        return self.redisobj.get("docId")
+
     def save_assesment_byDocId(self, dataFrame):
         # Save assessment data to Redis
         self.redisobj.set("assessment_data", dataFrame)
@@ -126,6 +134,13 @@ class LocalCache:
         # Retrieve assessment data from Redis
         # print(self.redisobj.get("assessment_data"))
         return self.redisobj.get("assessment_data")
+
+        #@Mona
+        '''doc_id=self.get_id()
+        patientsDataFrame=Network.get_assesment_byDocId(doc_id)
+        return patientsDataFrame'''
+
+        
     
     def get_assessment_byDocId_version2(self):
         # Normalize the JSON data and create a DataFrame

@@ -2,11 +2,15 @@ import streamlit as st
 import pandas as pd
 from Networking.Networking import Networking
 import Components.vaildation
+from ourData.cache import LocalCache
+
 
 def app():
     st.title('Add Physician')
     # Function to add user to the system
     Network = Networking()
+    Cache=LocalCache()
+
     new_doctor_fname = st.text_input("First Name")
     new_doctor_lname = st.text_input("Last Name")
     new_doctor_email = st.text_input("Email")
@@ -50,8 +54,8 @@ def app():
                         st.warning("Password must be at least 7 characters long.")
          st.write("Password:", new_doctor_password)   
     st.subheader('View Physicians')
-    df = Network.get_users_table('Physician')
-    if df:
+    df = Cache.get_doctors_for_admins()
+    if not df.empty:
         st.write(df)
     else:
         st.write("No Physicians added yet.")
