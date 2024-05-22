@@ -13,7 +13,7 @@ Ensure you have Python installed on your machine. Python 3.8 or later is recomme
 First, clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/omarelnsary/ALNM_Baheya
+git https://github.com/omarelansary/ALNM_Baheya.git
 cd ALNM_Baheya
 ```
 
@@ -72,6 +72,22 @@ sudo -i -u postgres
 
 ```bash
 psql
+```
+##### Create Data base
+```bash
+CREATE DATABASE "ALNM_Baheya";
+```
+##### Create User and change the password here and in the Backend
+```bash
+CREATE USER admin WITH PASSWORD 'Password';
+ALTER ROLE admin WITH SUPERUSER;
+ALTER ROLE admin WITH CREATEDB;
+ALTER ROLE admin CREATEROLE;
+```
+
+##### (Optional) make pasword for postgres pysql user
+```bash
+ALTER USER postgres PASSWORD 'postgres';
 ```
 ### 5. Run migrations
 
