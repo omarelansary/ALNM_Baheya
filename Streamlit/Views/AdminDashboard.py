@@ -4,8 +4,6 @@ import pandas as pd
 import streamlit as st
 import subprocess
 import re
-# Set the page layout to wide
-# st.set_page_config(layout="wide")
 
 # Generate 30 different numbers from 0 to 40 for each row
 working_days = [random.sample(range(41), 30) for _ in range(3)]
@@ -17,8 +15,13 @@ dfdoc = pd.DataFrame(
     }
 )
 
+# Calculate total working days for each doctor
+dfdoc['total_working_days'] = dfdoc['working_days'].apply(sum)
 
-# Generate the DataFrame
+# Find the doctor with the highest total working days
+top_doctor = dfdoc.loc[dfdoc['total_working_days'].idxmax()]
+
+# Generate the DataFrame for performance ratings
 dfperformane = pd.DataFrame(
     {
         "name": ["Performance Rating", "Usability Rating", "Learnability Rating"],
@@ -56,56 +59,32 @@ def check_service_status(service_name):
     except Exception as e:
         return {"error": str(e)}
 
-def format_number(num):
-    if num > 1000000:
-        if not num % 1000000:
-            return f'{num // 1000000} M'
-        return f'{round(num / 1000000, 1)} M'
-    return f'{num // 1000} K'
-
-
 def app():
     st.title(':bookmark_tabs: Admin DashBoard')
     # Create a new column for star ratings in visual format
     # dfperformane['star_visual'] = dfperformane['stars'].apply(lambda x: '⭐' * x)
     st.write(check_service_status('postgresql'))
-    # Display the DataFrame in Streamlit
-    # st.dataframe(
-    #     dfperformane[['name', 'star_visual']],  # Select the columns to display
-    #     column_config={
-    #         "name": "Ratings",
-    #         "star_visual": st.column_config.TextColumn(
-    #             "Stars (1 to 5)",
-    #         ),
-    #     },
-    #     hide_index=True,
-    #     width=1200
-    # )
-    st.markdown("##")
 
-# TOP KPI's (example KPIs, update with relevant columns)
-    Tolal_doctors_num=len(dfdoc['name'])
-    Tolal_analyst_num=len(dfdoc['name'])
-    Total_total=Tolal_doctors_num+Tolal_analyst_num+1
+    # Display total physicians, data analysts, and website users
+    total_doctors = len(dfdoc)
+    total_analysts = total_doctors  # Assuming same number of analysts as doctors for demonstration
+    total_users = total_doctors + total_analysts + 1
+
     left_column, middle_column, right_column = st.columns(3)
     with left_column:
-        st.subheader("Total Physicians:")
-        st.subheader(f"{Tolal_doctors_num}")
+        st.subheader(":male-doctor: Total Physicians:")
+        st.subheader(f"{total_doctors}")
     with middle_column:
-        st.subheader("Total Data Analyst:")
-        st.subheader(f"{Tolal_analyst_num} years")
+        st.subheader(":male-technologist: Total Data Analysts:")
+        st.subheader(f"{total_analysts}")
     with right_column:
-        st.subheader("Total Website Users:")
-        st.subheader(f"{Total_total}")
+        st.subheader(":male-office-worker: Total Website Users:")
+        st.subheader(f"{total_users}")
 
     st.markdown("""---""")
 
-    # col = st.columns((1.5, 4.5, 2), gap='medium')
-    # with col[0]:
-    #     docs_name="Doctors"
-    #     Tolal_doctors_num=len(dfdoc['name'])
-    #     Tolal_analyst_num=len(dfdoc['name'])
-    #     st.metric(label=docs_name, value=Tolal_analyst_num)
+    # Display working days of doctors
+    st.subheader("Working Days of Doctors")
     st.dataframe(
         dfdoc,
         column_config={
@@ -115,20 +94,18 @@ def app():
             ),
         },
         hide_index=True,
-        width=1200  # Adjust the width as needed
+        width=1200
     )
-    st.dataframe(
-        dfdoc,
-        column_config={
-            "name": "Data Analyst",
-            "working_days": st.column_config.LineChartColumn(
-                "Working Days", y_min=0, y_max=40
-            ),
-        },
-        hide_index=True,
-        width=1200  # Adjust the width as needed
-    )
+
+    # Display Performance Ratings
     st.subheader("Performance Ratings")
     for i, row in dfperformane.iterrows():
-        st.write(f"{row['name']}:",f"{row['stars']}")
+        st.write(f"{row['name']}:", f"{row['stars']}")
         st.progress(row['stars'] / 5)  # Assuming the stars are out of 5
+
+    # # Display the top doctor who worked the most
+    # st.subheader("Top Doctor of the Month")
+    # st.write(f"Name: {top_doctor['name']}")
+    # st.write(f"Total Working Days: {top_doctor['total_working_days']}")
+
+

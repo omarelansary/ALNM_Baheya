@@ -6,16 +6,6 @@ from PIL import Image
 def app(authComponents):
     col1, col2= st.columns(2)
     with col1:
-
-        # image = Image.open('sunrise.jpg')
-        image_url_0 = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/logo.jpg"
-
-        st.image(image_url_0)   
-    # Title for your radio button section
-    with col2:
-        # st.title('Select Your Role')
-        # role = st.radio("Select Your Role", options=["Doctor", "Data Analyst","Admin"],index=None,horizontal=True)
-        # Radio button widget
         role = st.radio(
             "Select your role:",
             ('Physician', 'Data Analyst', 'Admin'),horizontal=True
@@ -31,4 +21,14 @@ def app(authComponents):
             st.title('Some content')
         else:
             st.write(' ')
+        # image = Image.open('sunrise.jpg')
+          
+    # Title for your radio button section
+    with col2:
+        image_url_0 = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/logo.jpg"
 
+        st.image(image_url_0) 
+        # st.title('Select Your Role')
+        # role = st.radio("Select Your Role", options=["Doctor", "Data Analyst","Admin"],index=None,horizontal=True)
+        # Radio button widget
+      

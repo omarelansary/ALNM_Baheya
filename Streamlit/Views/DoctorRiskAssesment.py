@@ -201,15 +201,13 @@ def app():
                 if case == 0:
                     content = """
                         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                            <h1 style="color: red; font-size: 28px; font-family: 'Open Sans', sans-serif;">No</h1>
-                            <h2 style="font-size: 16px; font-family: 'Open Sans', sans-serif;">Patient will not have metastasis</h2>
+                            <h1 style="color: green; font-size: 28px; font-family: 'Open Sans', sans-serif;">Patient is Unlikely to Have Metastasis</h1>
                         </div>
                     """
                 else:
                     content = """
                         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                            <h1 style="color: green; font-size: 28px; font-family: 'Open Sans', sans-serif;">Yes</h1>
-                            <h2 style="font-size: 16px; font-family: 'Open Sans', sans-serif;">Patient might have metastasis</h2>
+                            <h1 style="color: red; font-size: 28px; font-family: 'Open Sans', sans-serif;">Patient may Have Metastasis</h1>
                         </div>
                     """
                 st.markdown(content, unsafe_allow_html=True)

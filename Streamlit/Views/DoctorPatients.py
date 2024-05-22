@@ -8,6 +8,8 @@ import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.graph_objects as go
+from streamlit_modal import Modal
+
 
 # st.set_page_config(
 #     page_title="Risk Assessment",
@@ -88,9 +90,34 @@ def app():
                 'MRN': new_MRN_values,
                 'ground_truth': new_ground_truth_values
             })
-
+            mrn = new_MRN_values.iloc[0] if not new_MRN_values.empty else "N/A"
+            new_ground_truth = new_ground_truth_values[0] if new_ground_truth_values else "N/A"
+            message = f"You have Added Biopsy Result with Value {new_ground_truth} for MRN {mrn}"
             # Display the new DataFrame
-            st.write("Done")
+            modal = Modal("Risk Assessment Result", key="result-modal", padding=10, max_width=430)
+
+        # Button to open the modal
+            
+
+
+            # Check if modal is open
+            if modal.is_open():
+                # Content inside the modal based on the value of 'case'
+                with modal.container():
+                
+                    content = """
+                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                            <h1 style="color: green; font-size: 28px; font-family: 'Open Sans', sans-serif;">{message}</h1>
+                        </div>
+                    """
+                    
+                    st.markdown(content, unsafe_allow_html=True)
+
+                    # Set the height of the modal dynamically
+                    st.markdown(
+                        f"<style>.streamlit-modal .element-container{{height: auto}}</style>",
+                        unsafe_allow_html=True
+                    )             
 
     else:
         st.write("No changes detected.")
