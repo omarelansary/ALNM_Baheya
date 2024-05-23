@@ -1,11 +1,13 @@
 import streamlit as st
+
+import Views.AnalystCorrelationGraphs
 st.set_page_config(layout="wide")
 from streamlit_option_menu import option_menu
 from Components.authComponents import AuthComponents
 from Authentication.Authenticator import AuthExceptions
 import Views.AdminDashboard, Views.AdminPatientsView
 import Views.AdminAddAnalyst, Views.AdminAddDoctor
-import Views.AnalystDashboard, Views.AnalystReview
+import Views.AnalystDashboard, Views.AnalystReview, Views.AnalystDashboard
 import Views.DoctorDashboard, Views.DoctorPatients, Views.DoctorRiskAssesment
 import Views.DoctorGantChart
 import  Views.Home, Views.Login
@@ -31,8 +33,8 @@ def main():
         elif st.session_state['role']=='Data Analyst': 
             app = option_menu(
             menu_title='Welcome Analyst. Ahmed',
-            options=['Home', 'Analysis', 'Review','Logout'],
-            icons=['house-fill', 'bar-chart-line','binoculars','door-open'],
+            options=['Home', 'Analysis', 'Correlations', 'Review','Logout'],
+            icons=['house-fill', 'bar-chart-line','clipboard2-pulse-fill','binoculars','door-open'],
             menu_icon=['person-fill'],
             default_index=0,
             orientation='horizontal',
@@ -45,8 +47,8 @@ def main():
         elif st.session_state['role']=='Admin': 
             app = option_menu(
             menu_title='Welcome Admin. Hassan',
-            options=['Home', 'Panel', 'Risk','All Patients','Analysis', 'Review', 'Add Doctor','Add Analyst','Logout'],
-            icons=['house-fill', 'graph-up','exclamation-triangle-fill', 'heart-fill','bar-chart-line','binoculars','person-plus','person-plus-fill','door-open'],
+            options=['Home', 'Panel', 'Risk','All Patients','Analysis', 'Correlations', 'Review', 'Add Doctor','Add Analyst','Logout'],
+            icons=['house-fill', 'graph-up','exclamation-triangle-fill', 'heart-fill','bar-chart-line','clipboard2-pulse-fill','binoculars','person-plus','person-plus-fill','door-open'],
             menu_icon=['person-fill'],
             default_index=0,
             orientation='horizontal',
@@ -85,7 +87,9 @@ def main():
     if app=='Analysis':
        Views.AnalystDashboard.app()
     if app=='Review':
-       Views.AnalystReview.app()               
+       Views.AnalystReview.app() 
+    if app=='Correlations':
+       Views.AnalystCorrelationGraphs.app()                  
     if app== 'Dashboard':
         Views.DoctorDashboard.app()    
     if app== 'Risk':
