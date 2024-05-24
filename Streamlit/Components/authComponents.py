@@ -2,10 +2,11 @@ import streamlit as st
 import datetime
 from Authentication.Authenticator import Authenticator
 from Components.cookieHandler import CookieHandler
+from streamlit_cookies_controller import CookieController
 class AuthComponents:
     
     def __init__(self): 
-        self.cookie_handler = CookieHandler('user_auth_token')
+        self.cookie_handler = CookieHandler()
         if 'initialized' not in st.session_state:
             st.session_state['initialized'] = False      
             self.set_user_session_state(is_logged_in=False)
@@ -25,7 +26,6 @@ class AuthComponents:
             # Update only if values are provided
             if is_logged_in is not None:
                 st.session_state['is_logged_in'] = is_logged_in
-                st.rerun()
             if role is not None:
                 st.session_state['role'] = role
             if fname is not None:
@@ -71,11 +71,10 @@ class AuthComponents:
                             response = authenticator.login(role, email, password)
                             if 'token' in response:
                                 st.success("Login successful!")
-                                st.session_state['is_logged_in'] = True
-                                st.session_state['token'] = response.get('token')
-                                st.session_state['role'] = role
-                                self.set_user_session_state(is_logged_in=True, token_expiry_date=datetime.datetime.now() + datetime.timedelta(seconds=30))
-                                self.cookie_handler().set_cookie(st.session_state['token'], datetime.datetime.now() + datetime.timedelta(days=30))
+                                token=response.get('token')
+                                username=response.get('firstName') + ' ' + response.get('lastName')
+                                self.set_user_session_state(is_logged_in=True,role=st.session_state['role'], token=st.session_state['token'])
+                                self.cookie_handler.set_cookie(token,username=username,role=role,id=response.get('id'))
                             else:
                                 st.session_state['is_logged_in'] = False
                                 st.error("Login failed! Please check your email and password.")
@@ -122,26 +121,12 @@ class AuthComponents:
    
 
     def check_cookie_session(self):
-        # Check if token and expiry date exist and are valid
-        if ('token' in st.session_state and st.session_state['token'] != None)  and ('token_expiry_date' in st.session_state and st.session_state['token_expiry_date'] != None):
-            st.write('Time')
-            st.write(datetime.datetime.now() < st.session_state['token_expiry_date'])
-            if datetime.datetime.now() < st.session_state['token_expiry_date']:
-                # Token is valid and not expired
-                st.session_state['is_logged_in'] = False
-                return 1
-            else:
-                # Token is expired
-                st.session_state['token'] = None
-                st.session_state['token_expiry_date'] = None
-                st.session_state['is_logged_in'] = True
-                return 0
+        if (self.cookie_handler.get_cookie()):
+            return self.cookie_handler.check_token_in_config(self.cookie_handler.get_cookie())
         else:
-            # Token or expiry date does not exist
-            st.write('')
             return 0
-
     def logout(self):
+        self.cookie_handler.del_cookies()
         self.set_user_session_state(is_logged_in=False)
 
                                               
