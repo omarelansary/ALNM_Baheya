@@ -8,13 +8,13 @@ def app():
     Network = Networking()
     cacheInMemory = LocalCache()
 
-    st.title("Risk Assessment :clipboard:")
-    with st.form("Risk Assessment"):
+    st.title(":clipboard: Breast Cancer Metastasis Risk Prediction ")
+    with st.form("Breast Cancer Metastasis Risk Prediction"):
         col_Numerical, col_Categorical1, col_YesorNo = st.columns(3)
 
         # Numerical inputs
         with col_Numerical:
-            st.subheader("Numerical Inputs :abacus:")
+            st.subheader(":abacus: Numerical Inputs ")
             patient_MRN = st.number_input("Patient MRN", value=0, min_value=0, format="%d")
             patient_first_bmi = st.number_input("First BMI", value=None, min_value=0.0, max_value=100.0, format="%.2f")
             patient_age = st.number_input("Age", value=None, min_value=0, max_value=150, format="%d")
@@ -23,7 +23,7 @@ def app():
 
         # Categorical inputs
         with col_Categorical1:
-            st.subheader("Categorical Inputs :page_facing_up: ")
+            st.subheader(":page_facing_up: Categorical Inputs ")
             col_11, col_22 = st.columns(2)
             with col_11:
                 patient_family_history = st.selectbox("Family History", options=["Yes - BC", "Yes - both", "Yes - other cancers", "No", "Unrecorded"], index=None, placeholder="Select family history...")
@@ -91,13 +91,13 @@ def app():
                     st.error(f"Please fill in the following fields or reduce 'Unrecorded' selections: {', '.join([k for k, v in patient_data.items() if v == 'Unrecorded'])}")
                 else:
                     # Display results
-                    st.subheader("Risk Assessment Results")
+                    st.subheader("Breast Cancer Metastasis Risk Prediction Results")
                     for key, value in patient_data.items():
                         st.write(f"- {key.replace('_', ' ').title()}: {value}")
 
                     st.write(Network.post_make_assesment(18, int(patient_MRN), patient_data))
 
-        modal = Modal("Risk Assessment Result", key="result-modal", padding=10, max_width=430)
+        modal = Modal("Breast Cancer Metastasis Risk Prediction Result", key="result-modal", padding=10, max_width=430)
 
         # Generate a random value for 'case'
         case = 0

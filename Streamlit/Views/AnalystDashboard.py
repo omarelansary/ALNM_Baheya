@@ -47,19 +47,13 @@ Cache=LocalCache()
 def app():
     st.title('Analyst DashBoard')
         # Load your data
-    # data = pd.read_excel('ourData/cairouniversity_march_known_nooutliers.xlsx')
-    data=Cache.get_dashBoardData_forAnalysts()
-
-
-    # Clean and prepare your data
-    data_clean = data[['Age', 'First_BMI', 'size_cm', 'Tumor_Type']].dropna()
+    
     AUC=79
     accurcy=83
     macro=80
     micro=83
     weighted=80
     image_url_PCA_Analysis = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/PCA_Analysis.png"
-    image_url_Numerical_Features_Distribution = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/Numerical_Features_Distribution.png"
     image_url_Mean_ROC_AUC_Curve2 = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/Mean_ROC_AUC_Curve2.png"
     image_url_Mean_ROC_AUC_Curve1 = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/Mean_ROC_AUC_Curve1.png"
     image_url_HMAP_NEW= "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/HMAP_NEW.png"
@@ -78,14 +72,14 @@ def app():
         st.write('Accuracy')
         st.altair_chart(donut_chart_Accuracy)
     with col2:
+        st.write('F1 Micro')
+        st.altair_chart(donut_chart_Micro)
+    with col3:
         st.write('F1 weighted')
         st.altair_chart(donut_chart_weighted)
-    with col3:
-        st.write('F1 Micro')
-        st.altair_chart(donut_chart_Macro)
     with col4:
         st.write('F1 Macro')
-        st.altair_chart(donut_chart_Micro)
+        st.altair_chart(donut_chart_Macro)
     with col5:
         st.write('Auc Score')
         st.altair_chart(donut_chart_Auc) 
@@ -98,48 +92,8 @@ def app():
         
     with col22:    
         st.image(image_url_Mean_ROC_AUC_Curve2) 
-        st.image(image_url_Numerical_Features_Distribution) 
+        st.image(image_url_confusion_matrix_last) 
     
     st.image(image_url_HMAP_NEW)
     
-    #     st.image(image_url_PCA_Analysis)                 
-    fig = px.scatter(
-        data_clean,
-        x='Age',
-        y='First_BMI',
-        size='size_cm',
-        color='Tumor_Type',
-        hover_name='Tumor_Type',
-        title='Age vs. BMI Bubble Chart',
-        labels={'Age': 'Age', 'First_BMI': 'BMI'},
-        size_max=60,
-        color_discrete_map={
-            'Invasive duct carcinoma (NST)': 'blue',
-            'Invasive duct carcinoma in situ, DCIS': 'green',
-            'Ductal carcinoma NOS': 'orange',
-            'Other': 'red',
-            'Mixed Tumor': 'purple',
-            'Invasive tubular/cribriform carcinoma': 'brown',
-            'Mucinous adenocarcinoma': 'pink',
-            'Invasive Lobular carcinoma NOS': 'cyan'
-        }
-    )
-
-    # Show the Plotly chart in Streamlit
-    st.plotly_chart(fig, use_container_width=True)
-
-
-    fig = px.box(data, x='Tumor_Type', y='First_BMI', title='BMI Distribution by Tumor Type')
-
-    # Show the box plot in Streamlit
-    st.plotly_chart(fig, use_container_width=True)
-    
-
-
-    # Create a pair plot using Seaborn
-    pairplot = sns.pairplot(data[['Age', 'First_BMI', 'size_cm', 'KI67']], diag_kind='kde')
-
-    # Show the pair plot in Streamlit
-    st.pyplot(pairplot)
-
-    st.image(image_url_confusion_matrix_last) 
+   

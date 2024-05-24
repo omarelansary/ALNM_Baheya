@@ -1,16 +1,8 @@
-# @Email:  contact@pythonandvba.com
-# @Website:  https://pythonandvba.com
-# @YouTube:  https://youtube.com/c/CodingIsFun
-# @Project:  Tumor Data Dashboard w/ Streamlit
-
 import pandas as pd  # pip install pandas openpyxl
 import plotly.express as px  # pip install plotly-express
 import streamlit as st  # pip install streamlit
 
-# emojis: https://www.webfx.com/tools/emoji-cheat-sheet/
-# st.set_page_config(page_title="Tumor Data Dashboard", page_icon=":bar_chart:", layout="wide")
 def app():
-    # ---- READ EXCEL ----
     @st.cache_data
     def get_data_from_excel():
         file_path = "D:/gp/admin/data/cairouniversity_march_known_nooutliers (1).xlsx"
@@ -63,9 +55,13 @@ def app():
         options=df["T"].unique(),
         default=df["T"].unique()
     )
-
+    n = st.sidebar.multiselect(
+        "Select the N:",
+        options=df["N"].unique(),
+        default=df["N"].unique()
+    )
     df_selection = df.query(
-        "(`Grade` == @tumor_grade) & (`family_history` == @family_history) & (`Site` == @tumor_location) & (T == @t)"
+        "(`Grade` == @tumor_grade) & (`family_history` == @family_history) & (`Site` == @tumor_location) & (T == @t) & (N == @n)"
     )
 
     # Check if the dataframe is empty:
@@ -95,20 +91,21 @@ def app():
 
     st.markdown("""---""")
 
-    # Example Bar Chart
-    patients_by_location = df_selection.groupby(by=["Site"])[["Age"]].count().sort_values(by="Age")
-    fig_location = px.bar(
-        patients_by_location,
-        x="Age",
-        y=patients_by_location.index,
+    # Bar Chart for Patients by Tumor Type
+    patients_by_tumor_type = df_selection["Tumor_Type"].value_counts().reset_index()
+    patients_by_tumor_type.columns = ["Tumor_Type", "Count"]
+    fig_tumor_type = px.bar(
+        patients_by_tumor_type,
+        x="Count",
+        y="Tumor_Type",
         orientation="h",
-        title="<b>Patients by Tumor Location</b>",
-        color_discrete_sequence=["#E75480"] * len(patients_by_location),  # Pink color
+        title="<b>Patients by Tumor Type</b>",
+        color_discrete_sequence=["#E75480"] * len(patients_by_tumor_type),  # Pink color
         template="plotly_white",
     )
-    fig_location.update_layout(
+    fig_tumor_type.update_layout(
         plot_bgcolor="rgba(0,0,0,0)",
-        xaxis=(dict(showgrid=False))
+        xaxis=dict(showgrid=False)
     )
 
     # Example Pie Chart
@@ -124,9 +121,26 @@ def app():
         plot_bgcolor="rgba(0,0,0,0)",
     )
 
+    # Example Box Plot
+    fig_box = px.box(
+        df_selection,
+        x="Site",
+        y="Age",
+        title="<b>Age Distribution by Tumor Location</b>",
+        color="Site",
+        color_discrete_sequence=px.colors.qualitative.Pastel  # Use a pastel color palette
+    )
+    fig_box.update_layout(
+        plot_bgcolor="rgba(0,0,0,0)",
+        xaxis=dict(showgrid=False),
+        yaxis=dict(showgrid=False)
+    )
+
     left_column, right_column = st.columns(2)
-    left_column.plotly_chart(fig_location, use_container_width=True)
+    left_column.plotly_chart(fig_tumor_type, use_container_width=True)
     right_column.plotly_chart(fig_grade, use_container_width=True)
+
+    st.plotly_chart(fig_box, use_container_width=True)
 
     # Display filtered data table
     st.subheader("Filtered Data")
@@ -141,3 +155,5 @@ def app():
                 </style>
                 """
     st.markdown(hide_st_style, unsafe_allow_html=True)
+
+

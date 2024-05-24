@@ -1,18 +1,12 @@
 import streamlit as st
-import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
-import os
-import pandas as pd
 import plotly.express as px
-import pandas as pd
-import matplotlib.pyplot as plt
 from math import pi
-import pandas as pd
-import plotly.graph_objects as go
-import matplotlib.pyplot as plt
 import numpy as np
+import altair as alt
+
 
 def count_yes_no_in_column(df, column_title):
     try:
@@ -210,7 +204,44 @@ def plot_histogram(df, col_name):
     ax.hist(df[col_name].dropna(), bins=30, edgecolor='k',color=colors[1])
     ax.set_xlabel(col_name)
     ax.set_ylabel('Frequency')
-    st.pyplot(fig)    
+    st.pyplot(fig)  
+def plot_interactive_histogram(df, col_name):
+    # Check if the column exists in the DataFrame
+    if col_name not in df.columns:
+        st.error(f"Column '{col_name}' does not exist in the DataFrame.")
+        return
+    
+    # Check if the column is numerical
+    if not pd.api.types.is_numeric_dtype(df[col_name]):
+        st.error(f"Column '{col_name}' is not a numerical column.")
+        return
+
+    st.write(f"Histogram for column: {col_name}")
+
+    # Define colors
+    colors = ['#cc8562', '#c08497', '#3a4440']
+
+    # Create an Altair chart
+    base = alt.Chart(df).mark_bar(color=colors[0]).encode(
+        y='count()',
+        tooltip=['count()']
+    ).properties(
+        width=600,
+        height=100
+    )
+
+    brush = alt.selection_interval(encodings=['x'])
+
+    upper = base.encode(
+        x=alt.X(f'{col_name}:Q', bin=alt.Bin(maxbins=30), scale=alt.Scale(domain=brush))
+    )
+
+    lower = base.encode(
+        x=alt.X(f'{col_name}:Q', bin=alt.Bin(maxbins=30))
+    ).add_params(brush)
+
+    st.altair_chart(alt.vconcat(upper, lower))
+     
 def app():
     st.title("Physician Dashboard")
     
@@ -232,7 +263,7 @@ def app():
              st.header('Grade Distribution')   
              horizontal_bar_chart(df, "Grade") 
             with col2a:
-                st.header('family history Distribution')
+                st.header('Family History Distribution')
                 horizontal_bar_chart(df, "family_history")
             # missing_data_bar_chart(df)
             # st.header("Pareto Chart")
@@ -260,26 +291,26 @@ def app():
             st.subheader("Menopausal State Distribution")
             draw_bar_chart("Menopausal State Distribution", "Menopausal State", "Count", categories1, counts1)
             st.subheader("First BMI State Distribution")
-            plot_histogram(df, "First_BMI")
+            plot_interactive_histogram(df, "First_BMI")
         with col2:
             st.subheader("Unilateral Bilateral Distribution")
             draw_bar_chart("Unilateral Bilateral Distribution", "Unilateral Bilateral", "Count", categories2, counts2)
             st.subheader("Age Distribution")
-            plot_histogram(df, "Age")
+            plot_interactive_histogram(df, "Age")
         
         with col3:
             st.subheader("T Distribution")
             st.subheader(" ")
             draw_bar_chart("T", "T", "Count", categories3, counts3)
             st.subheader("Tumer size Distribution")
-            plot_histogram(df, "size_cm")
+            plot_interactive_histogram(df, "size_cm")
         
         with col4:
             st.subheader("N Distribution")
             st.subheader(" ")
             draw_bar_chart("N Distribution", "N", "Count", categories4, counts4)
             st.subheader("KI67 Distribution")
-            plot_histogram(df, "KI67")
+            plot_interactive_histogram(df, "KI67")
         
         # Display pie charts in a row
         st.header("Pie Charts")

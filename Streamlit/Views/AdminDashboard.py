@@ -1,68 +1,52 @@
 import streamlit as st
-import random
+import altair as alt
 import pandas as pd
-import streamlit as st
+import numpy as np
+import random
 import subprocess
 import re
+from datetime import datetime, timedelta
 
 # Generate 30 different numbers from 0 to 40 for each row
 working_days = [random.sample(range(41), 30) for _ in range(3)]
+start_date = datetime(2023, 1, 1)
+dates = [start_date + timedelta(days=i) for i in range(30)]
 
-dfdoc = pd.DataFrame(
-    {
-        "name": ["Dr Ahmed", "Dr Karim", "Dr Yasser"],
-        "working_days": working_days
-    }
-)
+# Create DataFrame with dates
+dfdoc = pd.DataFrame({
+    "name": ["Dr Ahmed", "Dr Karim", "Dr Yasser"],
+    "Filled_Risk_Prediction_Per_Day": working_days
+})
 
-# Calculate total working days for each doctor
-dfdoc['total_working_days'] = dfdoc['working_days'].apply(sum)
+# Convert to long format for Altair
+df_long = dfdoc.explode("Filled_Risk_Prediction_Per_Day")
+df_long['date'] = dates * 3  # Repeat the dates for each doctor
+df_long.reset_index(drop=True, inplace=True)
 
-# Find the doctor with the highest total working days
-top_doctor = dfdoc.loc[dfdoc['total_working_days'].idxmax()]
+# Calculate average filled risk prediction per day for each doctor
+dfdoc['Average_Filled_Risk_Prediction_Per_Day'] = dfdoc['Filled_Risk_Prediction_Per_Day'].apply(lambda x: round(np.mean(x)))
 
-# Generate the DataFrame for performance ratings
-dfperformane = pd.DataFrame(
-    {
-        "name": ["Performance Rating", "Usability Rating", "Learnability Rating"],
-        "stars": [random.randint(2, 5) for _ in range(3)]
-    }
-)
-
-
-
+# Function to check service status
 def check_service_status(service_name):
     details = {}
     try:
-        # Execute the systemctl command to check the status of the PostgreSQL service
         result = subprocess.run(['systemctl', 'status', service_name], text=True, capture_output=True)
-        # Get the output as a text string
         status_output = result.stdout
-
-        # Check if the service is enabled
         enabled_search = re.search(r'enabled;', status_output)
         details['Enabled'] = "Yes" if enabled_search else "No"
-
-        # Find the active since time
         active_since_search = re.search(r'Active:\s(\d+);', status_output)
         details['Active'] = active_since_search.group(1) if active_since_search else "Not available"
-
-        # Find the number of tasks
         tasks_search = re.search(r'Tasks:\s(\d+)', status_output)
         details['Tasks'] = tasks_search.group(1) if tasks_search else "Not available"
-
-        # Find the memory usage
         memory_search = re.search(r'Memory:\s([\w\d.]+)', status_output)
         details['Memory'] = memory_search.group(1) if memory_search else "Not available"
-
         return details
     except Exception as e:
         return {"error": str(e)}
 
 def app():
-    st.title(':bookmark_tabs: Admin DashBoard')
-    # Create a new column for star ratings in visual format
-    # dfperformane['star_visual'] = dfperformane['stars'].apply(lambda x: '⭐' * x)
+    st.title(':bookmark_tabs: Admin Dashboard')
+
     st.write(check_service_status('postgresql'))
 
     # Display total physicians, data analysts, and website users
@@ -84,28 +68,113 @@ def app():
     st.markdown("""---""")
 
     # Display working days of doctors
-    st.subheader("Working Days of Doctors")
+    st.subheader("Filled Risk Prediction Per Day by Physicians")
     st.dataframe(
         dfdoc,
         column_config={
-            "name": "Doctors",
-            "working_days": st.column_config.LineChartColumn(
-                "Working Days", y_min=0, y_max=40
+            "name": "Physicians",
+            "Filled_Risk_Prediction_Per_Day": st.column_config.LineChartColumn(
+                "Filled Risk Prediction Per Day", y_min=0, y_max=40
             ),
+            "Average_Filled_Risk_Prediction_Per_Day": "Average Filled Risk Prediction Per Day"
         },
         hide_index=True,
         width=1200
     )
-
+    st.subheader("    " )
+    st.subheader("    " )
     # Display Performance Ratings
-    st.subheader("Performance Ratings")
-    for i, row in dfperformane.iterrows():
-        st.write(f"{row['name']}:", f"{row['stars']}")
-        st.progress(row['stars'] / 5)  # Assuming the stars are out of 5
+    col12,col21,col333=st.columns([2,4,2])
+    with col21:
+        
+        # Create and display Altair chart
+        brush = alt.selection_interval(encodings=['x'])
+        
+        base = alt.Chart(df_long).mark_area().encode(
+            x=alt.X('date:T', title='Date'),
+            y=alt.Y('Filled_Risk_Prediction_Per_Day:Q', title='Filled Risk Prediction'),
+            color='name:N'
+        ).properties(
+            width=600,
+            height=200
+        )
+        
+        upper = base.encode(
+            alt.X('date:T').scale(domain=brush)
+        )
+        
+        lower = base.properties(
+            height=60
+        ).add_params(brush)
+        
+        st.altair_chart(upper & lower)
+    st.markdown("""---""")
+    st.subheader("Evaluation esults")
 
-    # # Display the top doctor who worked the most
-    # st.subheader("Top Doctor of the Month")
-    # st.write(f"Name: {top_doctor['name']}")
-    # st.write(f"Total Working Days: {top_doctor['total_working_days']}")
+    # Function to generate random ratings for each performance category
+    def generate_random_ratings(num_categories):
+        return [random.randint(2, 5) for _ in range(num_categories)]
 
+    # Create the performance rating DataFrame
+    performance_categories = ["Performance Rating", "Usability Rating", "Learnability Rating"]
+    num_ratings = [random.randint(10, 50) for _ in range(len(performance_categories))]
+    dfperformance = pd.DataFrame({
+        "name": performance_categories,
+        "stars": generate_random_ratings(len(performance_categories)),
+        "num_ratings": num_ratings
+    })
 
+    # Convert the data to long format suitable for Altair
+    values = pd.DataFrame(
+        [
+            {"value": row['stars'], "name": row['name'], "id": f"P{i+1}", "num_ratings": row['num_ratings']}
+            for i, row in dfperformance.iterrows()
+        ]
+    )
+
+    medians = pd.DataFrame(
+        [
+            {"name": cat, "median": dfperformance.loc[dfperformance['name'] == cat, 'stars'].values[0], "lo": "--", "hi": "-"}
+            for cat in performance_categories
+        ]
+    )
+
+    y_axis = alt.Y("name").axis(
+        title=None,
+        offset=50,
+        labelFontWeight="bold",
+        ticks=False,
+        grid=True,
+        domain=False,
+    )
+
+    base = alt.Chart(medians).encode(y_axis)
+
+    bubbles = (
+        alt.Chart(values)
+        .transform_filter(
+            (alt.datum.name != "Participant ID")
+        )
+        .mark_circle(color="#6EB4FD")
+        .encode(
+            alt.X("value:Q").title(None),
+            y_axis,
+            alt.Size("num_ratings:Q", scale=alt.Scale(range=[100, 1000])).legend(offset=75, title="Number of ratings"),
+            tooltip=[alt.Tooltip("num_ratings:Q", format=".0f").title("Number of ratings")],  # Ensure count is displayed as integer
+        )
+    )
+
+    ticks = base.mark_tick(color="black").encode(
+        alt.X("median:Q")
+        .axis(grid=False, values=[1, 2, 3, 4, 5], format=".0f")
+        .scale(domain=[0, 6]),
+    )
+
+    texts_lo = base.mark_text(align="right", x=-5).encode(text="lo")
+    texts_hi = base.mark_text(align="left", x=255).encode(text="hi")
+
+    chart = (bubbles + ticks + texts_lo + texts_hi).properties(
+        width=250, height=175
+    ).configure_view(stroke=None)
+
+    st.altair_chart(chart, use_container_width=True)
