@@ -1,111 +1,119 @@
-# import streamlit as st
-# import pandas as pd
-# from Networking.Networking import Networking
-# import Components.vaildation
-
-# def app():
-#     st.title('Add Analyst')
-#     # Function to add user to the system
-#     Network = Networking()
-#     new_analyst_fname = st.text_input("First Name")
-#     new_analyst_lname = st.text_input("Last Name")
-#     new_analyst_email = st.text_input("Email")
-#     new_analyst_password = st.text_input("Password",type="password")
-#     add_button = st.button("Add Analyst")
-#     if add_button:
-#         missing_fields = []
-#         if not new_analyst_fname:
-#                 missing_fields.append("First Name")
-#         if not new_analyst_lname:
-#                 missing_fields.append("Last Name")
-#         if not new_analyst_email:
-#                 missing_fields.append("Email")
-#         if not new_analyst_password:
-#                 missing_fields.append("password") 
-#         if missing_fields:
-#                 st.error(f"Please fill in the following fields: {', '.join(missing_fields)}")
-#         else:
-#             new_user = Network.post_signup('Data Analyst',new_analyst_fname,new_analyst_lname, new_analyst_email,new_analyst_password)
-#             st.success("DataAnalyst added successfully!")
-#             st.write("New Analyst Information:")
-#             st.write(f"First Name: {new_user.get('first_name', 'N/A')}")
-#             st.write(f"Last Name: {new_user.get('last_name', 'N/A')}")
-#             st.write(f"Email: {new_user.get('email', 'N/A')}")
-#             st.write(f"Role: {new_user.get('role', 'N/A')}")
-            
-#             # Display added user
-#             st.write(new_user)# DH EL VIRABLE EL FIH HGT EL USER @OMAR
-#             # Add user to session state
-#             analysts = st.session_state.get('analysts', [])
-#             analysts.append(new_user)
-#             st.session_state.analysts = analysts
-#     st.subheader('View Analysts')
-#     #analysts = st.session_state.get('analysts', [])
-#     df = Network.get_table('Data Analyst')
-#     if df:
-#         st.write(df)
-#     else:
-#         st.write("No Analysts added yet.")
 import streamlit as st
-import re
+import pandas as pd
 from Networking.Networking import Networking
 import Components.vaildation
 from ourData.cache import LocalCache
-
+from streamlit_modal import Modal
 
 def app():
-    st.title('Add Analyst')
+    st.title('Add Data Scientist')
     # Function to add user to the system
-    Network = Networking()
     Cache=LocalCache()
-    new_analyst_fname = st.text_input("First Name")
-    new_analyst_lname = st.text_input("Last Name")
-    new_analyst_email = st.text_input("Email")
-    new_analyst_password = st.text_input("Password", type="password")
-    add_button = st.button("Add Analyst")
+    new_scientist_fname = st.text_input("First Name")
+    new_scientist_lname = st.text_input("Last Name")
+    new_scientist_email = st.text_input("Email")
+    new_scientist_password = st.text_input("Password", type="password")
+    add_button = st.button("Add Data Scientist")
     if add_button:
         missing_fields = []
-        if not new_analyst_fname:
+        if not new_scientist_fname:
             missing_fields.append("First Name")
-        if not new_analyst_lname:
+        if not new_scientist_lname:
             missing_fields.append("Last Name")
-        if not new_analyst_email:
+        if not new_scientist_email:
             missing_fields.append("Email")
-        if not new_analyst_password:
-            missing_fields.append("password")
+        if not new_scientist_password:
+            missing_fields.append("Password") 
         if missing_fields:
             st.error(f"Please fill in the following fields: {', '.join(missing_fields)}")
         else:
-            if not Components.vaildation.validate_username(new_analyst_fname):
-                st.warning("aloo.")
-            elif not Components.vaildation.validate_username(new_analyst_lname):
-                st.warning("aloo.")    
-            elif not Components.vaildation.validate_email(new_analyst_email):
+            if not Components.vaildation.validate_username(new_scientist_fname):
+                st.warning("Invalid first name.")
+            elif not Components.vaildation.validate_username(new_scientist_lname):
+                st.warning("Invalid last name.")    
+            elif not Components.vaildation.validate_email(new_scientist_email):
                 st.warning("Invalid email format.")
             else:
-                validation_result = Components.vaildation.validate_password(new_analyst_password)
+                validation_result = Components.vaildation.validate_password(new_scientist_password)
                 st.write("Validation result:", validation_result)  # Print validation result
                 if validation_result == "VALID":
-                    Components.vaildation.signup(new_analyst_fname, new_analyst_lname, new_analyst_email)
-                    new_user = Network.post_signup('Data Analyst', new_analyst_fname, new_analyst_lname, new_analyst_email, new_analyst_password)
-                    st.success("DataAnalyst added successfully!")
-                    # Display added user
-                    st.write(new_user)  # DH EL VIRABLE EL FIH HGT EL USER @OMAR
+                    Components.vaildation.signup(new_scientist_fname, new_scientist_lname, new_scientist_email)
+                    new_user =('Data Scientist', new_scientist_fname, new_scientist_lname, new_scientist_email, new_scientist_password)
+                    st.success("Data Scientist added successfully!")
+                    st.write(new_user)
                     # Add user to session state
-                    analysts = st.session_state.get('analysts', [])
-                    analysts.append(new_user)
-                    st.session_state.analysts = analysts
+                    scientists = st.session_state.get('scientists', [])
+                    scientists.append(new_user)
+                    st.session_state.scientists = scientists
                 elif validation_result == "INVALID_FORMAT":
                     st.warning("Password must contain at least one uppercase letter, one number, and one special character.")
                 elif validation_result == "TOO_SHORT":
                     st.warning("Password must be at least 7 characters long.")
-                st.write("Password:", new_analyst_password)
+                st.write("Password:", new_scientist_password)   
 
-    st.subheader('View Analysts')
-    # analysts = st.session_state.get('analysts', [])
-    df=Cache.get_dashBoardData_forAnalysts()
+    st.subheader('View Data Scientists')
+    scientists = Cache.get_dataAnalysts_for_admins()
 
-    if not df.empty:
-        st.write(df)
+    if not scientists.empty:
+        df = scientists
+        selected_indices = []
+
+        # Display the table headers
+        col1, col2, col3, col4, col5 = st.columns([0.1, 0.2, 0.25, 0.25, 0.2])
+        with col1:
+            st.write("")
+        with col2:
+            st.write("ID")
+        with col3:
+            st.write("First Name")
+        with col4:
+            st.write("Last Name")
+        with col5:
+            st.write("Email")
+
+
+        # Display the table with checkboxes
+        for i, row in df.iterrows():
+            col1, col2, col3, col4, col5= st.columns([0.1, 0.2, 0.25, 0.25, 0.2])
+            with col1:
+                if st.checkbox("", key=f"select_{i}"):
+                    selected_indices.append(i)
+            with col2:
+                st.write(row['id'])
+            with col3:
+                st.write(row['firstName'])
+            with col4:
+                st.write(row['lastName'])
+            with col5:
+                st.write(row['email'])
+
+#########
+
+#######
+        modal = Modal("Confirm Deletion", key="confirm_deletion")
+
+        if selected_indices:
+           open_modal = st.button("Delete Selected Data Scientists")
+           if open_modal:
+                # Open the modal when the delete button is clicked
+                # modal = Modal("Confirm Deleticonfirm_deletion")on", key="
+                 modal.open()
+           if modal.is_open():
+                    with modal.container():
+                        st.markdown(
+                            """
+                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                                <h1 style="color: green; font-size: 28px; font-family: 'Open Sans', sans-serif;">Are you sure you want to delete the selected Data Scientists?</h1>
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+                        if st.button("Confirm"):
+                            # Remove the selected scientists
+                            for index in sorted(selected_indices, reverse=True):
+                                scientists.pop(index)
+                            st.session_state.scientists = scientists
+                            st.rerun()  # Refresh the app to reflect changes
+
     else:
-        st.write("No Analysts added yet.")
+        st.write("No Data Scientists added yet.")

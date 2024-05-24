@@ -5,7 +5,7 @@ import streamlit as st  # pip install streamlit
 def app():
     @st.cache_data
     def get_data_from_excel():
-        file_path = "D:/gp/admin/data/cairouniversity_march_known_nooutliers (1).xlsx"
+        file_path = "..\\Streamlit\\ourData\\cairouniversity_march_known_nooutliers.xlsx"
         try:
             df = pd.read_excel(
                 io=file_path,
