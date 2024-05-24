@@ -15,10 +15,13 @@ def main():
     # Perform login if not logged in
     authComponents=AuthComponents()
     app=None
-    if st.session_state['is_logged_in']:
-        if st.session_state['role']=='Physician':
+    data=authComponents.check_cookie_session()
+    #st.session_state['is_logged_in']
+    if data or st.session_state['is_logged_in']:
+        data=authComponents.check_cookie_session()
+        if data['role']=='Physician':
             app = option_menu(
-            menu_title='Welcome Dr. Omar',
+            menu_title="Welcome Dr. " + str(data['username']),
             options=['Home', 'Follow Up', 'My Patients','Dashboard', 'Risk','Logout'],
             icons=['house-fill', 'bar-chart-steps','heart-fill','graph-up','exclamation-triangle-fill', 'door-open'],
             menu_icon=['person-fill'],
@@ -30,9 +33,9 @@ def main():
                 "nav-link": {"color":"white", "font-size": "20px", "text-align":"left","margin":"0px"},
                 "nav-link-selected": {"background-color": "#02ab21"},}
             )
-        elif st.session_state['role']=='Data Analyst': 
+        elif data['role']=='Data Analyst': 
             app = option_menu(
-            menu_title='Welcome Analyst. Ahmed',
+            menu_title='Welcome Analyst, ' + str(data['username']),
             options=['Home', 'Analysis', 'Correlations', 'Review','Logout'],
             icons=['house-fill', 'bar-chart-line','clipboard2-pulse-fill','binoculars','door-open'],
             menu_icon=['person-fill'],
@@ -44,9 +47,9 @@ def main():
                 "nav-link": {"color":"white", "font-size": "20px", "text-align":"left","margin":"0px"},
                 "nav-link-selected": {"background-color": "#02ab21"},}
             )
-        elif st.session_state['role']=='Admin': 
+        elif data['role']=='Admin': 
             app = option_menu(
-            menu_title='Welcome Admin. Hassan',
+            menu_title='Welcome Admin, '+ str(data['username']),
             options=['Home', 'Panel', 'Risk','All Patients','Analysis', 'Correlations', 'Review', 'Add Doctor','Add Analyst','Logout'],
             icons=['house-fill', 'graph-up','exclamation-triangle-fill', 'heart-fill','bar-chart-line','clipboard2-pulse-fill','binoculars','person-plus','person-plus-fill','door-open'],
             menu_icon=['person-fill'],
