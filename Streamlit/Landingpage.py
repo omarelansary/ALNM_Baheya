@@ -96,7 +96,7 @@ def main():
     if app== 'Dashboard':
         Views.DoctorDashboard.app()    
     if app== 'Risk':
-        Views.DoctorRiskAssesment.app()
+        Views.DoctorRiskAssesment.app(data['id'])
     if app=='My Patients':
         Views.DoctorPatients.app()    
     if app=='Follow Up':

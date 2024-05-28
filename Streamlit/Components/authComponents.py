@@ -103,8 +103,8 @@ class AuthComponents:
                             if new_password != confirm_password:
                                 st.error("Passwords do not match! Please try again.")
                             else:
-                                response = authenticator.reset_password(email, new_password)
-                                if response.get('status') == 'success':
+                                response = authenticator.reset_password(role, email, new_password)
+                                if response['success']:
                                     st.success("Password reset successful! You can now log in with your new password.")
                                 else:
                                     st.error("Password reset failed! Please try again.")

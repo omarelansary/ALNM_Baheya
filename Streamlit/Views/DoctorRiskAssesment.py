@@ -4,7 +4,7 @@ import pandas as pd
 from ourData.cache import LocalCache
 from streamlit_modal import Modal
 
-def app():
+def app(physicianID):
     Network = Networking()
     cacheInMemory = LocalCache()
 
@@ -95,7 +95,7 @@ def app():
                     for key, value in patient_data.items():
                         st.write(f"- {key.replace('_', ' ').title()}: {value}")
 
-                    st.write(Network.post_make_assesment(18, int(patient_MRN), patient_data))
+                    st.write(Network.post_make_assesment(physicianID, int(patient_MRN), patient_data))
 
         modal = Modal("Breast Cancer Metastasis Risk Prediction Result", key="result-modal", padding=10, max_width=430)
 

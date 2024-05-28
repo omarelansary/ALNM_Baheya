@@ -51,20 +51,37 @@ def radar_plot(df, col1, col2, col3):
 
 def app():
     st.title('Analyst Correlation Graphs')
-    col12,col21=st.columns([3,2])
+    # Create columns for layout with specified relative widths
+    col12, col21 = st.columns([3, 2])
+
+    # Fetch data from the cache
     data = Cache.get_dashBoardData_forAnalysts()
-    # data = pd.read_excel('ourData/cairouniversity_march_known_nooutliers.xlsx')
-    # data = Cache.get_dashBoardData_forAnalysts()
-    # Clean and prepare your data
-    data_clean = data[['Age', 'First_BMI', 'size_cm', 'Tumor_Type']].dropna()
+
+    # List of columns to be used in the scatter plot
+    scatterPlotColumns = ['Age', 'First_BMI', 'size_cm']
+
+    # Convert the columns to numeric, coercing errors to NaN
+    for col in scatterPlotColumns:
+        data[col] = pd.to_numeric(data[col], errors='coerce')
+
+    # Append 'Tumor_Type' to the list of columns for further processing
+    scatterPlotColumns.append('Tumor_Type')
+
+    # Clean the data by dropping rows with NaNs in the specified columns
+    data_clean = data[scatterPlotColumns].dropna()
+
+    # URL of the image to be displayed
     image_url_Numerical_Features_Distribution = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/Numerical_Features_Distribution.png"
-    
+
+    # Display the radar plot in the first column
     with col12:
-     radar_plot(data, "First_BMI", "size_cm", "Age")
-    col123,col222=st.columns([3,2]) 
-    with col222: 
-     st.image(image_url_Numerical_Features_Distribution)
-    
+        radar_plot(data_clean, "First_BMI", "size_cm", "Age")
+
+    # Display the image in the second column
+    with col21:
+        st.image(image_url_Numerical_Features_Distribution)
+
+    # Create a scatter plot using Plotly
     fig = px.scatter(
         data_clean,
         x='Age',
