@@ -1,13 +1,13 @@
 import streamlit as st
 
-import Views.AnalystCorrelationGraphs
+import Views.HeadDoctorDashboard
 st.set_page_config(layout="wide")
 from streamlit_option_menu import option_menu
 from Components.authComponents import AuthComponents
 from Authentication.Authenticator import AuthExceptions
 import Views.AdminDashboard, Views.AdminPatientsView
-import Views.AdminAddAnalyst, Views.AdminAddDoctor
-import Views.AnalystDashboard, Views.AnalystReview, Views.AnalystDashboard
+import Views.AdminAddAnalyst, Views.AdminAddDoctor, Views.AdminAddHeadDoctor
+import Views.AnalystDashboard, Views.AnalystReview, Views.AnalystDashboard, Views.AnalystCorrelationGraphs
 import Views.DoctorDashboard, Views.DoctorPatients, Views.DoctorRiskAssesment
 import Views.DoctorGantChart
 import  Views.Home, Views.Login
@@ -15,15 +15,15 @@ def main():
     # Perform login if not logged in
     authComponents=AuthComponents()
     app=None
-    data=authComponents.check_cookie_session()
+    userAuthData=authComponents.check_cookie_session()
     #st.session_state['is_logged_in']
-    if data or st.session_state['is_logged_in']:
-        data=authComponents.check_cookie_session()
-        if data['role']=='Physician':
+    if userAuthData or st.session_state['is_logged_in']:
+        userAuthData=authComponents.check_cookie_session()
+        if userAuthData['role']=='Physician':
             app = option_menu(
-            menu_title="Welcome Dr. " + str(data['username']),
-            options=['Home', 'Follow Up', 'My Patients','Dashboard', 'Risk','Logout'],
-            icons=['house-fill', 'bar-chart-steps','heart-fill','graph-up','exclamation-triangle-fill', 'door-open'],
+            menu_title="Welcome Dr. " + str(userAuthData['username']),
+            options=['Home', 'Follow Up', 'Patients Table','Dashboard', 'Data Entry','Logout'],
+            icons=['house-fill', 'bar-chart-steps','person','graph-up','file-earmark-medical', 'door-open'],
             menu_icon=['person-fill'],
             default_index=0,
             orientation='horizontal',
@@ -33,9 +33,9 @@ def main():
                 "nav-link": {"color":"white", "font-size": "20px", "text-align":"left","margin":"0px"},
                 "nav-link-selected": {"background-color": "#02ab21"},}
             )
-        elif data['role']=='Data Analyst': 
+        elif userAuthData['role']=='Data Analyst': 
             app = option_menu(
-            menu_title='Welcome Analyst, ' + str(data['username']),
+            menu_title='Welcome Analyst, ' + str(userAuthData['username']),
             options=['Home', 'Analysis', 'Correlations', 'Review','Logout'],
             icons=['house-fill', 'bar-chart-line','clipboard2-pulse-fill','binoculars','door-open'],
             menu_icon=['person-fill'],
@@ -47,11 +47,11 @@ def main():
                 "nav-link": {"color":"white", "font-size": "20px", "text-align":"left","margin":"0px"},
                 "nav-link-selected": {"background-color": "#02ab21"},}
             )
-        elif data['role']=='Admin': 
+        elif userAuthData['role']=='Admin': 
             app = option_menu(
-            menu_title='Welcome Admin, '+ str(data['username']),
-            options=['Home', 'Panel', 'Risk','All Patients','Analysis', 'Correlations', 'Review', 'Add Doctor','Add Analyst','Logout'],
-            icons=['house-fill', 'graph-up','exclamation-triangle-fill', 'heart-fill','bar-chart-line','clipboard2-pulse-fill','binoculars','person-plus','person-plus-fill','door-open'],
+            menu_title='Welcome Admin, '+ str(userAuthData['username']),
+            options=['Home', 'Panel', 'Data Entry','All Patients','Analysis', 'Correlations', 'Review', 'Add Head Doctor','Add Analyst','Logout'],
+            icons=['house-fill', 'graph-up','file-earmark-medical', 'people','bar-chart-line','clipboard2-pulse-fill','binoculars','person-plus','person-plus-fill','door-open'],
             menu_icon=['person-fill'],
             default_index=0,
             orientation='horizontal',
@@ -60,7 +60,21 @@ def main():
                 "icon": {"color":"white", "font-size": "23px"},
                 "nav-link": {"color":"white", "font-size": "20px", "text-align":"left","margin":"0px"},
                 "nav-link-selected": {"background-color": "#02ab21"},}
-            )        
+            )
+        elif userAuthData['role']=='Head Doctor':
+            app = option_menu(
+            menu_title='Welcome Head Dr. '+ str(userAuthData['username']),
+            options=['Home', 'All Patients','Patients Table','Dashboard','Head Dashboard', 'Add Doctor','Logout'],
+            icons=['house-fill', 'people','person','graph-up','clipboard2-pulse','person-plus','door-open'],
+            menu_icon=['person-fill'],
+            default_index=0,
+            orientation='horizontal',
+            styles={
+                "container": {"padding": "5!important", "background-color": "black"},
+                "icon": {"color":"white", "font-size": "23px"},
+                "nav-link": {"color":"white", "font-size": "20px", "text-align":"left","margin":"0px"},
+                "nav-link-selected": {"background-color": "#02ab21"},}
+            )            
     else:    
         app = option_menu(
           menu_title=None,
@@ -86,7 +100,9 @@ def main():
     if app=='Add Doctor':
         Views.AdminAddDoctor.app() 
     if app=='Add Analyst':
-       Views.AdminAddAnalyst.app()     
+       Views.AdminAddAnalyst.app()
+    if app=='Add Head Doctor':
+       Views.AdminAddHeadDoctor.app()             
     if app=='Analysis':
        Views.AnalystDashboard.app()
     if app=='Review':
@@ -95,12 +111,14 @@ def main():
        Views.AnalystCorrelationGraphs.app()                  
     if app== 'Dashboard':
         Views.DoctorDashboard.app()    
-    if app== 'Risk':
-        Views.DoctorRiskAssesment.app(data['id'])
-    if app=='My Patients':
-        Views.DoctorPatients.app()    
+    if app== 'Data Entry':
+        Views.DoctorRiskAssesment.app(userAuthData)
+    if app=='Patients Table':
+        Views.DoctorPatients.app(userAuthData)    
     if app=='Follow Up':
-        Views.DoctorGantChart.app()        
+        Views.DoctorGantChart.app() 
+    if app=='Head Dashboard':
+        Views.HeadDoctorDashboard.app()
     if app== 'Logout':
         authComponents.logout()    
 

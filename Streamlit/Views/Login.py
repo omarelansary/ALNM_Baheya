@@ -8,7 +8,7 @@ def app(authComponents):
     with col1:
         role = st.radio(
             "Select your role:",
-            ('Physician', 'Data Analyst', 'Admin'),horizontal=True
+            ('Physician', 'Data Analyst','Head Doctor', 'Admin'),horizontal=True
         )
 
         try:

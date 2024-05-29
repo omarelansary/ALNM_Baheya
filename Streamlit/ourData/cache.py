@@ -1,6 +1,7 @@
 import redis
 import pandas as pd
 from pandas import json_normalize
+import streamlit as st
 #NEW
 from Networking.Networking import Networking
 assessments_json_data = {
@@ -130,17 +131,39 @@ class LocalCache:
     #     # Retrieve assessment data from Redis
     #     return self.redisobj.get("assessment_data")
     
-    def get_assessment_byDocId(self):
-        # Retrieve assessment data from Redis
-        # print(self.redisobj.get("assessment_data"))
-        return self.redisobj.get("assessment_data")
+    def get_assessment_byDocId(self, docId):
+        try:
+            # Fetch the assessments from the backend
+            assessments = Network.get_assessment_byDocId(docId)
+            # Display the assessments
+            return self.dataframeTest(assessments)
+        except Exception as e:
+            return e
 
         #@Mona
         '''doc_id=self.get_id()
         patientsDataFrame=Network.get_assesment_byDocId(doc_id)
         return patientsDataFrame'''
 
-        
+    def get_data_from_excel(self):
+        file_path = "..\\Backend\\cairouniversity_final_excel.xlsx"
+        try:
+            df = pd.read_excel(
+                io=file_path,
+                engine="openpyxl",
+                sheet_name="Sheet1",  # Update this if your sheet name is different
+                nrows=1000,  # Adjust as needed
+            )
+            return df
+        except FileNotFoundError:
+            st.error(f"File not found: {file_path}")
+            return pd.DataFrame()
+        except ValueError as e:
+            st.error(f"Value error: {e}")
+            return pd.DataFrame()
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+            return pd.DataFrame()   
     
     def get_assessment_byDocId_version2(self):
         # Normalize the JSON data and create a DataFrame
@@ -149,21 +172,34 @@ class LocalCache:
     #=========================================ADMIN===============================================
     #=============================NEW=========================
     def get_doctors_for_admins(self):
-        data_json=Network.get_table('Doctor')
-        # Convert the dictionary to a DataFrame
-        # Convert the dictionary to a DataFrame
-        doctors_df = pd.DataFrame(data_json["doctors"])       
-        return doctors_df
-        
+        try:
+            data_json=Network.get_users_table('Physician')
+            if data_json:
+               return pd.DataFrame(data_json["doctors"])
+        except Exception as e:
+            st.error(F"Error! {e}")
+            return pd.DataFrame()    
+             
+    def get_headDoctors_for_admins(self):
+        try:
+            data_json=Network.get_users_table('Head Doctor')
+            if data_json:
+               return pd.DataFrame(data_json["headDoctors"])
+        except Exception as e:   
+            st.error(F"Error! {e}")
+            return pd.DataFrame()    
+             
     #=========================================================
     #=============================NEW=========================@Mona
     def get_dataAnalysts_for_admins(self):
-        data_json=Network.get_table('Data Analyst')
-        # Convert the dictionary to a DataFrame
-        # Convert the dictionary to a DataFrame
-        doctors_df = pd.DataFrame(data_json["dataScientists"])
-        
-        return doctors_df
+        try:
+            data_json=Network.get_users_table('Data Analyst')
+            if data_json:
+               return pd.DataFrame(data_json["dataScientists"])
+        except Exception as e:
+            st.error(F"Error! {e}")
+            return pd.DataFrame()  
+
         
     #=========================================================
     def get_dashBoardData_forAnalysts(self):
@@ -179,26 +215,28 @@ class LocalCache:
         assessment_filtered = {key: value for key, value in assessment.items() if key not in exclude_keys}
         return assessment_filtered
 
-    def dataframeTest(self):
+    def dataframeTest(self, assesments_backend):
         # Extract assessments and medical_info into separate lists
-        assessments = []
-        medical_infos = []
-        exclude_keys = ["id", "status","MRN"]
-        for assessment in assessments_json_data["assessments"]:
-            medical_info = assessment["medical_info"]
-            medical_infos.append(medical_info)
-            assessment_filtered = self.extract_and_exclude_assessment_info(assessment, exclude_keys)
-            assessments.append(assessment_filtered)
-            print(assessment_filtered)
+        if assesments_backend:  
+            assessments = []
+            medical_infos = []
+            exclude_keys = ["id", "status","MRN"]
+            for assessment in assesments_backend:
+                medical_info = assessment["medical_info"]
+                medical_infos.append(medical_info)
+                assessment_filtered = self.extract_and_exclude_assessment_info(assessment, exclude_keys)
+                assessments.append(assessment_filtered)
+                print(assessment_filtered)
 
 
-        # Convert to DataFrames
-        df_assessments = pd.DataFrame(assessments)
-        df_medical_info = pd.DataFrame(medical_infos)
+            # Convert to DataFrames
+            df_assessments = pd.DataFrame(assessments)
+            df_medical_info = pd.DataFrame(medical_infos)
 
-        # Concatenate DataFrames side by side
-        df_combined = pd.concat([df_medical_info, df_assessments], axis=1)
-        return df_combined
-        # Display DataFrame as HTML table
-        # html_table = df_combined.to_html()
-    
+            # Concatenate DataFrames side by side
+            df_combined = pd.concat([df_medical_info, df_assessments], axis=1)
+            return df_combined
+            # Display DataFrame as HTML table
+            # html_table = df_combined.to_html()
+        else:
+            return pd.DataFrame()

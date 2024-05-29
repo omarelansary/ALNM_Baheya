@@ -34,7 +34,9 @@ class Authenticator:
             response = requests.post('http://127.0.0.1:8000/api/dataScientists/login', json=payload) 
         elif role == "Admin":
             response = requests.post('http://127.0.0.1:8000/api/admins/login', json=payload)
-            
+        elif role == "Head Doctor":
+            response = requests.post('http://127.0.0.1:8000/api/headDoctors/login', json=payload)
+
         if response.status_code == 200:
             data = response.json()
             return data
@@ -53,7 +55,8 @@ class Authenticator:
             response = requests.post('http://127.0.0.1:8000/api/doctors/forgotPassword', json=payload)
         elif role == "Data Analyst":
             response = requests.post('http://127.0.0.1:8000/api/dataScientists/forgotPassword', json=payload) 
-
+        elif role == "Head Doctor":
+            response = requests.post('http://127.0.0.1:8000/api/headDoctors/forgotPassword', json=payload) 
             
         if response.status_code == 200:
             data = response.json()

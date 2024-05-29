@@ -1,30 +1,13 @@
 import pandas as pd  # pip install pandas openpyxl
 import plotly.express as px  # pip install plotly-express
 import streamlit as st  # pip install streamlit
+from ourData.cache import LocalCache
 
 def app():
-    @st.cache_data
-    def get_data_from_excel():
-        file_path = "..\\Streamlit\\ourData\\cairouniversity_march_known_nooutliers.xlsx"
-        try:
-            df = pd.read_excel(
-                io=file_path,
-                engine="openpyxl",
-                sheet_name="Sheet1",  # Update this if your sheet name is different
-                nrows=1000,  # Adjust as needed
-            )
-            return df
-        except FileNotFoundError:
-            st.error(f"File not found: {file_path}")
-            return None
-        except ValueError as e:
-            st.error(f"Value error: {e}")
-            return None
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
-            return None
 
-    df = get_data_from_excel()
+    Cache = LocalCache()
+
+    df = Cache.get_data_from_excel()
 
     # Check if the dataframe is loaded successfully
     if df is None:

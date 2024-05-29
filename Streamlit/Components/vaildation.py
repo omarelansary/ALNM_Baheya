@@ -1,10 +1,17 @@
 import streamlit as st
 import re
-def signup(fname,lname, email):
-    username = f"{fname} {lname}"
-    # Here you can implement your signup logic, like saving the user to a database
-    st.success(f"Signup successful! Username: {username}, Email: {email}")
-    # Email validation function
+from Networking.Networking import Networking
+Network = Networking()
+def signup(role,fname,lname, email,password):
+    try:
+        response = Network.post_signup(role, fname, lname, email, password)
+        if response:
+            username = f"{fname} {lname}"
+            st.success(f"Signup successful! Username: {username}, Email: {email}")
+    except Exception as e:
+        username = f"{fname} {lname}"
+        st.error(f"Signup unsuccessful! Username: {username}, Email: {email}. Error: {e}")
+        
 def validate_email(email):
         # Regular expression to check if email is in valid format
         if re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):

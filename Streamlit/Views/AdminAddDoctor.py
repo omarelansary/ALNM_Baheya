@@ -39,10 +39,8 @@ def app():
                 validation_result = Components.vaildation.validate_password(new_physician_password)
                 st.write("Validation result:", validation_result)  # Print validation result
                 if validation_result == "VALID":
-                    Components.vaildation.signup(new_physician_fname, new_physician_lname, new_physician_email)
+                    Components.vaildation.signup("Physician",new_physician_fname, new_physician_lname, new_physician_email,new_physician_password)
                     new_user = ('Physician', new_physician_fname, new_physician_lname, new_physician_email, new_physician_password)
-                    st.success("Physician added successfully!")
-                    st.write(new_user)
                     # Add user to session state
                     physicians = st.session_state.get('physicians', [])
                     physicians.append(new_user)

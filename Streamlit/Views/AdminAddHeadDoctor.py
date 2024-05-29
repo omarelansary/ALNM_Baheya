@@ -6,57 +6,57 @@ from ourData.cache import LocalCache
 from streamlit_modal import Modal
 
 def app():
-    st.title('Add Data Scientist')
+    st.title('Add Head Doctor')
     # Function to add user to the system
-    Cache=LocalCache()
-    new_scientist_fname = st.text_input("First Name")
-    new_scientist_lname = st.text_input("Last Name")
-    new_scientist_email = st.text_input("Email")
-    new_scientist_password = st.text_input("Password", type="password")
-    add_button = st.button("Add Data Scientist")
+    Cache = LocalCache()
+
+    new_headDoctor_fname = st.text_input("First Name")
+    new_headDoctor_lname = st.text_input("Last Name")
+    new_headDoctor_email = st.text_input("Email")
+    new_headDoctor_password = st.text_input("Password", type="password")
+    add_button = st.button("Add Head Doctor")
+
     if add_button:
         missing_fields = []
-        if not new_scientist_fname:
+        if not new_headDoctor_fname:
             missing_fields.append("First Name")
-        if not new_scientist_lname:
+        if not new_headDoctor_lname:
             missing_fields.append("Last Name")
-        if not new_scientist_email:
+        if not new_headDoctor_email:
             missing_fields.append("Email")
-        if not new_scientist_password:
+        if not new_headDoctor_password:
             missing_fields.append("Password") 
         if missing_fields:
             st.error(f"Please fill in the following fields: {', '.join(missing_fields)}")
         else:
-            if not Components.vaildation.validate_username(new_scientist_fname):
+            if not Components.vaildation.validate_username(new_headDoctor_fname):
                 st.warning("Invalid first name.")
-            elif not Components.vaildation.validate_username(new_scientist_lname):
+            elif not Components.vaildation.validate_username(new_headDoctor_lname):
                 st.warning("Invalid last name.")    
-            elif not Components.vaildation.validate_email(new_scientist_email):
+            elif not Components.vaildation.validate_email(new_headDoctor_email):
                 st.warning("Invalid email format.")
             else:
-                validation_result = Components.vaildation.validate_password(new_scientist_password)
+                validation_result = Components.vaildation.validate_password(new_headDoctor_password)
                 st.write("Validation result:", validation_result)  # Print validation result
                 if validation_result == "VALID":
-                    Components.vaildation.signup("Data Analyst",new_scientist_fname, new_scientist_lname, new_scientist_email,new_scientist_password)
-                    new_user =('Data Scientist', new_scientist_fname, new_scientist_lname, new_scientist_email, new_scientist_password)
+                    Components.vaildation.signup("Head Doctor",new_headDoctor_fname, new_headDoctor_lname, new_headDoctor_email,new_headDoctor_password)
+                    new_user = ('Head Doctor', new_headDoctor_fname, new_headDoctor_lname, new_headDoctor_email, new_headDoctor_password)
                     # Add user to session state
-                    scientists = st.session_state.get('scientists', [])
-                    scientists.append(new_user)
-                    st.session_state.scientists = scientists
+                    headDoctors = st.session_state.get('headDoctors', [])
+                    headDoctors.append(new_user)
+                    st.session_state.headDoctors = headDoctors
                 elif validation_result == "INVALID_FORMAT":
                     st.warning("Password must contain at least one uppercase letter, one number, and one special character.")
                 elif validation_result == "TOO_SHORT":
                     st.warning("Password must be at least 7 characters long.")
-                st.write("Password:", new_scientist_password)   
+                st.write("Password:", new_headDoctor_password)   
 
-    st.subheader('View Data Scientists')
-    scientists = Cache.get_dataAnalysts_for_admins()
-
-    if not scientists.empty:
-        df = scientists
+    st.subheader('View Head Doctors')
+    headDoctors = Cache.get_headDoctors_for_admins()
+    if not headDoctors.empty:
+        df = headDoctors
         selected_indices = []
 
-        # Display the table headers
         col1, col2, col3, col4, col5 = st.columns([0.1, 0.2, 0.25, 0.25, 0.2])
         with col1:
             st.write("")
@@ -85,33 +85,31 @@ def app():
             with col5:
                 st.write(row['email'])
 
-#########
-
-#######
         modal = Modal("Confirm Deletion", key="confirm_deletion")
 
         if selected_indices:
            open_modal = st.button("Delete Selected Data Scientists")
            if open_modal:
-                # Open the modal when the delete button is clicked
-                # modal = Modal("Confirm Deleticonfirm_deletion")on", key="
+        # Open the modal when the delete button is clicked
+        # modal = Modal("Confirm Deletion", key="confirm_deletion")
                  modal.open()
            if modal.is_open():
                     with modal.container():
                         st.markdown(
-                            """
-                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                                <h1 style="color: green; font-size: 28px; font-family: 'Open Sans', sans-serif;">Are you sure you want to delete the selected Data Scientists?</h1>
-                            </div>
-                            """,
-                            unsafe_allow_html=True
+                                """
+                                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                                <h1 style="color: green; font-size: 28px; font-family: 'Open Sans', sans-serif;">Are you sure you want to delete the selected headDoctors?</h1>
+                                </div>
+                                """,
+                                unsafe_allow_html=True
                         )
                         if st.button("Confirm"):
-                            # Remove the selected scientists
-                            for index in sorted(selected_indices, reverse=True):
-                                scientists.pop(index)
-                            st.session_state.scientists = scientists
-                            st.rerun()  # Refresh the app to reflect changes
+                                # Remove the selected headDoctors
+                                for index in sorted(selected_indices, reverse=True):
+                                 headDoctors.pop(index)
+                                st.session_state.headDoctors = headDoctors
+                                st.rerun()  # Refresh the app to reflect changes
 
     else:
-        st.write("No Data Scientists added yet.")
+        st.write("No Head Doctors added yet.")
+
