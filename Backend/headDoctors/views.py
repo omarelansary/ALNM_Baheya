@@ -31,7 +31,24 @@ from assessments.serializers import AssessmentSerializer
 from collections import defaultdict 
 import pandas as pd
 from machineLearningModel.model import ALNM_Model
+from headDoctors.serializers import HeadDoctorSerializer
 
+#==========================GET HEAD DOCTORS============================================
+
+@api_view(['GET'])
+def getHeadDoctors(request):
+    try:
+        headDoctors=headDoctor.all()
+        serializedHeadDoctors=HeadDoctorSerializer(headDoctors)
+        return Response({'success': True,'headDoctors':serializedHeadDoctors})
+    except OperationalError as e:
+        # Return an error response for database errors
+        return Response({'success': False, 'message': f'Database error: {e}'}, status=400)
+    except Exception as e:
+        # Return a generic error response for other exceptions
+        return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)
+
+#======================================================================================
 #======================================================================================
 @api_view(['POST'])
 def login(request):
