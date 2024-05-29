@@ -81,19 +81,18 @@ def getDashboardData(request):
 
     # Read the Excel file
     try:
-        data = pd.read_excel('cairouniversity_final_excel.xlsx')
+        data = pd.read_excel('cairouniversity_march_known_nooutliers.xlsx')
     except FileNotFoundError:
         return JsonResponse({"error": "File not found"}, status=404)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
-    
     # Replace NaN values with empty strings
     data = data.fillna('')
     # Convert the data to JSON format
     data_json = data.to_dict(orient='records')
-    
+
     # Return the data as a JSON response
-    return Response({'success':True,'data':data_json})
+    return JsonResponse(data_json, safe=False)
 
 
 
@@ -275,14 +274,18 @@ from assessments.models import Assessment
 
 
 #TODO:Data Scientist will make a trial to see if these new rassessments addde to old excek are giving high accuracy and if so make status retrained(4)
-#TODO:Noww(get assessments that have status (reviewed))-->rightttt?????status=3???????donee
-#TODO:Add export MRN to EXCEL and remove DM,HTN&CVD
+#TODO:Noww(get assessments that have status (reviewed))
+
+
+#TODO:Rga3y kol l json response ll assessments b tarteb l excel (Assessment dol)
+
+
 @api_view(['GET'])
 def export_assessments_to_excel(request):
     try:
 
-        # Retrieve all Assessment records with status ="Reviewed"
-        assessments = Assessment.objects.filter(status=3)
+        # Retrieve all Assessment records with status=1
+        assessments = Assessment.objects.filter(status=1)
 
 
         # Convert the QuerySet to a list of dictionaries
@@ -306,8 +309,9 @@ def export_assessments_to_excel(request):
         df = pd.DataFrame(data_list)
 
         # Specify the order of columns
-        ordered_columns = ['MRN',
-                           'patient_first_bmi', 'patient_age','vte_result', 
+        ordered_columns = [ 
+                           'patient_first_bmi', 'patient_age', 'dm_result', 
+                           'htn_result', 'vte_result', 'cvd_result', 
                            'Others', 'patient_family_history', 'patient_menopausal_state', 
                            'Hormonal_Contraception', 'patient_t', 
                            'patient_n', 'patient_size_cm', 'lymphovascular_invasion_result',
@@ -319,7 +323,7 @@ def export_assessments_to_excel(request):
         df = df[ordered_columns]
 
         # Define the path to save the Excel file
-        file_path = 'cairouniversity_final_excel.xlsx'
+        file_path = 'cairouniversity_march_known_nooutliers copy.xlsx'
         sheet_name = 'Sheet1'
 
         # Check if the file exists
@@ -351,7 +355,7 @@ def export_assessments_to_excel(request):
         return JsonResponse({'error': str(e)}, status=500)
     
 #================================================================================
-
+#TODO: konty hatakhdelo dictionary{MRN:VALUR}
 @api_view(['POST'])
 def updateAssessmentToReviewed(request):
     try:
@@ -370,16 +374,9 @@ def updateAssessmentToReviewed(request):
                 assessment.save()
                 results[MRN] = 'Assessment status updated successfully.'
             except Assessment.DoesNotExist:
-                return Response({
-                'success': False,
-                'message': 'Some patients doesn\'t exist.'
-            })
+                results[MRN] = 'This patient doesn\'t exist.'
             except Exception as e:
-                return Response({
-                'success': False,
-                'message': f'An error occurred: {e}'
-            })
-                
+                results[MRN] = f'An error occurred: {e}'
 
         return Response({
             'success': True,

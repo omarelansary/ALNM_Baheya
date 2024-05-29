@@ -8,7 +8,9 @@ urlpatterns = [
     path( 'admins/getDoctors', views.getDoctors),   
     path( 'admins/getAssessments', views.getDoctors),   
     path( 'admins/getDoctors', views.getDoctors),   
-    path( 'admins/getDataScientists', views.getDataScientists),   
+    path( 'admins/getDataScientists', views.getDataScientists),  
+    path( 'admins/signUpHeadDoctor', views.signUpHeadDoctor),   
+
     
 
 

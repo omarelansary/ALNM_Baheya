@@ -79,7 +79,7 @@ from catboost import CatBoostClassifier
 def ALNM_Model(df):
     # Define the model path
     current_dir = os.path.dirname(__file__)
-    model_path = os.path.join(current_dir, 'trained_model.pkl')
+    model_path = os.path.join(current_dir, 'final_catboost_model.pkl')
     
     # Load the pickled model
     try:
@@ -90,4 +90,6 @@ def ALNM_Model(df):
         raise e
 
     y_pred = loaded_model.predict(df) 
-    return y_pred
+    y_pred_proba = loaded_model.predict_proba(df)
+    y_pred_percentage=y_pred_proba.max()
+    return y_pred,y_pred_percentage

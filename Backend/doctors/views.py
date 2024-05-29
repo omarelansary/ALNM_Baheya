@@ -32,6 +32,49 @@ from collections import defaultdict
 import pandas as pd
 from machineLearningModel.model import ALNM_Model
 
+#===================================Delete Assessments===============================
+@api_view(['POST'])
+def deleteAssessment(request):
+    try:#Extract request data
+        MRN=request.data.get('MRN')
+
+        if MRN is None:
+            return Response({
+            'success': False,
+            'message': 'MRN is missing.'
+        })
+    
+        assessment = Assessment.objects.get(MRN=MRN)
+        
+        # Check if the doctor is associated with any assessments
+        if assessment.doctors.exists():
+            # Disassociate the assessment from doctor
+            assessment.doctors.clear()
+
+        #finally delete assessments
+        assessment.delete()
+        
+      
+        return Response({
+            'success': True,
+            'message': 'Assessment is deleted successfully!', 
+        })
+    except Assessment.DoesNotExist:
+            return Response({
+                'success': False,
+                'message': 'Assessment not found.',
+            })
+    except OperationalError as e:
+        # Return an error response for database errors
+        return Response({'success': False, 'message': f'Database error: {e}'}, status=400)
+    except Exception as e:
+        # Return a generic error response for other exceptions
+        return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)
+
+
+#=====================================================================================
+
+
 @api_view(['POST'])
 def delete(request):
     try: 
@@ -573,7 +616,7 @@ def makeAssessment(request):
 
             # Create a DataFrame
             dataFramePickle = pd.DataFrame(dataForPickle)
-            prediction=ALNM_Model(dataFramePickle)
+            prediction,predictionProbability=ALNM_Model(dataFramePickle)
 
         except Exception as e:
             # Return a generic error response for other exceptions
@@ -634,6 +677,7 @@ def makeAssessment(request):
         return Response({
             'success': True,
             'prediction':prediction[0],
+            'predictionProbability':round(predictionProbability * 100, 2)
             # 'id': assessment.id,
             # 'MRN':MRN,
             # 'status':assessment.status,

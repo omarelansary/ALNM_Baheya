@@ -12,6 +12,9 @@ urlpatterns = [
     path( 'doctors/getAssessmentsByStatus', views.getAssessmentsByStatus), 
     path( 'doctors/getAssessmentsCreationDate', views.getAssessmentsCreationDate), 
     path( 'doctors/delete', views.delete), 
+    path( 'doctors/deleteAssessment', views.deleteAssessment), 
+
+    
 
     
     

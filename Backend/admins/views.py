@@ -35,6 +35,8 @@ from .models import Admin
 from doctors.models import Doctor
 from dataScientists.models import DataScientist
 from assessments.models import Assessment
+from headDoctors.models import headDoctor
+
 
 
 
@@ -203,7 +205,70 @@ def signUpDataScientists(request):
     except Exception as e:
         # Return a generic error response for other exceptions
         return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)
-#====================GETTERS==================================
+#====================SIGNUP FOR HEAD OF DOCTORS==================================
+
+@api_view(['POST'])
+def signUpHeadDoctor(request):
+    try:
+        # Get request data
+        firstName = request.data.get('firstName')
+        lastName = request.data.get('lastName')
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        # Check if all required fields are provided
+        if not firstName or not lastName or not email or not password:
+            return Response({'success': False, 'message': 'Please provide all required fields'}, status=400)
+
+        # Check if email already exists in the database
+        if headDoctor.objects.filter(email=email).exists():
+            # Email already exists
+            return Response({'success': False, 'message': 'Email already exists'}, status=400)
+        else:
+            try:
+                #TODO: Uncomment
+                # #send email to doctor
+                # my_subject='Admin Verification for Baheya ALNM Website'
+                # # my_message=f'You can now login using the following credentials:\nEmail: {email}\nPassword: {password}'
+                # my_message=f'Please login with the following credentials:\nEmail: {email}\nPassword: {password}'
+                # send_mail(
+                #     subject = my_subject,
+                #     message = my_message,
+                #     recipient_list= [email],
+                #     from_email = None,
+                # fail_silently = False)
+                # Hash the password using bcrypt
+                # hashedPassword = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+                # Hash the password using Django's default hashing algorithm
+                hashedPassword = make_password(password)
+                # # Convert the hashed password to a string
+                # hashedPassword_str = hashedPassword.decode('utf-8')
+
+                # Create a new Doctor instance
+                head = headDoctor.objects.create(
+                    firstName=firstName,
+                    lastName=lastName,
+                    email=email,
+                    password=hashedPassword
+                )
+                
+
+                # Return success response with doctor details
+                return Response({'success': True, 'headDoctor': {'id': head.id, 'firstName': head.firstName, 'lastName': head.lastName, 'email': head.email,'password':head.password}, 'message': 'Head of Doctors created successfully'})
+            except Exception as e:
+                return Response({'success': False, 'message': str(e)}, status=500)
+    except OperationalError as e:
+        # Return an error response for database errors
+        return Response({'success': False, 'message': f'Database error: {e}'}, status=400)
+    except Exception as e:
+        # Return a generic error response for other exceptions
+        return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)
+
+
+
+#======================================================================
+
+#====================================GETTERS=======================================
 @api_view(['GET'])
 def getDoctors(request):
     try:
