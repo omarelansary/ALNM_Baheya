@@ -7,20 +7,17 @@ import subprocess
 import re
 from datetime import datetime, timedelta
 
-# Function to check service status
+# Function to check service status on Windows
 def check_service_status(service_name):
     details = {}
     try:
-        result = subprocess.run(['systemctl', 'status', service_name], text=True, capture_output=True)
+        result = subprocess.run(['sc', 'query', service_name], text=True, capture_output=True)
         status_output = result.stdout
-        enabled_search = re.search(r'enabled;', status_output)
-        details['Enabled'] = "Yes" if enabled_search else "No"
-        active_since_search = re.search(r'Active:\s(\d+);', status_output)
-        details['Active'] = active_since_search.group(1) if active_since_search else "Not available"
-        tasks_search = re.search(r'Tasks:\s(\d+)', status_output)
-        details['Tasks'] = tasks_search.group(1) if tasks_search else "Not available"
-        memory_search = re.search(r'Memory:\s([\w\d.]+)', status_output)
-        details['Memory'] = memory_search.group(1) if memory_search else "Not available"
+
+        running_search = re.search(r'STATE\s+:\s+\d+\s+(\w+)', status_output)
+        details['State'] = running_search.group(1) if running_search else "Not available"
+        
+        # Add more parsing if needed for other details
         return details
     except Exception as e:
         return {"error": str(e)}
@@ -30,7 +27,6 @@ def app():
 
     st.write(check_service_status('postgresql'))
 
-   
     st.markdown("""---""")
     st.subheader("Evaluation Results")
 
@@ -73,16 +69,18 @@ def app():
 
     base = alt.Chart(medians).encode(y_axis)
 
+    awamacolor = ["#c8387d", "#ec6989", "#169DA6", "#b4f8ed"]
     bubbles = (
         alt.Chart(values)
         .transform_filter(
             (alt.datum.name != "Participant ID")
         )
-        .mark_circle(color="#6EB4FD")
+        .mark_circle()
         .encode(
             alt.X("value:Q").title(None),
             y_axis,
             alt.Size("num_ratings:Q", scale=alt.Scale(range=[100, 1000])).legend(offset=75, title="Number of ratings"),
+            color=alt.Color('name:N', scale=alt.Scale(range=awamacolor)),
             tooltip=[alt.Tooltip("num_ratings:Q", format=".0f").title("Number of ratings")],  # Ensure count is displayed as integer
         )
     )
@@ -94,10 +92,10 @@ def app():
     )
 
     texts_lo = base.mark_text(align="right", x=-5).encode(text="lo")
-    texts_hi = base.mark_text(align="left", x=255).encode(text="hi")
+    texts_hi = base.mark_text(align="left", x=455).encode(text="hi")
 
     chart = (bubbles + ticks + texts_lo + texts_hi).properties(
-        width=250, height=175
+        width=500, height=300  # Adjust width and height as needed
     ).configure_view(stroke=None)
 
     st.altair_chart(chart, use_container_width=True)
