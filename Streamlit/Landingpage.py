@@ -50,8 +50,8 @@ def main():
         elif userAuthData['role']=='Admin': 
             app = option_menu(
             menu_title='Welcome Admin, '+ str(userAuthData['username']),
-            options=['Home', 'Panel', 'Data Entry','All Patients','Analysis', 'Correlations', 'Review', 'Add Head Doctor','Add Analyst','Logout'],
-            icons=['house-fill', 'graph-up','file-earmark-medical', 'people','bar-chart-line','clipboard2-pulse-fill','binoculars','person-plus','person-plus-fill','door-open'],
+            options=['Home', 'Panel', 'All Patients','Analysis', 'Correlations', 'Review', 'Add Head Doctor','Add Analyst','Logout'],
+            icons=['house-fill', 'graph-up', 'people','bar-chart-line','clipboard2-pulse-fill','binoculars','person-plus','person-plus-fill','door-open'],
             menu_icon=['person-fill'],
             default_index=0,
             orientation='horizontal',

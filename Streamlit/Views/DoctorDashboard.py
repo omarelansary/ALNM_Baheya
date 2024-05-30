@@ -6,7 +6,7 @@ import plotly.express as px
 from math import pi
 import numpy as np
 import altair as alt
-
+from ourData.cache import LocalCache
 
 def count_yes_no_in_column(df, column_title):
     try:
@@ -17,7 +17,17 @@ def count_yes_no_in_column(df, column_title):
     except Exception as e:
         print(f"An error occurred: {e}")
         return None, None
-
+    
+def count_postive_negative_in_column(df, column_title):
+    try:
+        counts = df[column_title].value_counts()
+        positive_count = counts.get("Positive", 0)
+        negative_count = counts.get("Negative", 0)
+        return positive_count, negative_count
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None, None
+    
 def count_responses_in_column(df, column_title, categories):
     try:
         counts = df[column_title].value_counts()
@@ -156,21 +166,27 @@ def plot_histogram(df, col_name):
     ax.set_ylabel('Frequency')
     ax.set_title('Histogram')
     st.pyplot(fig)
-def horizontal_bar_chart(data, categorical_column):
-    # Grouping data by the categorical column and counting occurrences
-    grouped_data = data[categorical_column].value_counts()
-    colors = ['#cc8562', '#c08497', '#3a4440']
-    # Plotting horizontal bar chart
-    fig, ax = plt.subplots()
-    ax.barh(grouped_data.index, grouped_data.values,color=colors)
-    
-    # Customizing labels and title
-    ax.set_xlabel('Count')
-    ax.set_ylabel(categorical_column)
-    ax.set_title('Horizontal Bar Chart')
-    
-    # Displaying the plot in Streamlit
-    st.pyplot(fig)     
+def horizontal_bar_chart(chart_title, x_title, y_title, data, categorical_column):
+    try:
+        # Grouping data by the categorical column and counting occurrences
+        grouped_data = data[categorical_column].value_counts()
+        
+        # Plotting horizontal bar chart
+        fig = go.Figure(go.Bar(y=grouped_data.index, x=grouped_data.values, orientation='h', marker=dict(color='#cc8562')))
+        
+        # Update layout with title
+        fig.update_layout(
+            title=chart_title,
+            xaxis=dict(title=x_title),
+            yaxis=dict(title=y_title)
+        )
+        
+        # Displaying the chart
+        st.plotly_chart(fig, use_container_width=True)
+        
+    except Exception as e:
+        print(f"An error occurred: {e}")
+   
 def missing_data_bar_chart(data):
     colors = ['#cc8562', '#c08497', '#3a4440']
     # Calculate missing values for each column
@@ -187,93 +203,80 @@ def missing_data_bar_chart(data):
     
     # Displaying the plot in Streamlit
     st.pyplot(fig)     
-def plot_histogram(df, col_name):
-    # Check if the column exists in the DataFrame
-    if col_name not in df.columns:
-        st.error(f"Column '{col_name}' does not exist in the DataFrame.")
-        return
-    
-    # Check if the column is numerical
-    if not pd.api.types.is_numeric_dtype(df[col_name]):
-        st.error(f"Column '{col_name}' is not a numerical column.")
-        return
-    colors = ['#cc8562', '#c08497', '#3a4440']
-    # Plotting the histogram
-    st.write(f"Histogram for column: {col_name}")
-    fig, ax = plt.subplots()
-    ax.hist(df[col_name].dropna(), bins=30, edgecolor='k',color=colors[1])
-    ax.set_xlabel(col_name)
-    ax.set_ylabel('Frequency')
-    st.pyplot(fig)  
-def plot_interactive_histogram(df, col_name):
-    # Check if the column exists in the DataFrame
-    if col_name not in df.columns:
-        st.error(f"Column '{col_name}' does not exist in the DataFrame.")
-        return
-    
-    # Check if the column is numerical
-    if not pd.api.types.is_numeric_dtype(df[col_name]):
-        st.error(f"Column '{col_name}' is not a numerical column.")
-        return
+def plot_histogram(chart_title, x_title, y_title, data, col_name):
+    try:
+        # Check if the column exists in the DataFrame
+        if col_name not in data.columns:
+            st.error(f"Column '{col_name}' does not exist in the DataFrame.")
+            return
+        
+        # Check if the column is numerical
+        if not pd.api.types.is_numeric_dtype(data[col_name]):
+            st.error(f"Column '{col_name}' is not a numerical column.")
+            return
+        
+        # Plotting the histogram
+        fig = go.Figure(go.Histogram(x=data[col_name], marker=dict(color='#cc8562')))
+        
+        # Update layout with title
+        fig.update_layout(
+            title=chart_title,
+            xaxis=dict(title=x_title),
+            yaxis=dict(title=y_title)
+        )
+        
+        # Display the chart
+        st.plotly_chart(fig, use_container_width=True)
+        
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
-    st.write(f"Histogram for column: {col_name}")
+def draw_bar_chart(chart_title, x_title, y_title, categories, values):
+    try:
+        # Define colors from the palette
+        colors = ['#b7dbda', '#b7bfbe', '#d7c8e9']
+        colors = ['#d8e2dc', '#9d8189', '#ffe5d9']
+        colors = ['#cc8562', '#c08497', '#3a4440']
+        
+        # Create the bar chart
+        fig = go.Figure(go.Bar(x=categories, y=values, marker=dict(color=colors)))
 
-    # Define colors
-    colors = ['#cc8562', '#c08497', '#3a4440']
+        # Update layout with title
+        fig.update_layout(
+            title=chart_title,
+            xaxis=dict(title=x_title),
+            yaxis=dict(title=y_title),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+        )
 
-    # Create an Altair chart
-    base = alt.Chart(df).mark_bar(color=colors[0]).encode(
-        y='count()',
-        tooltip=['count()']
-    ).properties(
-        width=600,
-        height=100
-    )
+        # Display the chart
+        st.plotly_chart(fig, use_container_width=True)
 
-    brush = alt.selection_interval(encodings=['x'])
-
-    upper = base.encode(
-        x=alt.X(f'{col_name}:Q', bin=alt.Bin(maxbins=30), scale=alt.Scale(domain=brush))
-    )
-
-    lower = base.encode(
-        x=alt.X(f'{col_name}:Q', bin=alt.Bin(maxbins=30))
-    ).add_params(brush)
-
-    st.altair_chart(alt.vconcat(upper, lower))
-     
+    except Exception as e:
+        print(f"An error occurred: {e}")
+def count_tumor_sites(df):
+    # Count occurrences of each tumor site
+    tumor_site_counts = df['Site'].value_counts().reset_index()
+    tumor_site_counts.columns = ['site', 'cases']
+    return tumor_site_counts
 def app():
     st.title("Physician Dashboard")
-    
-    file_path = "ourData/cairouniversity_march_known_nooutliers.xlsx"
-    file_site_path="ourData/mohraData.xlsx"
+    Cache = LocalCache()
 
     try:
-        df = pd.read_excel(file_path)
-        df_site = pd.read_excel(file_site_path)
+        df = Cache.get_data_from_excel()
         
-        col11,col22=st.columns([3, 1])    
-        # Arrange charts in rows
+        col11, col22 = st.columns([3, 1])
+        
         with col11:
-            
-            col1a,col2a=st.columns(2)
-            # st.header('Radar Plot Generator')
-            # radar_plot(df, "First_BMI", "size_cm" , "Age") 
+            col1a, col2a = st.columns(2)
             with col1a:
-             st.header('Grade Distribution')   
-             horizontal_bar_chart(df, "Grade") 
+                horizontal_bar_chart("Grade Distribution", "Count", "Grade", df, "Grade")
             with col2a:
-                st.header('Family History Distribution')
-                horizontal_bar_chart(df, "family_history")
-            # missing_data_bar_chart(df)
-            # st.header("Pareto Chart")
-            # st.write("This is the Pareto chart:")
-            # # Call the function to draw Pareto chart
-            # draw_pareto_chart(df, "Tumor_Type")  # Change "First_BMI" to any column you want to analyze
-        st.header("Bar Charts and Pie Charts")
-        st.write("These are the bar charts and pie charts:")
+                horizontal_bar_chart("Family History Distribution", "Count", "Family History", df, "family_history")
+
+        st.header("Bar Charts:")
         
-        # Draw bar charts and pie charts
         categories1 = ["Post-M", "Pre-M", "Unrecorded"]
         counts1 = count_responses_in_column(df, "Menopausal_state", categories1)
         
@@ -285,104 +288,96 @@ def app():
         
         categories4 = ["N0", "N1", "N2", "Nx"]
         counts4 = count_responses_in_column(df, "N", categories4)
+        
+        categories5 = ["T1", "T2", "T3", "T4", "Tis"]
+        counts5 = count_responses_in_column(df, "T", categories5)
+        
         col1, col2, col3, col4 = st.columns(4)
 
         with col1:
-            st.subheader("Menopausal State Distribution")
             draw_bar_chart("Menopausal State Distribution", "Menopausal State", "Count", categories1, counts1)
-            st.subheader("First BMI State Distribution")
-            plot_interactive_histogram(df, "First_BMI")
+
         with col2:
-            st.subheader("Unilateral Bilateral Distribution")
             draw_bar_chart("Unilateral Bilateral Distribution", "Unilateral Bilateral", "Count", categories2, counts2)
-            st.subheader("Age Distribution")
-            plot_interactive_histogram(df, "Age")
-        
+
         with col3:
-            st.subheader("T Distribution")
-            st.subheader(" ")
-            draw_bar_chart("T", "T", "Count", categories3, counts3)
-            st.subheader("Tumer size Distribution")
-            plot_interactive_histogram(df, "size_cm")
-        
+            draw_bar_chart("T Distribution","t", "Count", categories5, counts5)
+            # draw_bar_chart("Family History Distribution", "Family History", "Count", categories3, counts3)
+
         with col4:
-            st.subheader("N Distribution")
-            st.subheader(" ")
-            draw_bar_chart("N Distribution", "N", "Count", categories4, counts4)
-            st.subheader("KI67 Distribution")
-            plot_interactive_histogram(df, "KI67")
-        
-        # Display pie charts in a row
+            draw_bar_chart("N Distribution","N", "Count", categories4, counts4)
+        st.header("Histograms:")
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            plot_histogram("First BMI State Distribution", "First BMI", "Frequency", df, "First_BMI")
+
+        with col2:
+            plot_histogram("Age Distribution", "Age", "Frequency", df, "Age")
+
+        with col3:
+            plot_histogram("Tumor Size Distribution", "Tumor Size (cm)", "Frequency", df, "size_cm")
+
+        with col4:
+            plot_histogram("KI67 Distribution", "KI67", "Frequency", df, "KI67")
         st.header("Pie Charts")
-        st.write("These are the pie charts:")
         pie_col1, pie_col2, pie_col3, pie_col4 = st.columns(4)
         custom_colors = ['#ffcad4', '#3a4440']
-        # Pie chart for CVD
-        with pie_col1:
-            column_title = "CVD"
-            labels = ['No', 'Yes']
-            yes_count, no_count = count_yes_no_in_column(df, column_title)
-            values = [no_count, yes_count]
-            # custom_colors = ['#b7dbda', '#b7bfbe']
-            # Create the Pie chart with custom colors
-            ig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.3, marker=dict(colors=custom_colors))])
-            # Update layout and display the chart
-            ig.update_layout(
-                title=f'{column_title} Yes/No Distribution',
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-            )
-            st.plotly_chart(ig, use_container_width=True)
-                        
-        # Pie chart for DM
-        with pie_col2:
-            column_title = "DM"
-            labels = ['No', 'Yes']
-            yes_count, no_count = count_yes_no_in_column(df, column_title)
-            values = [no_count, yes_count]
-            # custom_colors = ['#ffe5d8', '#9e8189']
-            # Create the Pie chart with custom colors
-            ig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.3, marker=dict(colors=custom_colors))])
-            # Update layout and display the chart
-            ig.update_layout(
-                title=f'{column_title} Yes/No Distribution',
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-            )
-            st.plotly_chart(ig, use_container_width=True)
         
-        # Pie chart for HTN
-        with pie_col3:
-            column_title = "HTN"
+        with pie_col1:
+            column_title = "Lymphovascular_Invasion"
             labels = ['No', 'Yes']
             yes_count, no_count = count_yes_no_in_column(df, column_title)
             values = [no_count, yes_count]
-            # custom_colors = ['#b7dbda', '#b7bfbe']
-            # Create the Pie chart with custom colors
             ig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.3, marker=dict(colors=custom_colors))])
-            # Update layout and display the chart
             ig.update_layout(
-                title=f'{column_title} Yes/No Distribution',
+                title='Lymphovascular Yes/No Distribution',
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
             )
             st.plotly_chart(ig, use_container_width=True)
-        # Pie chart for VTE
-        with pie_col4:
+
+        with pie_col2:
             column_title = "VTE"
             labels = ['No', 'Yes']
             yes_count, no_count = count_yes_no_in_column(df, column_title)
             values = [no_count, yes_count]
-            # custom_colors = ['#b7dbda', '#b7bfbe']
-            # Create the Pie chart with custom colors
             ig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.3, marker=dict(colors=custom_colors))])
-            # Update layout and display the chart
             ig.update_layout(
                 title=f'{column_title} Yes/No Distribution',
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
             )
             st.plotly_chart(ig, use_container_width=True)
+
+        with pie_col3:
+            column_title = "PR"
+            labels = ['Negative', 'Positive']
+            positive_count, negtive_count = count_postive_negative_in_column(df, column_title)
+            values = [positive_count, negtive_count]
+            ig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.3, marker=dict(colors=custom_colors))])
+            ig.update_layout(
+                title=f'{column_title} Positive/Negative Distribution',
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+            )
+            st.plotly_chart(ig, use_container_width=True)
+        
+        with pie_col4:
+            column_title = "ER"
+            labels = ['Negative', 'Positive']
+            positive_count, negtive_count = count_postive_negative_in_column(df, column_title)
+            values = [positive_count, negtive_count]
+            ig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.3, marker=dict(colors=custom_colors))])
+            ig.update_layout(
+                title=f'{column_title} Positive/Negative Distribution',
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+            )
+            st.plotly_chart(ig, use_container_width=True)
+        
+
+        ###############
         with col22:    
             # Display dataframe
-            st.header("Tumer Location")
+            st.header("Tumor Location")
             st.write(" ")
+            df_site = count_tumor_sites(df)
             st.dataframe(df_site,
                         column_order=("site", "cases"),
                         hide_index=True,
@@ -393,11 +388,12 @@ def app():
                             ),
                             "cases": st.column_config.ProgressColumn(
                                 "cases",
-                                format="%f",
+                                format="%d",  # Display integer format
                                 min_value=0,
-                                max_value=max(df_site.cases),
+                                max_value=max(df_site['cases']),  # Max value for progress bar
                             )}
                         )
-              
+
+        ############
     except Exception as e:
-        st.error(f"An error occurred: {e}")
+        st.error(f"An error occurred: {e}")
