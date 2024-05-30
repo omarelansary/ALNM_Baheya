@@ -33,7 +33,7 @@ import os
 # from openpyxl import load_workbook
 import openpyxl
 from openpyxl.utils.dataframe import dataframe_to_rows
-
+from assessments.serializers import AssessmentSerializer
 
 # Create your views here.
 # @api_view(['GET'])
@@ -70,6 +70,43 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 #     except Exception as e:
 #         # Return a generic error response for other exceptions
 #         return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)
+#================GET ASSESSMENTS BY STATUS===================================
+@api_view(['POST'])
+def getAllAssessmentsByStatus(request):
+    try:
+        status=request.data.get('status')
+
+        if status is None:
+            return Response({
+            'success': False,
+            'message': 'Status is missing.'
+        })
+        
+        # Retrieve all Assessment records with status ="Reviewed"
+        assessments = Assessment.objects.filter(status=status)
+
+        #serialize assessments
+        serialized_assessments=AssessmentSerializer(assessments, many=True)
+        
+      
+        return Response({
+            'success': True,
+            'assessments': serialized_assessments.data, 
+        })
+    except Assessment.DoesNotExist:
+        return Response({
+            'success': False,
+            'message': 'Doctor not found.',
+        })
+    except OperationalError as e:
+        # Return an error response for database errors
+        return Response({'success': False, 'message': f'Database error: {e}'}, status=400)
+    except Exception as e:
+        # Return a generic error response for other exceptions
+        return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)
+
+#============================================================================
+
 
 ###Trial========================================
 from django.http import JsonResponse
