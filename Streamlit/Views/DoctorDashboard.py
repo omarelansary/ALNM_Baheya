@@ -6,7 +6,9 @@ import plotly.express as px
 from math import pi
 import numpy as np
 import altair as alt
-from ourData.cache import LocalCache
+
+awamacolor=["#c8387d" , "#ec6989","#169DA6","#b4f8ed"]
+text_color = '#2C3E50'  # Customize text color as needed
 
 def count_yes_no_in_column(df, column_title):
     try:
@@ -17,7 +19,6 @@ def count_yes_no_in_column(df, column_title):
     except Exception as e:
         print(f"An error occurred: {e}")
         return None, None
-    
 def count_postive_negative_in_column(df, column_title):
     try:
         counts = df[column_title].value_counts()
@@ -51,7 +52,7 @@ def radar_plot(df, col1, col2, col3):
 
         # Define colors
         colors = ['#cc8562', '#c08497', '#3a4440']
-
+        awamacolor=["#c8387d" , "#ec6989","#169DA6"]
         # Create radar chart
         fig = go.Figure()
 
@@ -60,7 +61,7 @@ def radar_plot(df, col1, col2, col3):
             theta=categories,
             fill='toself',
             name='Average',
-            line=dict(color=colors[0])
+            line=dict(color=awamacolor[0])
         ))
 
         fig.update_layout(
@@ -87,7 +88,7 @@ def draw_bar_chart(chart_title, x_title, y_title, categories, values):
         
         # Create the bar chart
         plt.figure(figsize=(8, 6))
-        bars = plt.bar(categories, values, color=colors)
+        bars = plt.bar(categories, values, color=awamacolor)
 
         # Add title and labels
         plt.title(chart_title)
@@ -96,7 +97,7 @@ def draw_bar_chart(chart_title, x_title, y_title, categories, values):
 
         # Apply custom colors to bars
         for i, bar in enumerate(bars):
-            bar.set_color(colors[i % len(colors)])
+            bar.set_color(colors[i % len(awamacolor)])
 
         # Save the plot as an image
         plt.savefig('bar_chart.png')
@@ -161,7 +162,7 @@ def plot_histogram(df, col_name):
     st.write(f"Histogram for column: {col_name}")
     colors = ['#cc8562', '#c08497', '#3a4440']
     fig, ax = plt.subplots()
-    ax.hist(df[col_name].dropna(), bins=30, edgecolor='k', color=colors[0])
+    ax.hist(df[col_name].dropna(), bins=30, edgecolor='k', color=awamacolor[0])
     ax.set_xlabel(col_name)
     ax.set_ylabel('Frequency')
     ax.set_title('Histogram')
@@ -170,19 +171,27 @@ def horizontal_bar_chart(chart_title, x_title, y_title, data, categorical_column
     try:
         # Grouping data by the categorical column and counting occurrences
         grouped_data = data[categorical_column].value_counts()
-        
+
+        # Ensure there are enough colors for the bars
+        colors = awamacolor * (len(grouped_data) // len(awamacolor) + 1)
+        colors = colors[:len(grouped_data)]
+
         # Plotting horizontal bar chart
-        fig = go.Figure(go.Bar(y=grouped_data.index, x=grouped_data.values, orientation='h', marker=dict(color='#cc8562')))
-        
+        fig = go.Figure(go.Bar(y=grouped_data.index, x=grouped_data.values, orientation='h', marker=dict(color=colors)))
+
         # Update layout with title
         fig.update_layout(
             title=chart_title,
             xaxis=dict(title=x_title),
-            yaxis=dict(title=y_title)
+            yaxis=dict(title=y_title),
+            font=dict(color=text_color)  # Set text color
         )
-        
+
         # Displaying the chart
         st.plotly_chart(fig, use_container_width=True)
+
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
         
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -194,7 +203,7 @@ def missing_data_bar_chart(data):
     
     # Plotting horizontal bar chart
     fig, ax = plt.subplots()
-    ax.barh(missing_values.index, missing_values.values, color=colors)
+    ax.barh(missing_values.index, missing_values.values, color=awamacolor)
     
     # Customizing labels and title
     ax.set_xlabel('Number of Missing Values')
@@ -216,7 +225,7 @@ def plot_histogram(chart_title, x_title, y_title, data, col_name):
             return
         
         # Plotting the histogram
-        fig = go.Figure(go.Histogram(x=data[col_name], marker=dict(color='#cc8562')))
+        fig = go.Figure(go.Histogram(x=data[col_name], marker=dict(color='#169DA6')))
         
         # Update layout with title
         fig.update_layout(
@@ -239,7 +248,7 @@ def draw_bar_chart(chart_title, x_title, y_title, categories, values):
         colors = ['#cc8562', '#c08497', '#3a4440']
         
         # Create the bar chart
-        fig = go.Figure(go.Bar(x=categories, y=values, marker=dict(color=colors)))
+        fig = go.Figure(go.Bar(x=categories, y=values, marker=dict(color=awamacolor)))
 
         # Update layout with title
         fig.update_layout(
@@ -261,10 +270,11 @@ def count_tumor_sites(df):
     return tumor_site_counts
 def app():
     st.title("Physician Dashboard")
-    Cache = LocalCache()
+    
+    file_path = "cairouniversity_march_known_nooutliers (1).xlsx"
 
     try:
-        df = Cache.get_data_from_excel()
+        df = pd.read_excel(file_path)
         
         col11, col22 = st.columns([3, 1])
         
@@ -283,7 +293,7 @@ def app():
         categories2 = ["Unilateral", "Bilateral"]
         counts2 = count_responses_in_column(df, "Unilateral_Bilateral", categories2)
         
-        categories3 = ["Yes - BC","Yes - both","Yes - other cancers", "No","Unrecorded"]
+        categories3 = ["Yes - BC", "Yes - both", "Yes - other cancers", "No", "Unrecorded"]
         counts3 = count_responses_in_column(df, "family_history", categories3)
         
         categories4 = ["N0", "N1", "N2", "Nx"]
@@ -322,37 +332,39 @@ def app():
         st.header("Pie Charts")
         pie_col1, pie_col2, pie_col3, pie_col4 = st.columns(4)
         custom_colors = ['#ffcad4', '#3a4440']
-        
+        awamacolorpeichart=[ "#ec6989","#169DA6"]  
+        awamacolorpeichart3aks=[ "#c8387d" ,"#b4f8ed"]
+
         with pie_col1:
             column_title = "Lymphovascular_Invasion"
             labels = ['No', 'Yes']
             yes_count, no_count = count_yes_no_in_column(df, column_title)
             values = [no_count, yes_count]
-            ig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.3, marker=dict(colors=custom_colors))])
+            ig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.3, marker=dict(colors=awamacolorpeichart))])
             ig.update_layout(
                 title='Lymphovascular Yes/No Distribution',
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
             )
             st.plotly_chart(ig, use_container_width=True)
-
+        
         with pie_col2:
             column_title = "VTE"
             labels = ['No', 'Yes']
             yes_count, no_count = count_yes_no_in_column(df, column_title)
             values = [no_count, yes_count]
-            ig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.3, marker=dict(colors=custom_colors))])
+            ig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.3, marker=dict(colors=awamacolorpeichart))])
             ig.update_layout(
                 title=f'{column_title} Yes/No Distribution',
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
             )
             st.plotly_chart(ig, use_container_width=True)
-
+        
         with pie_col3:
             column_title = "PR"
             labels = ['Negative', 'Positive']
             positive_count, negtive_count = count_postive_negative_in_column(df, column_title)
             values = [positive_count, negtive_count]
-            ig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.3, marker=dict(colors=custom_colors))])
+            ig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.3, marker=dict(colors=awamacolorpeichart))])
             ig.update_layout(
                 title=f'{column_title} Positive/Negative Distribution',
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
@@ -364,14 +376,12 @@ def app():
             labels = ['Negative', 'Positive']
             positive_count, negtive_count = count_postive_negative_in_column(df, column_title)
             values = [positive_count, negtive_count]
-            ig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.3, marker=dict(colors=custom_colors))])
+            ig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.3, marker=dict(colors=awamacolorpeichart))])
             ig.update_layout(
                 title=f'{column_title} Positive/Negative Distribution',
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
             )
             st.plotly_chart(ig, use_container_width=True)
-        
-
         ###############
         with col22:    
             # Display dataframe
@@ -396,4 +406,5 @@ def app():
 
         ############
     except Exception as e:
-        st.error(f"An error occurred: {e}")
+        st.error(f"An error occurred: {e}")
+

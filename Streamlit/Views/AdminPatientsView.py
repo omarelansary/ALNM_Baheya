@@ -2,6 +2,7 @@ import pandas as pd  # pip install pandas openpyxl
 import plotly.express as px  # pip install plotly-express
 import streamlit as st  # pip install streamlit
 from ourData.cache import LocalCache
+awamacolor=["#c8387d" , "#ec6989","#169DA6","#b4f8ed"]
 
 def app():
 
@@ -83,7 +84,7 @@ def app():
         y="Tumor_Type",
         orientation="h",
         title="<b>Patients by Tumor Type</b>",
-        color_discrete_sequence=["#E75480"] * len(patients_by_tumor_type),  # Pink color
+        color_discrete_sequence=["#169DA6"] * len(patients_by_tumor_type),  # Pink color
         template="plotly_white",
     )
     fig_tumor_type.update_layout(
@@ -98,7 +99,7 @@ def app():
         values=tumor_grade_distribution.values,
         names=tumor_grade_distribution.index,
         title="<b>Menopausal state Distribution</b>",
-        color_discrete_sequence=["#FFC0CB", "#FF69B4", "#FF1493", "#DB7093", "#C71585"]  # Pink color
+        color_discrete_sequence=["#c8387d" , "#ec6989","#169DA6","#b4f8ed", "#C71585"]  # Pink color
     )
     fig_grade.update_layout(
         plot_bgcolor="rgba(0,0,0,0)",
