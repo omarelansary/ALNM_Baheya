@@ -60,7 +60,7 @@ def app():
     image_url_confusion_matrix_last = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/confusion_matrix_last.png"
 
     # st.image(image_url_HMAP_NEW)
-    color = ['#E74C3C', '#781F16']
+    color = ["#169DA6","#b4f8ed"]
     donut_chart_Accuracy = make_donut(accurcy, 'Accuracy',color)
     donut_chart_weighted = make_donut(weighted, 'Outbound Migration',color)
     donut_chart_Macro = make_donut(macro, 'Accuracy',color)
@@ -84,11 +84,14 @@ def app():
         st.write('Auc Score')
         st.altair_chart(donut_chart_Auc) 
     col11,col22=st.columns(2)  
-    with col11:    
-        st.image(image_url_Mean_ROC_AUC_Curve1)
-        st.markdown("<br><br><br><br>", unsafe_allow_html=True)
+    with col11:  
+        with open('mean_roc.html', 'r', encoding='utf-8') as f:
+          html_content = f.read()
+        st.components.v1.html(html_content, height=600)  
+        # st.image(image_url_Mean_ROC_AUC_Curve1)
+        # st.markdown("<br><br><br><br>", unsafe_allow_html=True)
 
-        st.image(image_url_PCA_Analysis)                 
+        # st.image(image_url_PCA_Analysis)                 
         
     with col22:    
         st.image(image_url_Mean_ROC_AUC_Curve2) 

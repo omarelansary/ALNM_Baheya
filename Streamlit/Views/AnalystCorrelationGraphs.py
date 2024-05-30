@@ -21,7 +21,7 @@ def radar_plot(df, col1, col2, col3):
         values = normalized_df.mean().tolist()
 
         # Define colors
-        colors = ['#cc8562', '#c08497', '#3a4440']
+        colors = ["#c8387d", "#169DA6","#b4f8ed"]
 
         # Create radar chart
         fig = go.Figure()
