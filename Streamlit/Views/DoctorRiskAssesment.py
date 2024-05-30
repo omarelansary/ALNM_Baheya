@@ -362,8 +362,6 @@ def editing_form(df, selected_mrn, userAuthData):
 
 
 def app(userAuthData):
-    Network = Networking()
-    cacheInMemory = LocalCache()
     Cache = LocalCache()
     df = Cache.get_assessment_byDocId(userAuthData['id'])
     st.sidebar.title("Breast Cancer Metastasis Risk Prediction")
@@ -378,8 +376,11 @@ def app(userAuthData):
         st.write(df)
     elif choice == "Choose Patient MRN":
         st.title(":clipboard: Breast Cancer Metastasis Risk Prediction ")
-        mrn_list = df["MRN"].unique().tolist()
-        selected_mrn = st.sidebar.selectbox("Select Patient MRN", mrn_list)
-        editing_form(df, selected_mrn, userAuthData)
+        if not df.empty:
+            mrn_list = df["MRN"].unique().tolist()
+            selected_mrn = st.sidebar.selectbox("Select Patient MRN", mrn_list)
+            editing_form(df, selected_mrn, userAuthData)
+        else:
+            st.write('No patients added yet')    
 
 
