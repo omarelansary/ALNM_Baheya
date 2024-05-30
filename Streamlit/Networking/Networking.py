@@ -14,15 +14,16 @@ class Networking():
                         "MRN": mrn,
                         "medical_info":data }
         response = requests.post('http://127.0.0.1:8000/api/doctors/makeAssessment', json=patient_data)
+        print(response)
         if response.status_code == 200:
             data = response.json()
             if data.get('success'):
                 return data
             else:
-                st.error(data.get('message'))
+                st.error(data['message'])
                 #raise Exception(data.get('message'))
         else:
-            raise Exception(f"HTTP Error: {response.status_code}")
+            raise Exception(f"HTTP Error: {response.json()['message']}")
         
     def post_delete_assesment(self,selectedMRN):
         patient_data = {"MRN": selectedMRN}

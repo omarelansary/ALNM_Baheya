@@ -17,34 +17,34 @@ def app(userAuthData):
         st.sidebar.header("Please Filter Here:")
         tumor_grade = st.sidebar.multiselect(
             "Select the Tumor Grade:",
-            options=df["Grade"].unique(),
-            default=df["Grade"].unique()
+            options=df["patient_grade"].unique(),
+            default=df["patient_grade"].unique()
         )
 
         family_history = st.sidebar.multiselect(
             "Select the Family History:",
-            options=df["family_history"].unique(),
-            default=df["family_history"].unique(),
+            options=df["patient_family_history"].unique(),
+            default=df["patient_family_history"].unique(),
         )
 
         tumor_location = st.sidebar.multiselect(
             "Select the Tumor Location:",
-            options=df["Site"].unique(),
-            default=df["Site"].unique()
+            options=df["patient_site"].unique(),
+            default=df["patient_site"].unique()
         )
 
         t = st.sidebar.multiselect(
             "Select the T:",
-            options=df["T"].unique(),
-            default=df["T"].unique()
+            options=df["patient_t"].unique(),
+            default=df["patient_t"].unique()
         )
         n = st.sidebar.multiselect(
             "Select the N:",
-            options=df["N"].unique(),
-            default=df["N"].unique()
+            options=df["patient_n"].unique(),
+            default=df["patient_n"].unique()
         )
         df_selection = df.query(
-            "(`Grade` == @tumor_grade) & (`family_history` == @family_history) & (`Site` == @tumor_location) & (T == @t) & (N == @n)"
+            "(`patient_grade` == @tumor_grade) & (`patient_family_history` == @family_history) & (`patient_site` == @tumor_location) & (patient_t == @t) & (patient_n == @n)"
         )
 
         # Check if the dataframe is empty:
@@ -58,8 +58,8 @@ def app(userAuthData):
 
         # TOP KPI's (example KPIs, update with relevant columns)
         total_patients = len(df_selection)
-        average_age = round(df_selection["Age"].mean(), 1)
-        most_common_location = df_selection["Site"].mode()[0]
+        average_age = round(df_selection["patient_age"].mean(), 1)
+        most_common_location = df_selection["patient_site"].mode()[0]
 
         left_column, middle_column, right_column = st.columns(3)
         with left_column:
@@ -75,12 +75,12 @@ def app(userAuthData):
         st.markdown("""---""")
 
         # Bar Chart for Patients by Tumor Type
-        patients_by_tumor_type = df_selection["Tumor_Type"].value_counts().reset_index()
-        patients_by_tumor_type.columns = ["Tumor_Type", "Count"]
+        patients_by_tumor_type = df_selection["patient_tumor_type"].value_counts().reset_index()
+        patients_by_tumor_type.columns = ["patient_tumor_type", "Count"]
         fig_tumor_type = px.bar(
             patients_by_tumor_type,
             x="Count",
-            y="Tumor_Type",
+            y="patient_tumor_type",
             orientation="h",
             title="<b>Patients by Tumor Type</b>",
             color_discrete_sequence=["#169DA6"] * len(patients_by_tumor_type),  # Pink color
@@ -92,7 +92,7 @@ def app(userAuthData):
         )
 
         # Example Pie Chart
-        tumor_grade_distribution = df_selection["Menopausal_state"].value_counts()
+        tumor_grade_distribution = df_selection["patient_menopausal_state"].value_counts()
         fig_grade = px.pie(
             tumor_grade_distribution,
             values=tumor_grade_distribution.values,
@@ -107,10 +107,10 @@ def app(userAuthData):
         # Example Box Plot
         fig_box = px.box(
             df_selection,
-            x="Site",
-            y="Age",
+            x="patient_site",
+            y="patient_age",
             title="<b>Age Distribution by Tumor Location</b>",
-            color="Site",
+            color="patient_site",
             color_discrete_sequence=px.colors.qualitative.Pastel  # Use a pastel color palette
         )
         fig_box.update_layout(
