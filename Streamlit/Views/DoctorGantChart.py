@@ -37,12 +37,22 @@ df_appointments = pd.DataFrame(appointment_data)
 df_appointments['Start'] = pd.to_datetime(df_appointments['Start'])
 df_appointments['End'] = pd.to_datetime(df_appointments['End'])
 
+# Define color palette
+awamacolor = ["#c8387d", "#ec6989", "#169DA6", "#b4f8ed"]
+
 def app():
     # Choose the doctor to display risk prediction data for
     doctor_name = 'Dr Ahmed'
     
     # Create a Gantt chart for the selected doctor's appointments
-    fig = px.timeline(df_appointments, x_start='Start', x_end='End', y='Patient', title="Doctor's Appointments")
+    fig = px.timeline(
+        df_appointments, 
+        x_start='Start', 
+        x_end='End', 
+        y='Patient', 
+        title="Doctor's Appointments",
+        color_discrete_sequence=awamacolor
+    )
     fig.update_yaxes(categoryorder='total ascending')
     fig.update_layout(xaxis_title='Date', yaxis_title='Patient')
 
@@ -63,10 +73,10 @@ def app():
         # Create and display Altair chart
         brush = alt.selection_interval(encodings=['x'])
         
-        base = alt.Chart(df_doctor).mark_area().encode(
+        base = alt.Chart(df_doctor).mark_area(color=awamacolor[0]).encode(
             x=alt.X('date:T', title='Date'),
             y=alt.Y('Filled_Risk_Prediction_Per_Day:Q', title='Filled Risk Prediction'),
-            
+            color=alt.Color('name:N', scale=alt.Scale(range=awamacolor))
         ).properties(
             width=600,
             height=200
@@ -81,4 +91,3 @@ def app():
         ).add_params(brush)
         
         st.altair_chart(upper & lower)
-
