@@ -181,7 +181,7 @@ def editing_form(df, selected_mrn, userAuthData):
         Network = Networking()
         selected_row = df[df["MRN"] == selected_mrn].iloc[0]
         form_key = f"form_{selected_mrn}"
-        modal = Modal("Confirm Deletion", key="confirm_deletion")
+        confirmDelete_modal = Modal("Confirm Deletion", key="confirm_deletion")
         edited_patient_data=None
         predectionResult=None
         predection_modal = Modal("Breast Cancer Metastasis Risk Prediction Result", key="result-modal", padding=10, max_width=430)
@@ -258,30 +258,30 @@ def editing_form(df, selected_mrn, userAuthData):
                     st.success('Saved Successfully')
             except Exception as e:
                 st.error(f"An error occurred: {e}")   
-
+        
         if delete_button:
-            modal.open()
+            confirmDelete_modal.open()
 
-            if modal.is_open():
-                with modal.container():
-                    st.markdown(
-                        """
-                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                            <h1 style="color: green; font-size: 28px; font-family: 'Open Sans', sans-serif;">Are you sure you want to delete the selected data?</h1>
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
-                    if st.button("Confirm"):
-                        # Logic to delete the selected data
-                        df.drop(df[df["MRN"] == selected_mrn].index, inplace=True)
-                        modal.close()
-            try:
-                deleteResponseResult =Network.post_delete_assesment(selected_mrn)
-                if deleteResponseResult:
-                    st.success('Deleted Successfully') 
-            except Exception as e:
-                st.error(f"An error occurred: {e}")   
+        if confirmDelete_modal.is_open():
+            with confirmDelete_modal.container():
+                st.markdown(
+                    """
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                        <h1 style="color: green; font-size: 28px; font-family: 'Open Sans', sans-serif;">Are you sure you want to delete the selected data?</h1>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+                if st.button("Confirm"):
+                    # Logic to delete the selected data
+                    df.drop(df[df["MRN"] == selected_mrn].index, inplace=True)
+                    confirmDelete_modal.close()
+        try:
+            deleteResponseResult =Network.post_delete_assesment(selected_mrn)
+            if deleteResponseResult:
+                st.success('Deleted Successfully') 
+        except Exception as e:
+            st.error(f"An error occurred: {e}")   
 
   
         
