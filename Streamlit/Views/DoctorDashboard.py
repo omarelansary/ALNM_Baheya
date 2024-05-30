@@ -6,6 +6,7 @@ import plotly.express as px
 from math import pi
 import numpy as np
 import altair as alt
+from ourData.cache import LocalCache
 
 awamacolor=["#c8387d" , "#ec6989","#169DA6","#b4f8ed"]
 text_color = '#2C3E50'  # Customize text color as needed
@@ -270,11 +271,11 @@ def count_tumor_sites(df):
     return tumor_site_counts
 def app():
     st.title("Physician Dashboard")
-    
-    file_path = "cairouniversity_march_known_nooutliers (1).xlsx"
+    Cache = LocalCache()
+
 
     try:
-        df = pd.read_excel(file_path)
+        df = Cache.get_data_from_excel()
         
         col11, col22 = st.columns([3, 1])
         

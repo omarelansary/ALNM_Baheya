@@ -10,6 +10,7 @@ import Views.AdminAddAnalyst, Views.AdminAddDoctor, Views.AdminAddHeadDoctor
 import Views.AnalystDashboard, Views.AnalystReview, Views.AnalystDashboard, Views.AnalystCorrelationGraphs
 import Views.DoctorDashboard, Views.DoctorPatients, Views.DoctorRiskAssesment
 import Views.DoctorGantChart
+import Views.FiltringPatientsCases
 import  Views.Home, Views.Login
 def main():
     # Perform login if not logged in
@@ -22,8 +23,8 @@ def main():
         if userAuthData['role']=='Physician':
             app = option_menu(
             menu_title="Welcome Dr. " + str(userAuthData['username']),
-            options=['Home', 'Follow Up', 'Patients Table','Dashboard', 'Data Entry','Logout'],
-            icons=['house-fill', 'bar-chart-steps','person','graph-up','file-earmark-medical', 'door-open'],
+            options=['Home', 'Follow Up', 'Patients Filters','Patients Table','Dashboard', 'Data Entry','Logout'],
+            icons=['house-fill', 'bar-chart-steps', 'people','person','graph-up','file-earmark-medical', 'door-open'],
             menu_icon=['person-fill'],
             default_index=0,
             orientation='horizontal',
@@ -50,8 +51,8 @@ def main():
         elif userAuthData['role']=='Admin': 
             app = option_menu(
             menu_title='Welcome Admin, '+ str(userAuthData['username']),
-            options=['Home', 'Panel', 'All Patients','Analysis', 'Correlations', 'Review', 'Add Head Doctor','Add Analyst','Logout'],
-            icons=['house-fill', 'graph-up', 'people','bar-chart-line','clipboard2-pulse-fill','binoculars','person-plus','person-plus-fill','door-open'],
+            options=['Home', 'Panel', 'Add Head Doctor','Add Analyst','Logout'],
+            icons=['house-fill', 'graph-up', 'person-plus','person-plus-fill','door-open'],
             menu_icon=['person-fill'],
             default_index=0,
             orientation='horizontal',
@@ -114,7 +115,9 @@ def main():
     if app== 'Data Entry':
         Views.DoctorRiskAssesment.app(userAuthData)
     if app=='Patients Table':
-        Views.DoctorPatients.app(userAuthData)    
+        Views.DoctorPatients.app(userAuthData)
+    if app=='Patients Filters':
+        Views.FiltringPatientsCases.app(userAuthData)        
     if app=='Follow Up':
         Views.DoctorGantChart.app() 
     if app=='Head Dashboard':

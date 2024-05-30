@@ -234,7 +234,7 @@ class LocalCache:
             df_medical_info = pd.DataFrame(medical_infos)
 
             # Concatenate DataFrames side by side
-            df_combined = pd.concat([df_medical_info, df_assessments], axis=1)
+            df_combined = pd.concat([df_medical_info, df_assessments], axis=1).iloc[: , :-1]
             return df_combined
             # Display DataFrame as HTML table
             # html_table = df_combined.to_html()
