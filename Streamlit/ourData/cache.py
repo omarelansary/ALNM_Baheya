@@ -146,7 +146,7 @@ class LocalCache:
         return patientsDataFrame'''
 
     def get_data_from_excel(self):
-        file_path = "..\\Backend\\cairouniversity_final_excel.xlsx"
+        file_path = "../Backend/cairouniversity_final_excel.xlsx"
         try:
             df = pd.read_excel(
                 io=file_path,
