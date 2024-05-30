@@ -362,25 +362,133 @@ def editing_form(df, selected_mrn, userAuthData):
 
 
 def app(userAuthData):
+    Network = Networking()
+    cacheInMemory = LocalCache()
     Cache = LocalCache()
     df = Cache.get_assessment_byDocId(userAuthData['id'])
     st.sidebar.title("Breast Cancer Metastasis Risk Prediction")
-    menu_options = ["Default Form", "Test data", "Choose Patient MRN"]
+    menu_options = ["Enter New Patient", "Add Biopsy Result", "Choose Patient to(edite,pridect or delete)"]
     choice = st.sidebar.selectbox("Select an option", menu_options)
-    if choice == "Default Form":
+    if choice == "Enter New Patient":
         st.title(":clipboard: Breast Cancer Metastasis Risk Prediction ")
 
         default_form(userAuthData)
         # pass
-    elif choice == "Test data":
+    elif choice == "Add Biopsy Result":
+        ###################
+        Network = Networking()
+        Cache = LocalCache()
+        st.title(f"{userAuthData['username']} patients")
+        df=Cache.get_assessment_byDocId(userAuthData['id'])
         st.write(df)
-    elif choice == "Choose Patient MRN":
+        # Initialize the session state if not already initialized
+        if 'edit_mode' not in st.session_state:
+            st.session_state['edit_mode'] = False
+        if 'selected_mrn' not in st.session_state:
+            st.session_state['selected_mrn'] = None
+        if df.empty:
+            st.write('Nothing to set')
+        else:    
+            # Select MRN before enabling editing
+            st.write("Select Patient's MRN to add Biopsy Result:")
+            selected_mrn = st.selectbox(
+                "Select MRN",
+                df['MRN'].unique()
+            )
+            st.session_state['selected_mrn'] = selected_mrn
+            # st.write(f"Editing ground_truth for MRN: {selected_mrn}")
+            if selected_mrn:
+                    st.write(f"Add Biopsy Result for Patient with this MRN: {selected_mrn}")
+                    # Enable edit mode if MRN is selected
+                    st.session_state['edit_mode'] = True
+            # Create an "Edit" button to enable editing
+
+            if st.session_state['edit_mode']:
+                # Make only the ground_truth column editable for the selected MRN
+                edited_df = df.copy()
+                mask = edited_df['MRN'] == selected_mrn
+                st.write("Selected Row:")
+                st.write(edited_df[mask])
+                
+                # Allow the user to select the new ground truth value from a dropdown menu
+                new_ground_truth = st.selectbox("Select Biopsy Result", ["0", "1"])
+
+                # Update the ground_truth column with the new value
+                edited_df.loc[mask, 'ground_truth'] = new_ground_truth
+                # Display the entire row corresponding to the selected MRN
+
+            else:
+                edited_df = df.copy()
+
+            # Initialize the session state if not already initialized
+            if 'edited_rows' not in st.session_state:
+                st.session_state['edited_rows'] = {}
+
+            # Update the session state with changes from data_editor
+            st.session_state['edited_rows'] = edited_df.to_dict('index')
+            
+            # Find the changed rows by comparing session state with the original data
+            changes = {}
+            for index, row in edited_df.iterrows():
+                if not row.equals(df.loc[index]):
+                    changes[index] = row.to_dict()
+
+            if changes:
+                # Extract the row indices of the changes
+                if st.button("Save Biopsy Result"):
+                    changed_rows = list(changes.keys())
+                    
+                    # Extract the IDs, MRNs, and new ground_truth values from the changed rows
+                    new_MRN_values = df.loc[changed_rows, 'MRN']
+                    new_ground_truth_values = [changes[index]['ground_truth'] for index in changed_rows]
+
+                    # Create a DataFrame with the extracted values
+                    omr_change = pd.DataFrame({
+                        'MRN': new_MRN_values,
+                        'ground_truth': new_ground_truth_values
+                    })
+                    mrn = new_MRN_values.iloc[0] if not new_MRN_values.empty else "N/A"
+                    new_ground_truth = new_ground_truth_values[0] if new_ground_truth_values else "N/A"
+                    message = f"You have Added Biopsy Result with Value {new_ground_truth} for MRN {mrn}"
+                    # Display the new DataFrame
+                    modal = Modal("Added Biopsy Result", key="result-modal", padding=10, max_width=430)
+
+                # Button to open the modal
+                    
+
+
+                    # Check if modal is open
+                    if modal.is_open():
+                        # Content inside the modal based on the value of 'case'
+                        with modal.container():
+                        
+                            content = """
+                                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                                    <h1 style="color: green; font-size: 28px; font-family: 'Open Sans', sans-serif;">{message}</h1>
+                                </div>
+                            """
+                            
+                            st.markdown(content, unsafe_allow_html=True)
+
+                            # Set the height of the modal dynamically
+                            st.markdown(
+                                f"<style>.streamlit-modal .element-container{{height: auto}}</style>",
+                                unsafe_allow_html=True
+                            )             
+
+            else:
+                st.write("No changes detected.")
+
+    # Run the app
+
+        ##########################
+    elif choice == "Choose Patient to(edite,pridect or delete)":
         st.title(":clipboard: Breast Cancer Metastasis Risk Prediction ")
         if not df.empty:
             mrn_list = df["MRN"].unique().tolist()
             selected_mrn = st.sidebar.selectbox("Select Patient MRN", mrn_list)
             editing_form(df, selected_mrn, userAuthData)
         else:
-            st.write('No patients added yet')    
+            st.write('No patients added yet') 
 
 

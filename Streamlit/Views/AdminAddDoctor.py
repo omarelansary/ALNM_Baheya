@@ -89,7 +89,7 @@ def app():
         modal = Modal("Confirm Deletion", key="confirm_deletion")
 
         if selected_indices:
-           open_modal = st.button("Delete Selected Data Scientists")
+           open_modal = st.button("Delete Selected Physicians")
            if open_modal:
         # Open the modal when the delete button is clicked
         # modal = Modal("Confirm Deletion", key="confirm_deletion")
