@@ -14,7 +14,6 @@ class Networking():
                         "MRN": mrn,
                         "medical_info":data }
         response = requests.post('http://127.0.0.1:8000/api/doctors/makeAssessment', json=patient_data)
-        print(response)
         if response.status_code == 200:
             data = response.json()
             if data.get('success'):

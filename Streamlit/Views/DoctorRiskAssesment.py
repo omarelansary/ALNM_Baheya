@@ -13,7 +13,6 @@ def default_form(userAuthData):
         Network = Networking()
         cacheInMemory = LocalCache()
         patient_data=None
-        predectionResult=None
         predectionPercentage=None
         # with st.form("Breast Cancer Metastasis Risk Prediction"):
         predection_modal = Modal("Breast Cancer Metastasis Risk Prediction Result", key="result-modal", padding=10, max_width=430)
@@ -137,42 +136,47 @@ def default_form(userAuthData):
                     st.error(f"Please fill in the following fields or reduce 'Unrecorded' selections: {', '.join([k for k, v in patient_data.items() if v == 'Unrecorded'])}")
                 else:
                     # Display results
-                    st.subheader("Breast Cancer Metastasis Risk Prediction Results")
-                    for key, value in patient_data.items():
-                        st.write(f"- {key.replace('_', ' ').title()}: {value}")
+                    # st.subheader("Breast Cancer Metastasis Risk Prediction Results")
+                    # for key, value in patient_data.items():
+                    #     st.write(f"- {key.replace('_', ' ').title()}: {value}")
                         
                     # Make API call and handle the result
                     try:
                         assessment_result = Network.post_make_assesment(userAuthData['id'], int(patient_MRN), patient_data)
                         if assessment_result:
-                            predection_modal.open()
-                            predectionResult=assessment_result['prediction']          # Check if modal is open
+                            st.session_state['predectionResult']=int(assessment_result['prediction'])                           
                             predectionPercentage=assessment_result['predictionProbability']
+                            predection_modal.open()
+
                     except Exception as e:
                         st.error(f"An error occurred: {e}")   
 
         if predection_modal.is_open():
             # Content inside the modal based on the value of 'predectionResult'
             with predection_modal.container():
-                if predectionResult == 0:
-                    content = f"""
-                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                            <h1 style="color: green; font-size: 28px; font-family: 'Open Sans', sans-serif;">Patient is Unlikley to Have Metastasis</h1>
-                        </div>
-                    """
-                else:
-                    content = f"""
-                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                            <h1 style="color: red; font-size: 28px; font-family: 'Open Sans', sans-serif;">Patient may Have Metastasis</h1>
-                        </div>
-                    """
-                st.markdown(content, unsafe_allow_html=True)
+                if 'predectionResult' in st.session_state: 
+                    if st.session_state['predectionResult'] == 0:
+                        content = f"""
+                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                                <h1 style="color: green; font-size: 28px; font-family: 'Open Sans', sans-serif;">Patient is Unlikley to Have Metastasis</h1>
+                            </div>
+                        """
+                    else:
+                        content = f"""
+                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                                <h1 style="color: red; font-size: 28px; font-family: 'Open Sans', sans-serif;">Patient may Have Metastasis</h1>
+                            </div>
+                        """
+                    del st.session_state['predectionResult']
+                    st.markdown(content, unsafe_allow_html=True)
 
-                    # Set the height of the modal dynamically
-                st.markdown(
-                        f"<style>.streamlit-modal .element-container{{height: auto}}</style>",
-                        unsafe_allow_html=True
-                    )
+                        # Set the height of the modal dynamically
+                    st.markdown(
+                            f"<style>.streamlit-modal .element-container{{height: auto}}</style>",
+                            unsafe_allow_html=True
+                        )
+                else:
+                    st.error('Error! Something went wrong')              
        
 
 
@@ -183,7 +187,6 @@ def editing_form(df, selected_mrn, userAuthData):
         form_key = f"form_{selected_mrn}"
         confirmDelete_modal = Modal("Confirm Deletion", key="confirm_deletion")
         edited_patient_data=None
-        predectionResult=None
         predection_modal = Modal("Breast Cancer Metastasis Risk Prediction Result", key="result-modal", padding=10, max_width=430)
 
         col_Numerical, col_Categorical1, col_YesorNo = st.columns(3)
@@ -276,12 +279,12 @@ def editing_form(df, selected_mrn, userAuthData):
                     # Logic to delete the selected data
                     df.drop(df[df["MRN"] == selected_mrn].index, inplace=True)
                     confirmDelete_modal.close()
-        try:
-            deleteResponseResult =Network.post_delete_assesment(selected_mrn)
-            if deleteResponseResult:
-                st.success('Deleted Successfully') 
-        except Exception as e:
-            st.error(f"An error occurred: {e}")   
+            try:
+                deleteResponseResult =Network.post_delete_assesment(selected_mrn)
+                if deleteResponseResult:
+                    st.success('Deleted Successfully') 
+            except Exception as e:
+                st.error(f"An error occurred: {e}")   
 
   
         
@@ -321,43 +324,47 @@ def editing_form(df, selected_mrn, userAuthData):
                 if unrecorded_count > 5:
                     st.error(f"Please fill in the following fields or reduce 'Unrecorded' selections: {', '.join([k for k, v in edited_patient_data.items() if v == 'Unrecorded'])}")
                 else:
-                    # Display results
-                    st.subheader("Breast Cancer Metastasis Risk Prediction Results")
-                    for key, value in edited_patient_data.items():
-                        st.write(f"- {key.replace('_', ' ').title()}: {value}")
+                    ## Display results
+                    # st.subheader("Breast Cancer Metastasis Risk Prediction Results")
+                    # for key, value in edited_patient_data.items():
+                    #     st.write(f"- {key.replace('_', ' ').title()}: {value}")
                         
                     # Make API call and handle the result
                     try:
                         assessment_result = Network.post_make_assesment(userAuthData['id'], int(patient_MRN), edited_patient_data)
                         if assessment_result:
+                            st.session_state['predectionResult']=int(assessment_result['prediction'])                           
+                            predectionPercentage=assessment_result['predictionProbability']
                             predection_modal.open()
-                            predectionResult=assessment_result['prediction']          # Check if modal is open
-                            #predectionPercentage=assessment_result['predictionProbability']
                     except Exception as e:
                         st.error(f"An error occurred: {e}")   
 
         if predection_modal.is_open():
             # Content inside the modal based on the value of 'predectionResult'
             with predection_modal.container():
-                if predectionResult == 0:
-                    content = f"""
-                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                            <h1 style="color: green; font-size: 28px; font-family: 'Open Sans', sans-serif;">Patient is Unlikley to Have Metastasis</h1>
-                        </div>
-                    """
-                else:
-                    content = f"""
-                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                            <h1 style="color: red; font-size: 28px; font-family: 'Open Sans', sans-serif;">Patient may Have Metastasis</h1>
-                        </div>
-                    """
-                st.markdown(content, unsafe_allow_html=True)
+                if 'predectionResult' in st.session_state: 
+                    if st.session_state['predectionResult'] == 0:
+                        content = f"""
+                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                                <h1 style="color: green; font-size: 28px; font-family: 'Open Sans', sans-serif;">Patient is Unlikley to Have Metastasis</h1>
+                            </div>
+                        """
+                    else:
+                        content = f"""
+                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                                <h1 style="color: red; font-size: 28px; font-family: 'Open Sans', sans-serif;">Patient may Have Metastasis</h1>
+                            </div>
+                        """
+                    del st.session_state['predectionResult']
+                    st.markdown(content, unsafe_allow_html=True)
 
-                    # Set the height of the modal dynamically
-                st.markdown(
-                        f"<style>.streamlit-modal .element-container{{height: auto}}</style>",
-                        unsafe_allow_html=True
-                    )
+                        # Set the height of the modal dynamically
+                    st.markdown(
+                            f"<style>.streamlit-modal .element-container{{height: auto}}</style>",
+                            unsafe_allow_html=True
+                        )
+                else:
+                    st.error('Error! Something went wrong')
        
 
 
@@ -367,7 +374,7 @@ def app(userAuthData):
     Cache = LocalCache()
     df = Cache.get_assessment_byDocId(userAuthData['id'])
     st.sidebar.title("Breast Cancer Metastasis Risk Prediction")
-    menu_options = ["Enter New Patient", "Add Biopsy Result", "Choose Patient to(edite,pridect or delete)"]
+    menu_options = ["Enter New Patient", "Add Biopsy Result", "Choose Patient (edit, predict or delete)"]
     choice = st.sidebar.selectbox("Select an option", menu_options)
     if choice == "Enter New Patient":
         st.title(":clipboard: Breast Cancer Metastasis Risk Prediction ")
@@ -482,7 +489,7 @@ def app(userAuthData):
     # Run the app
 
         ##########################
-    elif choice == "Choose Patient to(edite,pridect or delete)":
+    elif choice == "Choose Patient (edit, predict or delete)":
         st.title(":clipboard: Breast Cancer Metastasis Risk Prediction ")
         if not df.empty:
             mrn_list = df["MRN"].unique().tolist()

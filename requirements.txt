@@ -58,3 +58,4 @@ imbalanced-learn==0.10.1
 lightgbm
 delayed
 streamlit_cookies_controller
+streamlit_lottie
