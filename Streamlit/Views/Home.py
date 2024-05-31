@@ -30,7 +30,7 @@ def app():
         set_session_state(options, "statistics")
     if st.sidebar.button("🎗️ Awareness Campaigns"):
         set_session_state(options, "campaigns")
-    if st.sidebar.button("💬 Frequently Asked Questions"):
+    if st.sidebar.button("💬 FAQ        "):
         set_session_state(options, "Frequently Asked Questions")
     if ("educational" not in st.session_state) and ("statistics" not in st.session_state) and ("campaigns" not in st.session_state) and ("Frequently Asked Questions" not in st.session_state):
         css = """
@@ -207,50 +207,83 @@ def app():
         st.markdown(css, unsafe_allow_html=True)
 
         st.markdown('<div class="header">📘 Educational Content</div>', unsafe_allow_html=True)
+        lottie_url_edu1 ="https://lottie.host/670ec0d0-726b-4cde-9774-90ae295e247b/tI4Y5JLeiu.json"
+        lottie_edu = load_lottieurl(lottie_url_edu1)
+        st_lottie(lottie_edu,height=490,width=1050,key="edu")
+        # col1, col2 = st.columns(2)
+        # with col1:
         st.markdown('<div class="subheader">🧠 Intro about Metastatic Breast Cancer</div>', unsafe_allow_html=True)
-        st.markdown('<div class="content">Metastatic breast cancer, often referred to as stage IV or advanced breast cancer, is a formidable adversary in the realm of oncology. This aggressive form of cancer occurs when breast cancer cells spread beyond the breast and nearby lymph nodes to other organs in the body, such as the bones, lungs, liver, or brain. Unlike localized breast cancer, where the disease is confined to the breast or nearby lymph nodes, metastatic breast cancer poses significant challenges in terms of diagnosis, treatment, and management. Despite advancements in medical science, metastatic breast cancer remains incurable, emphasizing the critical need for ongoing research, improved treatment modalities, and enhanced support systems for those living with this chronic condition.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="content">Metastatic breast cancer, often referred to as stage IV or advanced breast cancer, is a formidable adversary in the realm of oncology. This aggressive form of cancer occurs when breast cancer cells spread beyond the breast and nearby lymph nodes to other organs in the body, such as the bones, lungs, liver, or brain. Unlike localized breast cancer, where the disease is confined to the breast or nearby lymph nodes, metastatic breast cancer poses significant challenges in terms of diagnosis, treatment, and management.</div>', unsafe_allow_html=True)
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown('<div class="subheader">🩺 Sentinel Lymph Node Biopsy (SLNB) in Breast Cancer</div>', unsafe_allow_html=True)
+            st.markdown('<div class="subsubheader">🔍 Why is SLNB performed?</div>', unsafe_allow_html=True)
+            st.markdown('<div class="content">SLNB helps in determining the stage of breast cancer and aids in treatment planning. It helps in avoiding the removal of unnecessary lymph nodes, reducing the risk of complications such as lymphedema.</div>', unsafe_allow_html=True)
+            lottie_url_dr ="https://lottie.host/6c9fd2de-8562-4e70-a4d3-74ac96cbbd04/ULBPkhT0cK.json"
+            lottie_dr = load_lottieurl(lottie_url_dr)
+            st_lottie(lottie_dr,height=320,width=400,key="dr")
+            st.markdown('<div class="content"><br>', unsafe_allow_html=True)
 
-        st.markdown('<div class="subheader">🩺 Sentinel Lymph Node Biopsy (SLNB) in Breast Cancer</div>', unsafe_allow_html=True)
-        st.markdown('<div class="subsubheader">🔍 Why is SLNB performed?</div>', unsafe_allow_html=True)
-        st.markdown('<div class="content">SLNB helps in determining the stage of breast cancer and aids in treatment planning. It helps in avoiding the removal of unnecessary lymph nodes, reducing the risk of complications such as lymphedema.</div>', unsafe_allow_html=True)
+            
+            st.markdown('<div class="subsubheader">⚠️ Risks and complications</div>', unsafe_allow_html=True)
+            st.markdown('<div class="content">'
+            '<ul>'
+            '<li><strong>Infection:</strong> As with any surgical procedure, there is a risk of infection at the site of the incision.</li>'
+            '<li><strong>Bleeding:</strong> There may be bleeding during or after the procedure.</li>'
+            '<li><strong>Lymphedema:</strong> Swelling caused by the removal or damage of lymph nodes, which can lead to long-term discomfort and reduced range of motion.</li>'
+            '<li><strong>False-Negative Results:</strong> There is a small risk that the sentinel lymph node may not correctly indicate the presence of cancer in other lymph nodes.</li>'
+            '<li><strong>Extended Recovery Time:</strong> Some patients may require more time to recover, especially if complications arise.</li>'
+            '</ul>'
+            '</div>',
+            unsafe_allow_html=True)
 
-        st.markdown('<div class="subsubheader">📝 Procedure</div>', unsafe_allow_html=True)
-        st.markdown('<div class="content"><ul><li>Preoperative preparation: The patient may receive anesthesia before the procedure.</li><li>Injection of tracer: A tracer material, often a radioactive substance or blue dye, is injected into the area around the tumor.</li><li>Mapping of sentinel lymph nodes: The tracer material travels through the lymphatic channels to the sentinel lymph node(s), which are then identified by the surgeon.</li><li>Biopsy: The surgeon removes the identified sentinel lymph node(s) for examination under a microscope.</li></ul></div>', unsafe_allow_html=True)
 
-        st.markdown('<div class="subsubheader">⚠️ Risks and complications</div>', unsafe_allow_html=True)
-        st.markdown('<div class="content">Although SLNB is generally safe, there are some risks, including infection, bleeding, and lymphedema. It is important to discuss the benefits and risks of SLNB with your healthcare provider.</div>', unsafe_allow_html=True)
-
+        with col2:
+            lottie_url_stetho ="https://lottie.host/c37dce43-0531-4f99-b172-7bd740b15575/h8is12xFlW.json"
+            lottie_stetho = load_lottieurl(lottie_url_stetho)
+            st_lottie(lottie_stetho,height=220,width=300,key="stetho")
+            
+            st.markdown('<div class="subsubheader">📝 Procedure</div>', unsafe_allow_html=True)
+            st.markdown('<div class="content"><ul><li>Preoperative preparation: The patient may receive anesthesia before the procedure.</li><li>Injection of tracer: A tracer material, often a radioactive substance or blue dye, is injected into the area around the tumor.</li><li>Mapping of sentinel lymph nodes: The tracer material travels through the lymphatic channels to the sentinel lymph node(s), which are then identified by the surgeon.</li><li>Biopsy: The surgeon removes the identified sentinel lymph node(s) for examination under a microscope.</li></ul></div>', unsafe_allow_html=True)
+            lottie_url_warn ="https://lottie.host/9699a09d-2ab0-4c8c-880d-ada6a55f56e8/XkEAZj7An5.json"
+            lottie_warn = load_lottieurl(lottie_url_warn)
+            st_lottie(lottie_warn,height=490,width=620,key="warn")
+            
         st.markdown('<div class="subheader">🌐 What is metastatic breast cancer (MBC)?</div>', unsafe_allow_html=True)
         st.markdown('<div class="content">MBC (also called stage IV or advanced breast cancer) is breast cancer that has spread beyond the breast to other organs in the body (most often the bones, lungs, liver, or brain). Both women and men can be diagnosed with MBC.</div>', unsafe_allow_html=True)
 
         # Adding more information specific to Egypt
         st.markdown('<div class="subheader">🇪🇬 Breast Cancer Awareness and Treatment in Egypt</div>', unsafe_allow_html=True)
-        st.markdown('<div class="subsubheader">🏥 Awareness Campaigns</div>', unsafe_allow_html=True)
-        st.markdown('<div class="content">In Egypt, numerous awareness campaigns are organized annually to educate the public about breast cancer, its early detection, and the importance of regular screenings. The Egyptian Ministry of Health, along with various NGOs and medical institutions, plays a significant role in these initiatives.</div>', unsafe_allow_html=True)
+        col1, col2 = st.columns(2)
+        with col1:
 
-        st.markdown('<div class="subsubheader">🔬 Research and Treatment Facilities</div>', unsafe_allow_html=True)
-        st.markdown('<div class="content">Egypt is home to several specialized cancer treatment centers, such as the National Cancer Institute (NCI) in Cairo, which offers comprehensive care for breast cancer patients, including advanced diagnostic tools, treatment options, and research programs.</div>', unsafe_allow_html=True)
+            st.markdown('<div class="subsubheader">🏥 Awareness Campaigns</div>', unsafe_allow_html=True)
+            st.markdown('<div class="content">In Egypt, numerous awareness campaigns are organized annually to educate the public about breast cancer, its early detection, and the importance of regular screenings. The Egyptian Ministry of Health, along with various NGOs and medical institutions, plays a significant role in these initiatives.</div>', unsafe_allow_html=True)
+            st.markdown('<div class="subsubheader">🤝 Support Groups</div>', unsafe_allow_html=True)
+            st.markdown('<div class="content">Support groups and counseling services are available to help patients and their families cope with the emotional and psychological impact of breast cancer. These groups provide a platform for sharing experiences and gaining strength from others who are facing similar challenges.</div>', unsafe_allow_html=True)
+            st.markdown('<div class="subsubheader">🌍 Community Outreach Programs</div>', unsafe_allow_html=True)
+            st.markdown('<div class="content">Various community outreach programs are conducted in rural and urban areas to raise awareness about breast cancer. These programs include educational workshops, free screening camps, and distribution of informational materials to educate women about the importance of early detection and self-examinations.</div>', unsafe_allow_html=True)
+            st.markdown('<div class="subsubheader">🚑 Treatment Options in Egypt</div>', unsafe_allow_html=True)
+            st.markdown('<div class="content">In Egypt, treatment options for breast cancer include surgery, chemotherapy, radiation therapy, and hormone therapy. Advanced treatment facilities and specialized oncologists are available in major cities like Cairo and Alexandria, providing patients with access to comprehensive cancer care.</div>', unsafe_allow_html=True)
 
-        st.markdown('<div class="subsubheader">📈 Statistics</div>', unsafe_allow_html=True)
-        st.markdown('<div class="content">According to the latest statistics, breast cancer is the most common cancer among women in Egypt. Efforts to improve early detection and treatment have led to better outcomes for many patients. However, ongoing education and support are crucial to further reduce mortality rates.</div>', unsafe_allow_html=True)
 
-        st.markdown('<div class="subsubheader">🤝 Support Groups</div>', unsafe_allow_html=True)
-        st.markdown('<div class="content">Support groups and counseling services are available to help patients and their families cope with the emotional and psychological impact of breast cancer. These groups provide a platform for sharing experiences and gaining strength from others who are facing similar challenges.</div>', unsafe_allow_html=True)
 
-        st.markdown('<div class="subsubheader">💡 Early Detection and Screening</div>', unsafe_allow_html=True)
-        st.markdown('<div class="content">Early detection of breast cancer significantly improves the chances of successful treatment. In Egypt, there are numerous facilities that offer mammograms and other screening services. Women are encouraged to undergo regular screenings, especially if they have a family history of breast cancer.</div>', unsafe_allow_html=True)
+        with col2:
+            st.markdown('<div class="subsubheader">🔬 Research and Treatment Facilities</div>', unsafe_allow_html=True)
+            st.markdown('<div class="content">Egypt is home to several specialized cancer treatment centers, such as the National Cancer Institute (NCI) in Cairo, which offers comprehensive care for breast cancer patients, including advanced diagnostic tools, treatment options, and research programs.</div>', unsafe_allow_html=True)
 
-        st.markdown('<div class="subsubheader">🌍 Community Outreach Programs</div>', unsafe_allow_html=True)
-        st.markdown('<div class="content">Various community outreach programs are conducted in rural and urban areas to raise awareness about breast cancer. These programs include educational workshops, free screening camps, and distribution of informational materials to educate women about the importance of early detection and self-examinations.</div>', unsafe_allow_html=True)
+        
+            
+            st.markdown('<div class="subsubheader">💡 Early Detection and Screening</div>', unsafe_allow_html=True)
+            st.markdown('<div class="content">Early detection of breast cancer significantly improves the chances of successful treatment. In Egypt, there are numerous facilities that offer mammograms and other screening services. Women are encouraged to undergo regular screenings, especially if they have a family history of breast cancer.</div>', unsafe_allow_html=True)
 
-        st.markdown('<div class="subsubheader">🎗️ Notable Organizations</div>', unsafe_allow_html=True)
-        st.markdown('<div class="content">Several notable organizations in Egypt are dedicated to the fight against breast cancer. These include the Breast Cancer Foundation of Egypt (BCFE) and Baheya Foundation, which provide support, education, and treatment to breast cancer patients. They also engage in extensive research and advocacy efforts.</div>', unsafe_allow_html=True)
 
-        st.markdown('<div class="subsubheader">🚑 Treatment Options in Egypt</div>', unsafe_allow_html=True)
-        st.markdown('<div class="content">In Egypt, treatment options for breast cancer include surgery, chemotherapy, radiation therapy, and hormone therapy. Advanced treatment facilities and specialized oncologists are available in major cities like Cairo and Alexandria, providing patients with access to comprehensive cancer care.</div>', unsafe_allow_html=True)
+            st.markdown('<div class="subsubheader">🎗️ Notable Organizations</div>', unsafe_allow_html=True)
+            st.markdown('<div class="content">Several notable organizations in Egypt are dedicated to the fight against breast cancer. These include the Breast Cancer Foundation of Egypt (BCFE) and Baheya Foundation, which provide support, education, and treatment to breast cancer patients. They also engage in extensive research and advocacy efforts.</div>', unsafe_allow_html=True)
 
-        st.markdown('<div class="subsubheader">💬 Personal Stories</div>', unsafe_allow_html=True)
-        st.markdown('<div class="content">Personal stories from breast cancer survivors in Egypt are shared through various platforms to inspire and provide hope to those currently battling the disease. These stories highlight the importance of early detection, support networks, and perseverance in overcoming challenges.</div>', unsafe_allow_html=True)
+
+            st.markdown('<div class="subsubheader">💬 Personal Stories</div>', unsafe_allow_html=True)
+            st.markdown('<div class="content">Personal stories from breast cancer survivors in Egypt are shared through various platforms to inspire and provide hope to those currently battling the disease. These stories highlight the importance of early detection, support networks, and perseverance in overcoming challenges.</div>', unsafe_allow_html=True)
 
     if "statistics" in st.session_state:
         css = """
@@ -322,6 +355,7 @@ def app():
 
             st.markdown('<div class="subheader">📅 SLNB Procedures by Year</div>', unsafe_allow_html=True)
             fig_pie = px.pie(slnb_df, values='SLNB Procedures', names='Year')
+            fig_pie.update_traces(marker=dict(colors=color_palette[:4]))
             fig_pie.update_layout(width=400, height=400)
             st.plotly_chart(fig_pie)
         with col2:
@@ -329,9 +363,9 @@ def app():
             
             
             
-            lottie_url_hello ="https://lottie.host/224f64a2-a231-4db5-a3d7-0d714c82a5ca/CZIkuJPRUF.json"
+            lottie_url_hello ="https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/stat1.json"
             lottie_hello = load_lottieurl(lottie_url_hello)
-            st_lottie(lottie_hello,height=400,width=600,key="hello")
+            st_lottie(lottie_hello,height=490,width=620,key="hello")
             # st_lottie6
             # lottie_hello,
             # speed=1,
@@ -380,6 +414,8 @@ def app():
             st.markdown('<div class="subheader">🔍 Survival Rate for MBC Patients</div>', unsafe_allow_html=True)
             st.markdown('<div class="content">Survival rate for at least five years after diagnosis with MBC:</div>', unsafe_allow_html=True)
             st.pyplot(fig3)
+            st.markdown('<div class="subheader">📊 Statistics From Egypt</div>', unsafe_allow_html=True)
+
 
         with col2:
             st.markdown('<div class="subheader">📉 Estimated Future Metastatic Cases</div>', unsafe_allow_html=True)
@@ -388,7 +424,44 @@ def app():
              
             lottie_url_helloo ="https://lottie.host/cc77d579-61d5-4519-bae1-47fdfb24589e/c92ODWPDgo.json"
             lottie_helloo = load_lottieurl(lottie_url_helloo)
-            st_lottie(lottie_helloo,height=400,width=600,key="helloo")
+            st_lottie(lottie_helloo,height=400,width=500,key="helloo")
+        lottie_url_egy ="https://lottie.host/4ad6b07f-e9ac-4aac-a35f-944465868ae7/g9Wzy0TRwJ.json"
+        lottie_egy = load_lottieurl(lottie_url_egy)
+        st_lottie(lottie_egy,height=400,width=600,key="egy")
+        # Data for Tumor Histology   
+        # Create columns
+        col1, col2 = st.columns(2) 
+        with col1:
+
+           
+
+            fig_histology, ax_histology = plt.subplots(figsize=(5, 5))
+            ax_histology.pie([3.2, 9.1, 83.2, 100 - (83.2 + 9.1 + 3.2)],
+                    labels=['Infiltrating Duct Carcinoma', 'Infiltrating Lobular Carcinoma', 'Medullary Carcinoma', 'Other'],
+                    autopct='%1.1f%%', startangle=210, colors=color_palette[:5],textprops={'fontsize': 12})
+            ax_histology.axis('equal')
+            st.markdown('<div class="subheader">📊 Distribution of Tumor Histology</div>', unsafe_allow_html=True)
+            st.pyplot(fig_histology)
+            
+            fig_lat, ax_lat = plt.subplots(figsize=(3, 3))
+            ax_lat.pie([53.64, 46.36],
+                    labels=['Left-sided', 'Right-sided'],
+                    autopct='%1.1f%%', startangle=210, colors=color_palette[1:3],textprops={'fontsize': 12})
+            ax_lat.axis('equal')
+            st.markdown('<div class="subheader">📊 Distribution of Invasive Breast Cancer Cases</div>', unsafe_allow_html=True)
+            st.pyplot(fig_lat)
+            
+        with col2:
+            fig_subtypes, ax_subtypes = plt.subplots(figsize=(3, 3))
+            ax_subtypes.pie([18.8, 27.7, 40, 13.5],
+                    labels=['Luminal A', 'Triple-Negative', 'Her2-Expressing', 'Luminal B'],
+                    autopct='%1.1f%%', startangle=90, colors=color_palette[:4],textprops={'fontsize': 8})
+            ax_subtypes.axis('equal')
+
+        
+        
+            st.markdown('<div class="subheader">📊 Distribution of Cancer Subtypes</div>', unsafe_allow_html=True)
+            st.pyplot(fig_subtypes)
 
         
             
