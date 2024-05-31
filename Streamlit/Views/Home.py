@@ -2,136 +2,19 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import matplotlib.pyplot as plt
-
+from streamlit_lottie import st_lottie
+import time
+import requests
+def load_lottieurl(url: str):
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
+color_palette = ['#c8387d', '#ec6989', '#169DA6', '#b4f8ed', '#FFFFFF', '#000000']
+lottie_url_hello = "https://lottie.host/224f64a2-a231-4db5-a3d7-0d714c82a5ca/CZIkuJPRUF.json"
 def app():
     # CSS to inject contained in a string
-    css = """
-    <style>
-        .home-header {
-            font-size: 28px;
-            font-weight: bold;
-            color: #e91e63;
-            border-bottom: 3px solid #e91e63;
-            padding-bottom: 10px;
-            margin-top: 20px;
-        }
-        .home-content {
-            font-size: 16px;
-            color: #212121;
-            margin-top: 10px;
-            line-height: 1.6;
-        }
-        .home-section {
-            margin-bottom: 40px;
-        }
-        .subheader {
-            color: #f06292;
-            font-size: 24px;
-            font-weight: bold;
-            margin-top: 20px;
-            border-left: 5px solid #f06292;
-            padding-left: 10px;
-        }
-        .subsubheader {
-            color: #ff80ab;
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 15px;
-            border-left: 3px solid #ff80ab;
-            padding-left: 8px;
-        }
-        .content {
-            font-size: 16px;
-            margin-top: 10px;
-            color: #212121;
-            line-height: 1.6;
-        }
-        .content ul {
-            margin-left: 20px;
-        }
-    </style>
-    """
-
-    # Inject CSS with Markdown
-    st.markdown(css, unsafe_allow_html=True)
-
-    st.markdown('<div class="home-header">💡 Our Project</div>', unsafe_allow_html=True)
-    st.markdown("""
-    <div class="home-content">
-    Our objective is to develop AI software that takes structured data from radiology reports,
-    clinical data, and pathological data to predict whether patients have experienced lymph node
-    metastasis, to improve the preoperative diagnosis of axillary lymph node (ALN) metastasis
-    in breast cancer patients.
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown('<div class="subheader">📋 Methodology</div>', unsafe_allow_html=True)
-    st.markdown("""
-    <div class="content">
-    <b>1. Data Collection</b>: Data from radiology reports, clinical data, and pathological data are collected.<br>
-    - Example of clinical data: gender, age, body mass index (BMI), history of surgery, and tumour location.<br>
-    <b>2. Data Pre-processing</b>: Processing the obtained data.<br>
-    <b>3. Feature Extraction</b>: Selecting the effective features based on correlation measures.<br>
-    <b>4. Training, Testing, and Validating the model</b>.<br>
-    <b>5. Make Prediction</b>: Using the model to make predictions.<br>
-    <b>6. Evaluation of Model</b>: Using metrics like accuracy and F1 scores.
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown('<div class="home-header">📘 About This Site</div>', unsafe_allow_html=True)
-    st.markdown("""
-    <div class="home-content">
-    This website is dedicated to raising awareness about metastatic breast cancer.
-    Here, you will find educational content, general statistics, ongoing awareness campaigns,
-    and answers to frequently asked questions. Our goal is to provide reliable information and support
-    to those affected by metastatic breast cancer.
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown('<div class="home-header">🌟 Featured Content</div>', unsafe_allow_html=True)
-    st.markdown("""
-    <div class="home-content">
-    - <b>Educational Content</b>: Learn about the causes, symptoms, and treatment options for metastatic breast cancer.<br>
-    - <b>General Statistics</b>: Explore the latest statistics and data on metastatic breast cancer.<br>
-    - <b>Awareness Campaigns</b>: Join us in our ongoing efforts to raise awareness and support research.<br>
-    - <b>Frequently Asked Questions</b>: Find answers to common questions about metastatic breast cancer.
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown('<div class="home-header">🙌 Get Involved</div>', unsafe_allow_html=True)
-    st.markdown("""
-    <div class="home-content">
-    Join us in our mission to spread awareness about metastatic breast cancer.
-    Participate in our campaigns, share your story, or sign up for our newsletter to stay updated on the latest news and events.
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown('<div class="home-header">🎗️ Join Our Awareness Campaign</div>', unsafe_allow_html=True)
-    image_url = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/DALL%C2%B7E%202024-05-19%2020.22.33%20-%20A%20visually%20appealing%20homepage%20for%20a%20cancer%20awareness%20website%20focusing%20on%20metastatic%20breast%20cancer.%20The%20design%20should%20include%20a%20warm%20and%20welcoming%20feel.ong.webp"
-    st.image(image_url, caption='Join Our Awareness Campaign')
-
-    st.markdown('<div class="home-header">📰 Latest News</div>', unsafe_allow_html=True)
-    st.markdown("""
-    <div class="home-content">
-    Stay updated with the latest news and developments in the field of metastatic breast cancer. Our news section features recent research findings, new treatment options, and updates on awareness campaigns.
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown('<div class="home-header">💡 Support Resources</div>', unsafe_allow_html=True)
-    st.markdown("""
-    <div class="home-content">
-    Access a variety of support resources, including counseling services, support groups, and educational materials. These resources are designed to help patients and their families navigate the challenges of living with metastatic breast cancer.
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown('<div class="home-header">📞 Contact Us</div>', unsafe_allow_html=True)
-    st.markdown("""
-    <div class="home-content">
-    Have questions or need more information? Contact us through our website, email, or phone. We are here to provide you with the support and information you need.
-    </div>
-    """, unsafe_allow_html=True)
     st.sidebar.title("Menu")
-
     # Define dictionary to map emoji labels to their corresponding sections
     options = {
         "📚 Educational Content": "educational",
@@ -149,6 +32,136 @@ def app():
         set_session_state(options, "campaigns")
     if st.sidebar.button("💬 Frequently Asked Questions"):
         set_session_state(options, "Frequently Asked Questions")
+    if ("educational" not in st.session_state) and ("statistics" not in st.session_state) and ("campaigns" not in st.session_state) and ("Frequently Asked Questions" not in st.session_state):
+        css = """
+        <style>
+            .home-header {
+                font-size: 28px;
+                font-weight: bold;
+                color: #e91e63;
+                border-bottom: 3px solid #e91e63;
+                padding-bottom: 10px;
+                margin-top: 20px;
+            }
+            .home-content {
+                font-size: 16px;
+                color: #212121;
+                margin-top: 10px;
+                line-height: 1.6;
+            }
+            .home-section {
+                margin-bottom: 40px;
+            }
+            .subheader {
+                color: #f06292;
+                font-size: 24px;
+                font-weight: bold;
+                margin-top: 20px;
+                border-left: 5px solid #f06292;
+                padding-left: 10px;
+            }
+            .subsubheader {
+                color: #ff80ab;
+                font-size: 20px;
+                font-weight: bold;
+                margin-top: 15px;
+                border-left: 3px solid #ff80ab;
+                padding-left: 8px;
+            }
+            .content {
+                font-size: 16px;
+                margin-top: 10px;
+                color: #212121;
+                line-height: 1.6;
+            }
+            .content ul {
+                margin-left: 20px;
+            }
+        </style>
+        """
+
+        # Inject CSS with Markdown
+        st.markdown(css, unsafe_allow_html=True)
+
+        st.markdown('<div class="home-header">💡 Our Project</div>', unsafe_allow_html=True)
+        st.markdown("""
+        <div class="home-content">
+        Our objective is to develop AI software that takes structured data from radiology reports,
+        clinical data, and pathological data to predict whether patients have experienced lymph node
+        metastasis, to improve the preoperative diagnosis of axillary lymph node (ALN) metastasis
+        in breast cancer patients.
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown('<div class="subheader">📋 Methodology</div>', unsafe_allow_html=True)
+        st.markdown("""
+        <div class="content">
+        <b>1. Data Collection</b>: Data from radiology reports, clinical data, and pathological data are collected.<br>
+        - Example of clinical data: gender, age, body mass index (BMI), history of surgery, and tumour location.<br>
+        <b>2. Data Pre-processing</b>: Processing the obtained data.<br>
+        <b>3. Feature Extraction</b>: Selecting the effective features based on correlation measures.<br>
+        <b>4. Training, Testing, and Validating the model</b>.<br>
+        <b>5. Make Prediction</b>: Using the model to make predictions.<br>
+        <b>6. Evaluation of Model</b>: Using metrics like accuracy and F1 scores.
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown('<div class="home-header">📘 About This Site</div>', unsafe_allow_html=True)
+        st.markdown("""
+        <div class="home-content">our website dedicated to raising awareness about metastatic breast cancer. Here, you will find educational content, general statistics, ongoing awareness campaigns, and answers to frequently asked questions. Our goal is to provide reliable information and support to those affected by metastatic breast cancer. Additionally, our private portal offers predictive tools and enables doctors to monitor patients closely, ensuring comprehensive care and support..
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown('<div class="home-header">🌟 Featured Content</div>', unsafe_allow_html=True)
+        st.markdown("""
+        <div class="home-content">
+        - <b>Educational Content</b>: Learn about the causes, symptoms, and treatment options for metastatic breast cancer.<br>
+        - <b>General Statistics</b>: Explore the latest statistics and data on metastatic breast cancer.<br>
+        - <b>Awareness Campaigns</b>: Join us in our ongoing efforts to raise awareness and support research.<br>
+        - <b>Frequently Asked Questions</b>: Find answers to common questions about metastatic breast cancer.
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown('<div class="home-header">🙌 Get Involved</div>', unsafe_allow_html=True)
+        st.markdown("""
+        <div class="home-content">
+        Join us in our mission to spread awareness about metastatic breast cancer.
+        Participate in our campaigns, share your story, or sign up for our newsletter to stay updated on the latest news and events.
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown('<div class="home-header">🎗️ Join Our Awareness Campaign</div>', unsafe_allow_html=True)
+        image_url = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/DALL%C2%B7E%202024-05-19%2020.22.33%20-%20A%20visually%20appealing%20homepage%20for%20a%20cancer%20awareness%20website%20focusing%20on%20metastatic%20breast%20cancer.%20The%20design%20should%20include%20a%20warm%20and%20welcoming%20feel.ong.webp"
+        st.image(image_url, caption='Join Our Awareness Campaign')
+
+        st.markdown('<div class="home-header">📰 Latest News</div>', unsafe_allow_html=True)
+        st.markdown("""
+        <div class="home-content">
+        Stay updated with the latest news and developments in the field of metastatic breast cancer. Our news section features recent research findings, new treatment options, and updates on awareness campaigns.
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown('<div class="home-header">💡 Support Resources</div>', unsafe_allow_html=True)
+        st.markdown("""
+        <div class="home-content">
+        Access a variety of support resources, including counseling services, support groups, and educational materials. These resources are designed to help patients and their families navigate the challenges of living with metastatic breast cancer.
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown('<div class="home-header">📞 Contact Us</div>', unsafe_allow_html=True)
+        st.markdown("""
+        <div class="home-content">
+        Have questions or need more information? Contact us through our website, email, or phone. We are here to provide you with the support and information you need.
+        For any inquiries, please feel free to reach out to us at: <a href="mailto:hassansamy491@gmail.com">hassansamy491@gmail.com</a><br>
+        <a href="mailto:omaressam.ee12@gmail.com">omaressam.ee12@gmail.com</a><br>
+        <a href="mailto:monamohsen707@gmail.com">monamohsen707@gmail.com</a><br>
+        <a href="mailto:mohraelayman1@gmail.com">mohraelayman1@gmail.com</a><br>
+        <a href="mailto:ahmed2013.ao48@gmail.com">ahmed2013.ao48@gmail.com</a><br>
+                    
+                    
+        </div>
+        """, unsafe_allow_html=True)
+
 
     if "educational" in st.session_state:
         # CSS to inject contained in a string
@@ -302,13 +315,34 @@ def app():
 
         # Visualize SLNB statistics
         fig = px.line(slnb_df, x='Year', y=['SLNB Procedures', 'Positive SLNB Cases'], 
-                      title='Trends in Sentinel Lymph Node Biopsy (SLNB) Procedures and Positive Cases')
+                    title='Trends in Sentinel Lymph Node Biopsy (SLNB) Procedures and Positive Cases')
         st.plotly_chart(fig)
+        col1, col2 = st.columns(2)
+        with col1:
 
-        st.markdown('<div class="subheader">📅 SLNB Procedures by Year</div>', unsafe_allow_html=True)
-        fig_pie = px.pie(slnb_df, values='SLNB Procedures', names='Year', title='SLNB Procedures by Year')
-        fig_pie.update_layout(width=500, height=500)
-        st.plotly_chart(fig_pie)
+            st.markdown('<div class="subheader">📅 SLNB Procedures by Year</div>', unsafe_allow_html=True)
+            fig_pie = px.pie(slnb_df, values='SLNB Procedures', names='Year')
+            fig_pie.update_layout(width=400, height=400)
+            st.plotly_chart(fig_pie)
+        with col2:
+           
+            
+            
+            
+            lottie_url_hello ="https://lottie.host/224f64a2-a231-4db5-a3d7-0d714c82a5ca/CZIkuJPRUF.json"
+            lottie_hello = load_lottieurl(lottie_url_hello)
+            st_lottie(lottie_hello,height=400,width=600,key="hello")
+            # st_lottie6
+            # lottie_hello,
+            # speed=1,
+            # # reverse=False,
+            # # loop=True,
+            # #quality="low", # medium ; high
+            # #renderer="svg", # canvas
+            # height=23,
+            # width=34,
+            # key=None,)
+
 
         # Define the percentages
         initial_metastatic_percentage = 8  # 6-10% of new cases
@@ -316,37 +350,48 @@ def app():
         survival_percentage = 15  # Survival rate for at least five years after diagnosis with MBC
 
         # Create pie charts
-        fig1, ax1 = plt.subplots(figsize=(3, 3))
+        fig1, ax1 = plt.subplots(figsize=(4, 3))
         ax1.pie([initial_metastatic_percentage, 100 - initial_metastatic_percentage],
-                labels=["Initially Stage IV or Metastatic", "Other Stages"],
-                autopct='%1.1f%%', startangle=90, colors=['skyblue', 'lightgreen'])
+                labels=["Metastatic", "Other Stages"],
+                autopct='%1.1f%%', startangle=90, colors=color_palette[1:3],textprops={'fontsize': 8})
         ax1.axis('equal')
 
-        fig2, ax2 = plt.subplots(figsize=(5, 5))
+        fig2, ax2 = plt.subplots(figsize=(29, 30))
         ax2.pie([future_metastatic_percentage, 100 - future_metastatic_percentage],
-                labels=["Estimated Future Metastatic", "Non-Metastatic"],
-                autopct='%1.1f%%', startangle=90, colors=['orange', 'lightgreen'])
+                labels=[" Future Metastatic", "Non-Metastatic"],
+                autopct='%1.1f%%', startangle=90, colors=color_palette[1:4],textprops={'fontsize': 60})
         ax2.axis('equal')
 
-        fig3, ax3 = plt.subplots(figsize=(4, 4))
+        fig3, ax3 = plt.subplots(figsize=(10, 10))
         ax3.pie([survival_percentage, 100 - survival_percentage],
                 labels=["Survival Rate (>5 years)", "Non-Survival Rate"],
-                autopct='%1.1f%%', startangle=90, colors=['lightcoral', 'lightgreen'],
-                textprops={'fontsize': 12})
+                autopct='%1.1f%%', startangle=90, colors=color_palette[1:5],
+                textprops={'fontsize': 25})
         ax3.axis('equal')
 
-        # Display the charts using Streamlit
-        st.markdown('<div class="subheader">📈 Proportion of New Breast Cancer Cases</div>', unsafe_allow_html=True)
-        st.markdown('<div class="content">Proportion of new breast cancer cases that are initially Stage IV or metastatic:</div>', unsafe_allow_html=True)
-        st.pyplot(fig1)
+        # Create columns
+        col1, col2 = st.columns(2)
 
-        st.markdown('<div class="subheader">📉 Estimated Future Metastatic Cases</div>', unsafe_allow_html=True)
-        st.markdown('<div class="content">Estimated percentage of all breast cancer cases that will become metastatic:</div>', unsafe_allow_html=True)
-        st.pyplot(fig2)
+        # Display the charts in columns
+        with col1:
+            st.markdown('<div class="subheader">📈 Proportion of New Breast Cancer Cases</div>', unsafe_allow_html=True)
+            st.markdown('<div class="content">Proportion of new breast cancer cases that are initially Stage IV or metastatic:</div>', unsafe_allow_html=True)
+            st.pyplot(fig1)
+            st.markdown('<div class="subheader">🔍 Survival Rate for MBC Patients</div>', unsafe_allow_html=True)
+            st.markdown('<div class="content">Survival rate for at least five years after diagnosis with MBC:</div>', unsafe_allow_html=True)
+            st.pyplot(fig3)
 
-        st.markdown('<div class="subheader">🔍 Survival Rate for MBC Patients</div>', unsafe_allow_html=True)
-        st.markdown('<div class="content">Survival rate for at least five years after diagnosis with MBC:</div>', unsafe_allow_html=True)
-        st.pyplot(fig3)
+        with col2:
+            st.markdown('<div class="subheader">📉 Estimated Future Metastatic Cases</div>', unsafe_allow_html=True)
+            st.markdown('<div class="content">Estimated percentage of all breast cancer cases that will become metastatic:</div>', unsafe_allow_html=True)
+            st.pyplot(fig2)
+             
+            lottie_url_helloo ="https://lottie.host/cc77d579-61d5-4519-bae1-47fdfb24589e/c92ODWPDgo.json"
+            lottie_helloo = load_lottieurl(lottie_url_helloo)
+            st_lottie(lottie_helloo,height=400,width=600,key="helloo")
+
+        
+            
 
     if "campaigns" in st.session_state:
         css = """
