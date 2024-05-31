@@ -144,6 +144,14 @@ class LocalCache:
         '''doc_id=self.get_id()
         patientsDataFrame=Network.get_assesment_byDocId(doc_id)
         return patientsDataFrame'''
+    def get_allAssessment_byStatus(self, status):
+        try:
+            # Fetch the assessments from the backend
+            assessments = Network.get_allAssessment_byStatus(status)
+            # Display the assessments
+            return self.dataframeTest(assessments)
+        except Exception as e:
+            return e
 
     def get_data_from_excel(self):
         file_path = "../Backend/cairouniversity_final_excel.xlsx"

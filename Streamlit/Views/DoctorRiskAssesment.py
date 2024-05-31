@@ -6,16 +6,16 @@ import pandas as pd
 from ourData.cache import LocalCache
 from streamlit_modal import Modal
 from streamlit_modal import Modal
-
+import math
 # Example JSON data
 
 def default_form(userAuthData):
         Network = Networking()
         cacheInMemory = LocalCache()
         patient_data=None
-        predectionPercentage=None
+        predictionPercentage=None
         # with st.form("Breast Cancer Metastasis Risk Prediction"):
-        predection_modal = Modal("Breast Cancer Metastasis Risk Prediction Result", key="result-modal", padding=10, max_width=430)
+        prediction_modal = Modal("Breast Cancer Metastasis Risk Prediction Result", key="result-modal", padding=10, max_width=430)
         col_Numerical, col_Categorical1, col_YesorNo = st.columns(3)
 
         # Numerical inputs
@@ -68,10 +68,10 @@ def default_form(userAuthData):
                 # Check for missing or unrecorded fields and default them to "Unrecorded" if necessary
                 patient_data = {
                     "MRN": int(patient_MRN),
-                    "patient_first_bmi": float(patient_first_bmi) if patient_first_bmi is not None and patient_first_bmi != 0.0 else "Unrecorded",
-                    "patient_age": int(patient_age) if patient_age is not None and patient_age != 0 else "Unrecorded",
-                    "patient_size_cm": float(patient_size_cm) if patient_size_cm is not None and patient_size_cm != 0.0 else "Unrecorded",
-                    "patient_ki67": float(patient_ki67) if patient_ki67 is not None and patient_ki67 != 0 else "Unrecorded",
+                    "patient_first_bmi": float(patient_first_bmi) if patient_first_bmi is not None and patient_first_bmi != 0.0 else None,
+                    "patient_age": int(patient_age) if patient_age is not None and patient_age != 0 else None,
+                    "patient_size_cm": float(patient_size_cm) if patient_size_cm is not None and patient_size_cm != 0.0 else None,
+                    "patient_ki67": float(patient_ki67) if patient_ki67 is not None and patient_ki67 != 0 else None,
                     "Others": patient_other if patient_other else "Unrecorded",
                     "patient_family_history": patient_family_history if patient_family_history != "Unrecorded" else "Unrecorded",
                     "patient_menopausal_state": patient_menopausal_state if patient_menopausal_state != "Unrecorded" else "Unrecorded",
@@ -108,10 +108,10 @@ def default_form(userAuthData):
                 # Check for missing or unrecorded fields and default them to "Unrecorded" if necessary
                 patient_data = {
                     "MRN": int(patient_MRN),
-                    "patient_first_bmi": float(patient_first_bmi) if patient_first_bmi is not None and patient_first_bmi != 0.0 else "Unrecorded",
-                    "patient_age": int(patient_age) if patient_age is not None and patient_age != 0 else "Unrecorded",
-                    "patient_size_cm": float(patient_size_cm) if patient_size_cm is not None and patient_size_cm != 0.0 else "Unrecorded",
-                    "patient_ki67": float(patient_ki67) if patient_ki67 is not None and patient_ki67 != 0 else "Unrecorded",
+                    "patient_first_bmi": float(patient_first_bmi) if patient_first_bmi is not None and not math.isnan(patient_first_bmi) and patient_first_bmi != 0.0 else None,
+                    "patient_age": int(patient_age) if patient_age is not None and not math.isnan(patient_age) and patient_age != 0 else None,
+                    "patient_size_cm": float(patient_size_cm) if patient_size_cm is not None and not math.isnan(patient_size_cm) and patient_size_cm != 0.0 else None,
+                    "patient_ki67": float(patient_ki67) if patient_ki67 is not None and not math.isnan(patient_ki67) and patient_ki67 != 0 else None,
                     "Others": patient_other if patient_other else "Unrecorded",
                     "patient_family_history": patient_family_history if patient_family_history != "Unrecorded" else "Unrecorded",
                     "patient_menopausal_state": patient_menopausal_state if patient_menopausal_state != "Unrecorded" else "Unrecorded",
@@ -144,30 +144,31 @@ def default_form(userAuthData):
                     try:
                         assessment_result = Network.post_make_assesment(userAuthData['id'], int(patient_MRN), patient_data)
                         if assessment_result:
-                            st.session_state['predectionResult']=int(assessment_result['prediction'])                           
-                            predectionPercentage=assessment_result['predictionProbability']
-                            predection_modal.open()
+                            st.session_state['predictionResult']=int(assessment_result['prediction'])                           
+                            st.session_state['predictionPropability']=int(assessment_result['predictionProbability'])
+                            prediction_modal.open()
 
                     except Exception as e:
                         st.error(f"An error occurred: {e}")   
 
-        if predection_modal.is_open():
-            # Content inside the modal based on the value of 'predectionResult'
-            with predection_modal.container():
-                if 'predectionResult' in st.session_state: 
-                    if st.session_state['predectionResult'] == 0:
+        if prediction_modal.is_open():
+            # Content inside the modal based on the value of 'predictionResult'
+            with prediction_modal.container():
+                if 'predictionResult' in st.session_state and 'predictionPropability' in st.session_state: 
+                    if st.session_state['predictionResult'] == 0:
                         content = f"""
                             <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                                <h1 style="color: green; font-size: 28px; font-family: 'Open Sans', sans-serif;">Patient is Unlikley to Have Metastasis</h1>
+                                <h1 style="color: green; font-size: 28px; font-family: 'Open Sans', sans-serif;">Patient is Unlikley to have metastasis with {st.session_state['predictionPropability']}% </h1>
                             </div>
                         """
                     else:
                         content = f"""
                             <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                                <h1 style="color: red; font-size: 28px; font-family: 'Open Sans', sans-serif;">Patient may Have Metastasis</h1>
+                                <h1 style="color: red; font-size: 28px; font-family: 'Open Sans', sans-serif;">Patient May have metastasis with {st.session_state['predictionPropability']}%</h1>
                             </div>
                         """
-                    del st.session_state['predectionResult']
+                    del st.session_state['predictionResult']
+                    del st.session_state['predictionPropability']
                     st.markdown(content, unsafe_allow_html=True)
 
                         # Set the height of the modal dynamically
@@ -187,7 +188,7 @@ def editing_form(df, selected_mrn, userAuthData):
         form_key = f"form_{selected_mrn}"
         confirmDelete_modal = Modal("Confirm Deletion", key="confirm_deletion")
         edited_patient_data=None
-        predection_modal = Modal("Breast Cancer Metastasis Risk Prediction Result", key="result-modal", padding=10, max_width=430)
+        prediction_modal = Modal("Breast Cancer Metastasis Risk Prediction Result", key="result-modal", padding=10, max_width=430)
 
         col_Numerical, col_Categorical1, col_YesorNo = st.columns(3)
         with col_Numerical:
@@ -234,10 +235,10 @@ def editing_form(df, selected_mrn, userAuthData):
         if saveEdits_button:
             edited_patient_data = {
                 "MRN": int(patient_MRN),
-                "patient_first_bmi": float(patient_first_bmi) if patient_first_bmi is not None and patient_first_bmi != 0.0 else "Unrecorded",
-                "patient_age": int(patient_age) if patient_age is not None and patient_age != 0 else "Unrecorded",
-                "patient_size_cm": float(patient_size_cm) if patient_size_cm is not None and patient_size_cm != 0.0 else "Unrecorded",
-                "patient_ki67": float(patient_ki67) if patient_ki67 is not None and patient_ki67 != 0 else "Unrecorded",
+                "patient_first_bmi": float(patient_first_bmi) if patient_first_bmi is not None and not math.isnan(patient_first_bmi) and patient_first_bmi != 0.0 else None,
+                "patient_age": int(patient_age) if patient_age is not None and not math.isnan(patient_age) and patient_age != 0 else None,
+                "patient_size_cm": float(patient_size_cm) if patient_size_cm is not None and not math.isnan(patient_size_cm) and patient_size_cm != 0.0 else None,
+                "patient_ki67": float(patient_ki67) if patient_ki67 is not None and not math.isnan(patient_ki67) and patient_ki67 != 0 else None,
                 "Others": patient_other if patient_other else "Unrecorded",
                 "patient_family_history": patient_family_history if patient_family_history != "Unrecorded" else "Unrecorded",
                 "patient_menopausal_state": patient_menopausal_state if patient_menopausal_state != "Unrecorded" else "Unrecorded",
@@ -297,10 +298,10 @@ def editing_form(df, selected_mrn, userAuthData):
                 # Check for missing or unrecorded fields and default them to "Unrecorded" if necessary
                 edited_patient_data = {
                 "MRN": int(patient_MRN),
-                "patient_first_bmi": float(patient_first_bmi) if patient_first_bmi is not None and patient_first_bmi != 0.0 else "Unrecorded",
-                "patient_age": int(patient_age) if patient_age is not None and patient_age != 0 else "Unrecorded",
-                "patient_size_cm": float(patient_size_cm) if patient_size_cm is not None and patient_size_cm != 0.0 else "Unrecorded",
-                "patient_ki67": float(patient_ki67) if patient_ki67 is not None and patient_ki67 != 0 else "Unrecorded",
+                "patient_first_bmi": float(patient_first_bmi) if patient_first_bmi is not None and not math.isnan(patient_first_bmi) and patient_first_bmi != 0.0 else None,
+                "patient_age": int(patient_age) if patient_age is not None and not math.isnan(patient_age) and patient_age != 0 else None,
+                "patient_size_cm": float(patient_size_cm) if patient_size_cm is not None and not math.isnan(patient_size_cm) and patient_size_cm != 0.0 else None,
+                "patient_ki67": float(patient_ki67) if patient_ki67 is not None and not math.isnan(patient_ki67) and patient_ki67 != 0 else None,
                 "Others": patient_other if patient_other else "Unrecorded",
                 "patient_family_history": patient_family_history if patient_family_history != "Unrecorded" else "Unrecorded",
                 "patient_menopausal_state": patient_menopausal_state if patient_menopausal_state != "Unrecorded" else "Unrecorded",
@@ -331,31 +332,34 @@ def editing_form(df, selected_mrn, userAuthData):
                         
                     # Make API call and handle the result
                     try:
+                        print("EDITTTTTT")
+                        print(edited_patient_data)
                         assessment_result = Network.post_make_assesment(userAuthData['id'], int(patient_MRN), edited_patient_data)
                         if assessment_result:
-                            st.session_state['predectionResult']=int(assessment_result['prediction'])                           
-                            predectionPercentage=assessment_result['predictionProbability']
-                            predection_modal.open()
+                            st.session_state['predictionResult']=int(assessment_result['prediction'])                           
+                            st.session_state['predictionPropability']=int(assessment_result['predictionProbability'])
+                            prediction_modal.open()
                     except Exception as e:
                         st.error(f"An error occurred: {e}")   
 
-        if predection_modal.is_open():
-            # Content inside the modal based on the value of 'predectionResult'
-            with predection_modal.container():
-                if 'predectionResult' in st.session_state: 
-                    if st.session_state['predectionResult'] == 0:
+        if prediction_modal.is_open():
+            # Content inside the modal based on the value of 'predictionResult'
+            with prediction_modal.container():
+                if 'predictionResult' in st.session_state and 'predictionPropability' in st.session_state: 
+                    if st.session_state['predictionResult'] == 0:
                         content = f"""
                             <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                                <h1 style="color: green; font-size: 28px; font-family: 'Open Sans', sans-serif;">Patient is Unlikley to Have Metastasis</h1>
+                                <h1 style="color: green; font-size: 28px; font-family: 'Open Sans', sans-serif;">Patient is Unlikley to have metastasis with {st.session_state['predictionPropability']}% </h1>
                             </div>
                         """
                     else:
                         content = f"""
                             <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                                <h1 style="color: red; font-size: 28px; font-family: 'Open Sans', sans-serif;">Patient may Have Metastasis</h1>
+                                <h1 style="color: red; font-size: 28px; font-family: 'Open Sans', sans-serif;">Patient May have metastasis with {st.session_state['predictionPropability']}%</h1>
                             </div>
                         """
-                    del st.session_state['predectionResult']
+                    del st.session_state['predictionResult']
+                    del st.session_state['predictionPropability']
                     st.markdown(content, unsafe_allow_html=True)
 
                         # Set the height of the modal dynamically
@@ -365,7 +369,7 @@ def editing_form(df, selected_mrn, userAuthData):
                         )
                 else:
                     st.error('Error! Something went wrong')
-       
+
 
 
 def app(userAuthData):

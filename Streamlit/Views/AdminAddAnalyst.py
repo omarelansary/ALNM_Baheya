@@ -35,7 +35,7 @@ def app():
                 st.warning("Invalid email format.")
             else:
                 validation_result = Components.vaildation.validate_password(new_scientist_password)
-                st.write("Validation result:", validation_result)  # Print validation result
+
                 if validation_result == "VALID":
                     Components.vaildation.signup("Data Analyst",new_scientist_fname, new_scientist_lname, new_scientist_email,new_scientist_password)
                     new_user =('Data Scientist', new_scientist_fname, new_scientist_lname, new_scientist_email, new_scientist_password)
@@ -47,7 +47,7 @@ def app():
                     st.warning("Password must contain at least one uppercase letter, one number, and one special character.")
                 elif validation_result == "TOO_SHORT":
                     st.warning("Password must be at least 7 characters long.")
-                st.write("Password:", new_scientist_password)   
+
 
     st.subheader('View Data Scientists')
     scientists = Cache.get_dataAnalysts_for_admins()

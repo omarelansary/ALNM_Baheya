@@ -49,6 +49,18 @@ class Networking():
                 st.error(data.get('message'))
         else:
             raise Exception(f"HTTP Error: {response.status_code}")
+
+    def get_allAssessment_byStatus(self, status):
+        payload = {"status": int(status)}
+        response = requests.post('http://127.0.0.1:8000/api/dataScientists/getAllAssessmentsByStatus', json=payload)
+        if response.status_code == 200:
+            data = response.json()
+            if data['success']:
+                return data['assessments']
+            else:
+                st.error(data.get('message'))
+        else:
+            raise Exception(f"HTTP Error: {response.json()}")    
     
     def post_signup(self,role,fname,lname,email,password):
         """Send login request to API and return the response."""

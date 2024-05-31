@@ -48,11 +48,11 @@ def app():
     st.title('Analyst DashBoard')
         # Load your data
     
-    AUC=79
+    AUC=80
     accurcy=83
-    macro=80
+    macro=82
     micro=83
-    weighted=80
+    weighted=82
     image_url_PCA_Analysis = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/PCA_Analysis.png"
     image_url_Mean_ROC_AUC_Curve2 = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/Mean_ROC_AUC_Curve2.png"
     image_url_Mean_ROC_AUC_Curve1 = "https://raw.githubusercontent.com/omarelansary/ALNM_Baheya/develop/Streamlit/Images/Mean_ROC_AUC_Curve1.png"
@@ -66,7 +66,9 @@ def app():
     donut_chart_Macro = make_donut(macro, 'Accuracy',color)
     donut_chart_Micro = make_donut(micro, 'Outbound Migration',color)
     donut_chart_Auc = make_donut(AUC, 'Accuracy',color)
-    st.markdown('Machine learning')
+    st.write("<br>", unsafe_allow_html=True)  
+    st.subheader('Model Performance Metrics')
+    st.write("<br>", unsafe_allow_html=True)  
     col1,col2,col3,col4,col5=st.columns(5)
     with col1:
         st.write('Accuracy')
@@ -83,20 +85,28 @@ def app():
     with col5:
         st.write('Auc Score')
         st.altair_chart(donut_chart_Auc) 
-    col11,col22=st.columns(2)  
-    with col11:  
-        with open('mean_roc.html', 'r', encoding='utf-8') as f:
-          html_content = f.read()
-        st.components.v1.html(html_content, height=600)  
-        # st.image(image_url_Mean_ROC_AUC_Curve1)
-        # st.markdown("<br><br><br><br>", unsafe_allow_html=True)
 
-        # st.image(image_url_PCA_Analysis)                 
+    st.write("<br>", unsafe_allow_html=True) 
+    st.subheader('Mean ROC curve with variability')
+    with open('../Streamlit/Images/mean_roc.html', 'r', encoding='utf-8') as f:
+          html_content = f.read()
+          st.components.v1.html(html_content,height=450)  
+
+    st.subheader("10 Folds Mean")
+    st.write("<br>", unsafe_allow_html=True)
+    col11,col22=st.columns(2)  
+
+    with col11:
+      st.write('Mean ROC Curve with Variability (10-Folds)')  
+      st.image(image_url_Mean_ROC_AUC_Curve2)             
         
-    with col22:    
-        st.image(image_url_Mean_ROC_AUC_Curve2) 
-        st.image(image_url_confusion_matrix_last) 
-    
+    with col22:
+      st.write('Confusion Matrix (10-Folds)')    
+      st.image(image_url_confusion_matrix_last) 
+
+    st.write("<br>", unsafe_allow_html=True)  
+    st.subheader("Heat Map")
+    st.write("<br>", unsafe_allow_html=True)  
     st.image(image_url_HMAP_NEW)
     
    
