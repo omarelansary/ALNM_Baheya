@@ -22,72 +22,72 @@ def main():
         userAuthData=authComponents.check_cookie_session()
         if userAuthData['role']=='Physician':
             app = option_menu(
-            menu_title="Welcome Dr. " + str(userAuthData['username']),
-            options=['Home', 'Follow Up', 'Patients Filters','Patients Table','Dashboard', 'Data Entry','Logout'],
-            icons=['house-fill', 'bar-chart-steps', 'people','person','graph-up','file-earmark-medical', 'door-open'],
+            menu_title="Welcome MD. " + str(userAuthData['username']),
+            options=['Home', 'Dashboard', 'Follow Up', 'Patients Filters','Patients Table', 'Patient Management','Logout'],
+            icons=['house', 'pie-chart', 'bar-chart-steps', 'funnel','file-spreadsheet','file-earmark-medical', 'door-open'],
             menu_icon=['person-fill'],
             default_index=0,
             orientation='horizontal',
             styles={
-                "container": {"padding": "5!important", "background-color": "black"},
-                "icon": {"color":"white", "font-size": "23px"},
-                "nav-link": {"color":"white", "font-size": "20px", "text-align":"left","margin":"0px"},
-                "nav-link-selected": {"background-color": "#02ab21"},}
+                "container": {"width": "100%"},
+                "icon": {"color":"black", "font-size": "23px"},
+                "nav-link": {"color":"black", "font-size": "20px", "text-align":"left" },
+                "nav-link-selected": {"background-color": "#ff9cbc"},}
             )
         elif userAuthData['role']=='Data Analyst': 
             app = option_menu(
             menu_title='Welcome Analyst, ' + str(userAuthData['username']),
             options=['Home', 'Analysis', 'Correlations', 'Review','Logout'],
-            icons=['house-fill', 'bar-chart-line','clipboard2-pulse-fill','binoculars','door-open'],
+            icons=['house', 'bar-chart-line','graph-up','binoculars','door-open'],
             menu_icon=['person-fill'],
             default_index=0,
             orientation='horizontal',
             styles={
-                "container": {"padding": "5!important", "background-color": "black"},
-                "icon": {"color":"white", "font-size": "23px"},
-                "nav-link": {"color":"white", "font-size": "20px", "text-align":"left","margin":"0px"},
-                "nav-link-selected": {"background-color": "#02ab21"},}
+                "container": {"width": "100%"},
+                "icon": {"color":"black", "font-size": "23px"},
+                "nav-link": {"color":"black", "font-size": "20px", "text-align":"left" },
+                "nav-link-selected": {"background-color": "#ff9cbc"},}
             )
         elif userAuthData['role']=='Admin': 
             app = option_menu(
             menu_title='Welcome Admin, '+ str(userAuthData['username']),
-            options=['Home', 'Panel', 'Add Head Doctor','Add Analyst','Logout'],
-            icons=['house-fill', 'graph-up', 'person-plus','person-plus-fill','door-open'],
+            options=['Home', 'Panel', 'Add Head Physician','Add Analyst','Logout'],
+            icons=['house', 'layout-sidebar', 'person-plus','person-rolodex','door-open'],
             menu_icon=['person-fill'],
             default_index=0,
             orientation='horizontal',
             styles={
-                "container": {"padding": "5!important", "background-color": "black"},
-                "icon": {"color":"white", "font-size": "23px"},
-                "nav-link": {"color":"white", "font-size": "20px", "text-align":"left","margin":"0px"},
-                "nav-link-selected": {"background-color": "#02ab21"},}
+                "container": {"width": "100%"},
+                "icon": {"color":"black", "font-size": "23px"},
+                "nav-link": {"color":"black", "font-size": "20px", "text-align":"left" },
+                "nav-link-selected": {"background-color": "#ff9cbc"},}
             )
         elif userAuthData['role']=='Head Doctor':
             app = option_menu(
-            menu_title='Welcome Head Dr. '+ str(userAuthData['username']),
-            options=['Home', 'All Patients','Patients Table','Dashboard','Head Dashboard', 'Add Doctor','Logout'],
-            icons=['house-fill', 'people','person','graph-up','clipboard2-pulse','person-plus','door-open'],
+            menu_title='Welcome Head MD. '+ str(userAuthData['username']),
+            options=['Home','Dashboard','Head Dashboard', 'Patients Filters','Patients Table', 'Add Physician','Logout'],
+            icons=['house','pie-chart','clipboard2-pulse', 'funnel','file-spreadsheet','person-plus','door-open'],
             menu_icon=['person-fill'],
             default_index=0,
             orientation='horizontal',
             styles={
-                "container": {"padding": "5!important", "background-color": "black"},
-                "icon": {"color":"white", "font-size": "23px"},
-                "nav-link": {"color":"white", "font-size": "20px", "text-align":"left","margin":"0px"},
-                "nav-link-selected": {"background-color": "#02ab21"},}
+                "container": {"width": "100%"},
+                "icon": {"color":"black", "font-size": "23px"},
+                "nav-link": {"color":"black", "font-size": "20px", "text-align":"left" },
+                "nav-link-selected": {"background-color": "#ff9cbc"},}
             )            
     else:    
         app = option_menu(
           menu_title=None,
           options=['Home', 'Login'],
-          icons=['house-fill', 'box-arrow-in-right'],
+          icons=['house', 'box-arrow-in-right'],
           default_index=0,
           orientation='horizontal',
           styles={
-            "container": {"padding": "5!important", "background-color": "black"},
-            "icon": {"color":"white", "font-size": "23px"},
-            "nav-link": {"color":"white", "font-size": "20px", "text-align":"left","margin":"0px"},
-            "nav-link-selected": {"background-color": "#02ab21"},}
+            "container": {"width": "100%"},
+            "icon": {"color":"black", "font-size": "23px"},
+            "nav-link": {"color":"black", "font-size": "20px", "text-align":"left" },
+            "nav-link-selected": {"background-color": "#ff9cbc"},}
         )
 
     if app== 'Home':
@@ -98,11 +98,11 @@ def main():
        Views.AdminDashboard.app()
     if app== 'All Patients':
        Views.AdminPatientsView.app() 
-    if app=='Add Doctor':
+    if app=='Add Physician':
         Views.AdminAddDoctor.app() 
     if app=='Add Analyst':
        Views.AdminAddAnalyst.app()
-    if app=='Add Head Doctor':
+    if app=='Add Head Physician':
        Views.AdminAddHeadDoctor.app()             
     if app=='Analysis':
        Views.AnalystDashboard.app()
@@ -112,7 +112,7 @@ def main():
        Views.AnalystCorrelationGraphs.app()                  
     if app== 'Dashboard':
         Views.DoctorDashboard.app()    
-    if app== 'Data Entry':
+    if app== 'Patient Management':
         Views.DoctorRiskAssesment.app(userAuthData)
     if app=='Patients Table':
         Views.DoctorPatients.app(userAuthData)
