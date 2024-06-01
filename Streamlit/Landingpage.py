@@ -117,7 +117,10 @@ def main():
     if app=='Patients Table':
         Views.DoctorPatients.app(userAuthData)
     if app=='Patients Filters':
-        Views.FiltringPatientsCases.app(userAuthData)        
+        if userAuthData['role'] == "Physician":
+            Views.FiltringPatientsCases.app(userAuthData)
+        else:
+            Views.AdminPatientsView.app()             
     if app=='Follow Up':
         Views.DoctorGantChart.app() 
     if app=='Head Dashboard':
