@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'assessments',
     'dataScientists',
     'headDoctors',
+    # 'rest_captcha',
+    'captcha',
 ]
 
 MIDDLEWARE = [
@@ -89,6 +91,7 @@ EMAIL_USE_SSL = False
 # EMAIL_SSL_VERIFICATION = False
 EMAIL_HOST_PASSWORD='iaul xzaw jbmd gpps'
 
+CAPTCHA_OUTPUT_FORMAT = 'captcha/image_%s.png'
 
 # Database
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases

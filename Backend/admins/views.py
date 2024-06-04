@@ -36,8 +36,21 @@ from doctors.models import Doctor
 from dataScientists.models import DataScientist
 from assessments.models import Assessment
 from headDoctors.models import headDoctor
+# from rest_captcha import helpers
+# from rest_captcha.helpers import captcha_image, validate_captcha  # Import helper functions from rest_captcha
 
-
+# @api_view(['POST'])
+# def generate_captcha(request):
+#     try:
+#         key, image = captcha_image()  # Generate captcha key and image
+#         return Response({
+#             'image_type': 'image/png',
+#             'image_decode': 'base64',
+#             'captcha_key': key,
+#             'captcha_value': image
+#         })
+#     except Exception as e:
+#         return Response({'success': False, 'message': str(e)}, status=500)
 
 
 #=========BRAND NEW SIGN UP========================================
@@ -55,10 +68,17 @@ def signUp(request):
         lastName = request.data.get('lastName')
         email = request.data.get('email')
         password = request.data.get('password')
+        # captcha_key = request.data.get('captcha_key')
+        # captcha_value = request.data.get('captcha_value')
 
         # Check if all required fields are provided
         if not firstName or not lastName or not email or not password:
             return Response({'success': False, 'message': 'Please provide all required fields'}, status=400)
+
+        # # Validate captcha
+        # if not validate_captcha(captcha_key, captcha_value):
+        #     return Response({'success': False, 'message': 'Invalid captcha'}, status=400)
+
 
         # Check if email already exists in the database
         if Doctor.objects.filter(email=email).exists():

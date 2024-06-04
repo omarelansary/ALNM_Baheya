@@ -16,12 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-
+from captcha import urls as captcha_urls
 urlpatterns = [
     path('api/',include('dataScientists.urls')),
     path('api/', include('doctors.urls')),
     path('api/',include('admins.urls')),
     path('api/',include('headDoctors.urls')),
-    
+    path('captcha/', include(captcha_urls)),  # Include Captcha built-in URLs
     path('admin/', admin.site.urls),
 ]

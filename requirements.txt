@@ -59,3 +59,4 @@ lightgbm
 delayed
 streamlit_cookies_controller
 streamlit_lottie
+django-simple-captcha

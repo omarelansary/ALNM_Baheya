@@ -31,7 +31,22 @@ from assessments.serializers import AssessmentSerializer
 from collections import defaultdict 
 import pandas as pd
 from machineLearningModel.model import ALNM_Model
+from captcha.models import CaptchaStore
+from captcha.helpers import captcha_image_url
 
+
+#===================================CATPCHA==========================================
+@api_view(['GET'])
+def get_captcha(request):
+    new_key = CaptchaStore.generate_key()
+    captcha_image_url_var = captcha_image_url(new_key)
+    return Response({
+        'captcha_key': new_key,
+        'captcha_image_url': captcha_image_url_var
+    })
+
+
+#====================================================================================
 #===================================Delete Assessments===============================
 @api_view(['POST'])
 def deleteAssessment(request):
@@ -203,9 +218,61 @@ def forgotPassword(request):
     except Exception as e:
         # Return a generic error response for other exceptions
         return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)
+#===========================LOGIN AFTER CAPTCHA=========================================
+from django.shortcuts import render
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Doctor  # Replace with your actual model
+from django.contrib.auth.hashers import check_password
+from captcha.models import CaptchaStore
+from captcha.helpers import captcha_image_url
 
+@api_view(['POST'])
+def login(request):
+    email = request.data.get('email')
+    password = request.data.get('password')
+    captcha_key = request.data.get('captcha_key')
+    captcha_response = request.data.get('captcha_response')
 
-#======================================================================================
+    # Check if email, password, and captcha fields are provided
+    if not email or not password or not captcha_key or not captcha_response:
+        return Response({'success': False, 'error': 'Please provide email, password, captcha key, and captcha response'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Verify CAPTCHA
+    if not CaptchaStore.objects.filter(hashkey=captcha_key).exists():
+        return Response({'success': False, 'error': 'Invalid captcha key'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    captcha = CaptchaStore.objects.get(hashkey=captcha_key)
+    if not captcha.response.lower() == captcha_response.lower():
+        print("captcha.response:\n",captcha.response)
+        print("captcha_response:\n",captcha_response)
+        
+        return Response({'success': False, 'error': 'Invalid captcha response'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Check if email exists in the database
+    try:
+        doctor = Doctor.objects.get(email=email)
+        if check_password(password, doctor.password):
+            # Generate JWT token
+            token = generate_jwt_token(doctor.id)
+            return Response({
+                'success': True,
+                'id': doctor.id,
+                'firstName': doctor.firstName,
+                'lastName': doctor.lastName,
+                'token': token,
+                'message': 'Login successful'
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({'success': False, 'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    except Doctor.DoesNotExist:
+        return Response({'success': False, 'error': 'Email does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+
+#=======================================================================================
+
+#=========================LOGIN BEFORE CAPTCHA=============================================================
+'''
 @api_view(['POST'])
 def login(request):
     try:
@@ -245,7 +312,7 @@ def login(request):
     except Exception as e:
         # Return a generic error response for other exceptions
         return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)
-
+'''
 
 #===========================END BRAND NEW LOGIN=====================
 #===========================Risk Assessment View====================
@@ -659,6 +726,8 @@ def makeAssessment(request):
 
         #Add status to assessment
         assessment.status = 1
+
+        assessment.prediction = prediction[0]
         
         #Add date assessment created 
         assessment.creation_date = timezone.now().date()

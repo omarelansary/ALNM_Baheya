@@ -13,6 +13,8 @@ urlpatterns = [
     path( 'doctors/getAssessmentsCreationDate', views.getAssessmentsCreationDate), 
     path( 'doctors/delete', views.delete), 
     path( 'doctors/deleteAssessment', views.deleteAssessment), 
+    path('doctors/captcha', views.get_captcha), 
+    
 
     
 
