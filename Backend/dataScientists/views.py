@@ -120,9 +120,9 @@ def getDashboardData(request):
     try:
         data = pd.read_excel('cairouniversity_final_excel.xlsx')
     except FileNotFoundError:
-        return JsonResponse({"error": "File not found"}, status=404)
+        return Response({'success':False,"error": "File not found"}, status=404)
     except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+        return Response({'success':False,"error": str(e)}, status=500)
     
     # Replace NaN values with empty strings
     data = data.fillna('')
@@ -383,9 +383,9 @@ def export_assessments_to_excel(request):
         # Save the workbook
         book.save(file_path)
 
-        return JsonResponse({'message': 'Assessments exported successfully', 'file_path': file_path}, status=200)
+        return Response({'success':False,'message': 'Assessments exported successfully', 'file_path': file_path}, status=200)
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        return Response({'success':False,'error': str(e)}, status=500)
     
 #================================================================================
 
