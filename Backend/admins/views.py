@@ -36,22 +36,8 @@ from doctors.models import Doctor
 from dataScientists.models import DataScientist
 from assessments.models import Assessment
 from headDoctors.models import headDoctor
-# from rest_captcha import helpers
-# from rest_captcha.helpers import captcha_image, validate_captcha  # Import helper functions from rest_captcha
-
-# @api_view(['POST'])
-# def generate_captcha(request):
-#     try:
-#         key, image = captcha_image()  # Generate captcha key and image
-#         return Response({
-#             'image_type': 'image/png',
-#             'image_decode': 'base64',
-#             'captcha_key': key,
-#             'captcha_value': image
-#         })
-#     except Exception as e:
-#         return Response({'success': False, 'message': str(e)}, status=500)
-
+from captcha.models import CaptchaStore
+from captcha.helpers import captcha_image_url
 
 #=========BRAND NEW SIGN UP========================================
 #Steps:
@@ -124,47 +110,47 @@ def signUp(request):
         # Return a generic error response for other exceptions
         return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)
 
-#=====BRAND NEW LOGIN FOR NEW MANUALLY DEFINED DOCTOR'S MODEL======
-
+#===============================LOGIN AFTER CAPTCHA=====================
 @api_view(['POST'])
 def login(request):
-    try:
-        # Get request data
-        email = request.data.get('email')
-        password = request.data.get('password')
+    email = request.data.get('email')
+    password = request.data.get('password')
+    captcha_key = request.data.get('captcha_key')
+    captcha_response = request.data.get('captcha_response')
 
-        # Check if both email and password are provided
-        if not email or not password:
-            return Response({'success': False, 'message': 'Please provide both email and password'}, status=400)
+    # Check if email, password, and captcha fields are provided
+    if not email or not password or not captcha_key or not captcha_response:
+        return Response({'success': False, 'error': 'Please provide email, password, captcha key, and captcha response'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Check if email already exists in the database
-        if Admin.objects.filter(email=email).exists():
-            #compare password (methode 2)
-            admin=Admin.objects.get(email=email)
-            print("My admin object:\n",admin)
-            print("Database password:\n",admin.password)
-            print("User entered password:\n",password)
-
-            print("Manual password checker:\n",type(password))
+    # Verify CAPTCHA
+    if not CaptchaStore.objects.filter(hashkey=captcha_key).exists():
+        return Response({'success': False, 'error': 'Invalid captcha key'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    captcha = CaptchaStore.objects.get(hashkey=captcha_key)
+    if not captcha.response.lower() == captcha_response.lower():
+        print("captcha.response:\n",captcha.response)
+        print("captcha_response:\n",captcha_response)
         
-            # Check if user exists and password matches
-            if not admin or (password != admin.password):
-            # if admin is None or password is not admin.password:
-                return Response({'success': False,'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-            else:
-                #TODO:set an expiration date
-                token=generate_jwt_token(admin.id)
-                print("My token: ",token)
-                return Response({'success': True,"id":admin.id,"firstName":admin.firstName,"lastName":admin.lastName,'token': token,'message': 'Login successful'})
+        return Response({'success': False, 'error': 'Invalid captcha response'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Check if email exists in the database
+    try:
+        admin = Admin.objects.get(email=email)
+        if check_password(password, admin.password):
+            # Generate JWT token
+            token = generate_jwt_token(admin.id)
+            return Response({
+                'success': True,
+                'id': admin.id,
+                'firstName': admin.firstName,
+                'lastName': admin.lastName,
+                'token': token,
+                'message': 'Login successful'
+            }, status=status.HTTP_200_OK)
         else:
-            # Email does not exist in the database
-            return Response({'success': False, 'message': 'Email does not exist'}, status=400)
-    except OperationalError as e:
-        # Return an error response for database errors
-        return Response({'success': False, 'message': f'Database error: {e}'}, status=400)
-    except Exception as e:
-        # Return a generic error response for other exceptions
-        return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)
+            return Response({'success': False, 'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    except Admin.DoesNotExist:
+        return Response({'success': False, 'error': 'Email does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
 #===========================END BRAND NEW LOGIN=====================
 

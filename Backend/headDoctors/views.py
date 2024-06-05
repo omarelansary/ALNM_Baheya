@@ -32,7 +32,8 @@ from collections import defaultdict
 import pandas as pd
 from machineLearningModel.model import ALNM_Model
 from headDoctors.serializers import HeadDoctorSerializer
-
+from captcha.models import CaptchaStore
+from captcha.helpers import captcha_image_url
 #==========================GET HEAD DOCTORS============================================
 
 @api_view(['GET'])
@@ -49,44 +50,76 @@ def getHeadDoctors(request):
         return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)
 
 #======================================================================================
-#======================================================================================
+#=================================LOGIN AFTER CAPTCHA=====================================================
 @api_view(['POST'])
 def login(request):
+    email = request.data.get('email')
+    password = request.data.get('password')
+    captcha_key = request.data.get('captcha_key')
+    captcha_response = request.data.get('captcha_response')
+
+    # Check if email, password, and captcha fields are provided
+    if not email or not password or not captcha_key or not captcha_response:
+        return Response({'success': False, 'error': 'Please provide email, password, captcha key, and captcha response'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Verify CAPTCHA
+    if not CaptchaStore.objects.filter(hashkey=captcha_key).exists():
+        return Response({'success': False, 'error': 'Invalid captcha key'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    captcha = CaptchaStore.objects.get(hashkey=captcha_key)
+    if not captcha.response.lower() == captcha_response.lower():
+        print("captcha.response:\n",captcha.response)
+        print("captcha_response:\n",captcha_response)
+        
+        return Response({'success': False, 'error': 'Invalid captcha response'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Check if email exists in the database
     try:
-        #TODO: return id , fisrat and lastname in the response -->DONE
-        # Get request data
-        email = request.data.get('email')
-        password = request.data.get('password')
+        doctor = headDoctor.objects.get(email=email)
+        if check_password(password, doctor.password):
+            # Generate JWT token
+            token = generate_jwt_token(doctor.id)
+            return Response({
+                'success': True,
+                'id': doctor.id,
+                'firstName': doctor.firstName,
+                'lastName': doctor.lastName,
+                'token': token,
+                'message': 'Login successful'
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({'success': False, 'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    except headDoctor.DoesNotExist:
+        return Response({'success': False, 'error': 'Email does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+
+#=======================================================================================
+
+@api_view(['POST'])
+def delete(request):
+    try: 
+        doctor_id = request.data.get('doctor_id')
 
         # Check if both email and password are provided
-        if email is None or password is None:
-            return Response({'success': False, 'message': 'Please provide both email and password'}, status=400)
+        if doctor_id is None:
+            return Response({'success': False, 'message': 'Doctor id is missing.'}, status=400)
+        try:
+            # Retrieve the doctor object based on the ID
+            doctor = headDoctor.objects.get(id=doctor_id)
+        except ObjectDoesNotExist:
+            # Return failure response if doctor does not exist
+            return Response({
+                'success': False,
+                'message': 'Doctor does not exist.'
+            })
 
-        # Check if email already exists in the database
-        if headDoctor.objects.filter(email=email).exists():
-            #compare password (methode 2)
-            head=headDoctor.objects.get(email=email)
-            print("My doctor object:\n",head)
-            print("Database password:\n",head.password)
-            print("User entered password:\n",password)
+        # Proceed with deleting the doctor
+        doctor.delete()
 
-            print("Manual password checker:\n",type(password))
+        return Response({'success': True, 'message': 'Doctor deleted successfully.'}, status=200)
         
-            # Check if user exists and password matches
-            if head is None or not check_password(password, head.password):
-                return Response({'success': False,'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-            else:
-                #TODO:set an expiration date
-                token=generate_jwt_token(head.id)
-                print("My token: ",token)
-                return Response({'success': True,"id":head.id,"firstName":head.firstName,"lastName":head.lastName,'token': token,'message': 'Login successful'})
-        else:
-            # Email does not exist in the database
-            return Response({'success': False, 'error': 'Email does not exist'}, status=400)
     except OperationalError as e:
-        # Return an error response for database errors
-        return Response({'success': False, 'message': f'Database error: {e}'}, status=400)
+            # Return an error response for database errors
+            return Response({'success': False, 'message': f'Database error: {e}'}, status=400)
     except Exception as e:
-        # Return a generic error response for other exceptions
-        return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)
-
+            # Return a generic error response for other exceptions
+            return Response({'success': False, 'message': f'An error occurred: {e}'}, status=500)

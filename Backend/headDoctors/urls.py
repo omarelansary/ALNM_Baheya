@@ -5,6 +5,9 @@ urlpatterns = [
 
     path( 'headDoctors/login', views.login),
     path( 'headDoctors/getHeadDoctors', views.getHeadDoctors),
+    path( 'headDoctors/delete', views.delete),
+
+
 
     
     

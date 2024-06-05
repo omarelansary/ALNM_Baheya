@@ -3,6 +3,8 @@ import datetime
 from Authentication.Authenticator import Authenticator
 from Components.cookieHandler import CookieHandler
 from streamlit_cookies_controller import CookieController
+import time
+
 class AuthComponents:
     
     def __init__(self): 
@@ -36,10 +38,7 @@ class AuthComponents:
                 st.session_state['token'] = token
             if token_expiry_date is not None:
                 st.session_state['token_expiry_date'] = token_expiry_date
- 
-
-
-
+    '''
     def login(self, role):
         if not st.session_state.get('is_logged_in'):
             if not self.check_cookie_session():
@@ -61,6 +60,14 @@ class AuthComponents:
                         email = st.text_input("Email")
                         password = st.text_input("Password", type="password")
 
+                        # CAPTCHA
+                        captcha_key, captcha_image_url = authenticator.refresh_captcha()  # Assuming you have a method to refresh CAPTCHA
+                        
+                        # Get the URL of the CAPTCHA image
+                        # Base URL
+                        print("captcha URL:\n",captcha_image_url)
+                        st.image(base_url + captcha_image_url, use_column_width=False, width=200)
+                        captcha_response = st.text_input("Enter CAPTCHA")
                         # Create columns to center the submit button
                         col1, col2, col3 = st.columns([2, 4, 2])
                         with col2:
@@ -68,7 +75,96 @@ class AuthComponents:
 
                         # Process form submission
                         if submit_button:
-                            response = authenticator.login(role, email, password)
+                            response = authenticator.login(role, email, password, captcha_key, captcha_response)
+                            if 'token' in response:
+                                st.success("Login successful!")
+                                token=response.get('token')
+                                username=response.get('firstName') + ' ' + response.get('lastName')
+                                self.set_user_session_state(is_logged_in=True,role=st.session_state['role'], token=st.session_state['token'])
+                                self.cookie_handler.set_cookie(token,username=username,role=role,id=response.get('id'))
+                            else:
+                                st.session_state['is_logged_in'] = False
+                                st.error("Login failed! Please check your email, password, and CAPTCHA.")
+                                st.write(response.get("details", "No additional information available."))
+
+                    # Buttons to switch form mode
+                    if st.button('Forgot Password'):
+                        st.session_state['form_mode'] = 'Forgot Password'
+
+                elif form_mode == "Forgot Password":
+                    with st.form("forgot_password_form"):
+                        st.subheader("Reset your password")
+
+                        # Form inputs
+                        email = st.text_input("Email")
+                        new_password = st.text_input("New Password", type="password")
+                        confirm_password = st.text_input("Confirm Password", type="password")
+
+                        # Create columns to center the submit button
+                        col1, col2, col3 = st.columns([2,4, 2])
+                        with col2:
+                            submit_button = st.form_submit_button("Reset Password", use_container_width=True)
+
+                        # Process form submission
+                        if submit_button:
+                            if new_password != confirm_password:
+                                st.error("Passwords do not match! Please try again.")
+                            else:
+                                response = authenticator.reset_password(role, email, new_password)
+                                if response['success']:
+                                    st.success("Password reset successful! You can now log in with your new password.")
+                                else:
+                                    st.error("Password reset failed! Please try again.")
+                                    st.write(response.get("details", "No additional information available."))
+
+                    # Buttons to switch form mode
+                    if st.button('Login'):
+                        st.session_state['form_mode'] = 'Login'
+        else:
+            st.write("You are already logged in.")
+            st.write(f"Role: {st.session_state['role']}")
+            st.write(f"Token: {st.session_state['token']}")
+
+    '''
+    
+    def login(self, role):
+        if not st.session_state.get('is_logged_in'):
+            if not self.check_cookie_session():
+                # Initialize the authenticator
+                authenticator = Authenticator()
+
+                st.title(f"{role.capitalize()} Portal")
+
+                if 'form_mode' not in st.session_state:
+                    st.session_state['form_mode'] = 'Login'
+
+                form_mode = st.session_state['form_mode']
+
+                if form_mode == "Login":
+                    with st.form("login_form"):
+                        st.subheader("Login to your account")
+
+                        # Form inputs
+                        email = st.text_input("Email")
+                        password = st.text_input("Password", type="password")
+                        #@Mona
+                        # CAPTCHA
+                        captcha_key, captcha_image_url = authenticator.refresh_captcha()  # Assuming you have a method to refresh CAPTCHA             
+                        # Get the URL of the CAPTCHA image
+                        # Base URL
+                        print("captcha URL:\n",captcha_image_url)
+                        st.image("http://127.0.0.1:8000" + captcha_image_url, use_column_width=False, width=200)
+                        captcha_response = st.text_input("Enter the Letters You See Above:")
+
+                        # Create columns to center the submit button
+                        col1, col2, col3 = st.columns([2, 4, 2])
+                        with col2:
+                            submit_button = st.form_submit_button("Login", use_container_width=True)
+
+                        # Process form submission
+                        if submit_button:
+                            response = authenticator.login(role, email, password, captcha_key, captcha_response)
+                            time.sleep(10) # Sleep for 10 seconds
                             if 'token' in response:
                                 st.success("Login successful!")
                                 token=response.get('token')
@@ -118,8 +214,8 @@ class AuthComponents:
             st.write(f"Role: {st.session_state['role']}")
             st.write(f"Token: {st.session_state['token']}")
     # Dummy methods for the example
-   
-
+    
+    
     def check_cookie_session(self):
         if (self.cookie_handler.get_cookie()):
             return self.cookie_handler.check_token_in_config(self.cookie_handler.get_cookie())

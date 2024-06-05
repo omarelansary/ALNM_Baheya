@@ -9,7 +9,7 @@ urlpatterns = [
     path( 'dataScientists/export_assessments_to_excel', views.export_assessments_to_excel),
     path( 'dataScientists/updateAssessmentToReviewed', views.updateAssessmentToReviewed),
     path( 'dataScientists/getAllAssessmentsByStatus', views.getAllAssessmentsByStatus),
-       
+    path( 'dataScientists/delete', views.delete),
        
 
 ]
