@@ -16,16 +16,16 @@ def app():
     # Instantiate cache object
     Network = Networking()
     cacheInMemory = LocalCache()
-    df = cacheInMemory.get_allAssessment_byStatus(1)
+    df_groundTruthAdded = cacheInMemory.get_allAssessment_byStatus(2)
     
      # Display the dataframe
-    st.write(df) 
+    st.write(df_groundTruthAdded) 
     # Display the dataframe
     #st.dataframe(df)
-    if not df.empty:
+    if not df_groundTruthAdded.empty:
         # Initialize session state for reviewed patients and selected row
         if 'reviewed_patients' not in st.session_state:
-            st.session_state.reviewed_patients = pd.DataFrame()
+            st.session_state.reviewed_patients = cacheInMemory.get_allAssessment_byStatus(3)
         if 'selected_row' not in st.session_state:
             st.session_state.selected_row = pd.DataFrame()
 
@@ -36,8 +36,8 @@ def app():
         if st.button("Review"):
             if mrn_input.isdigit():
                 mrn_input = int(mrn_input)
-                if mrn_input in df['MRN'].values:
-                    st.session_state.selected_row = df[df['MRN'] == mrn_input]
+                if mrn_input in df_groundTruthAdded['MRN'].values:
+                    st.session_state.selected_row = df_groundTruthAdded[df_groundTruthAdded['MRN'] == mrn_input]
                     st.write("Selected Row Displayed Horizontally:")
                     st.table(st.session_state.selected_row)
                 else:
@@ -48,9 +48,15 @@ def app():
         # Reviewed button to confirm review
         if not st.session_state.selected_row.empty:
             if st.button("Reviewed", key="reviewed_button"):
-                st.success("Reviewed button clicked successfully")
-                st.session_state.reviewed_patients = pd.concat([st.session_state.reviewed_patients, st.session_state.selected_row])
-                st.session_state.selected_row = pd.DataFrame()  # Clear the selected row after reviewing
+                try:
+                    response = Network.post_updateAssessmentToReviewed([mrn_input])
+                    if response:
+                        st.success(f"MRN: {mrn_input} is Reviewed Successfully")
+                        st.session_state.reviewed_patients = cacheInMemory.get_allAssessment_byStatus(3) 
+                except Exception as e:
+                    st.error(f"An error occurred: {e}")   
+
+                
 
         # Display reviewed patients
         if st.session_state.reviewed_patients.empty:
