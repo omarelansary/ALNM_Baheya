@@ -109,6 +109,8 @@ def getAllAssessmentsByStatus(request):
 
 #============================================================================
 
+#=======================Update assesment by 
+
 
 ###Trial========================================
 from django.http import JsonResponse
@@ -120,7 +122,13 @@ def getDashboardData(request):
 
     # Read the Excel file
     try:
-        data = pd.read_excel('cairouniversity_final_excel.xlsx')
+        data=None
+        if os.name == 'posix':
+            #This is for Linux or Mac OS
+            data = pd.read_excel('../../Backend/cairouniversity_final_excel.xlsx')
+        else:
+            #This is for windows OS
+            data = pd.read_excel('../Backend/cairouniversity_final_excel.xlsx')
     except FileNotFoundError:
         return Response({'success':False,"error": "File not found"}, status=404)
     except Exception as e:
@@ -360,7 +368,14 @@ def export_assessments_to_excel(request):
         df = df[ordered_columns]
 
         # Define the path to save the Excel file
-        file_path = 'cairouniversity_final_excel.xlsx'
+        file_path = None
+        if os.name == 'posix':
+            #This is for Linux or Mac OS
+            file_path = pd.read_excel('../../Backend/cairouniversity_final_excel.xlsx')
+        else:
+            #This is for windows OS
+            file_path = pd.read_excel('../Backend/cairouniversity_final_excel.xlsx')
+
         sheet_name = 'Sheet1'
 
         # Check if the file exists

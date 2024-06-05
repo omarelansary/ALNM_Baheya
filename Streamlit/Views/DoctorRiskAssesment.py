@@ -376,6 +376,7 @@ def app(userAuthData):
     Network = Networking()
     cacheInMemory = LocalCache()
     Cache = LocalCache()
+    modal = Modal("Added Biopsy Result", key="result-modal", padding=10, max_width=430)
     df = Cache.get_assessment_byDocId(userAuthData['id'])
     st.sidebar.title("Breast Cancer Metastasis Risk Prediction")
     menu_options = ["Enter New Patient", "Add Biopsy Result", "Choose Patient (edit, predict or delete)"]
@@ -454,38 +455,43 @@ def app(userAuthData):
                     new_ground_truth_values = [changes[index]['ground_truth'] for index in changed_rows]
 
                     # Create a DataFrame with the extracted values
-                    omr_change = pd.DataFrame({
-                        'MRN': new_MRN_values,
-                        'ground_truth': new_ground_truth_values
-                    })
-                    mrn = new_MRN_values.iloc[0] if not new_MRN_values.empty else "N/A"
-                    new_ground_truth = new_ground_truth_values[0] if new_ground_truth_values else "N/A"
-                    message = f"You have Added Biopsy Result with Value {new_ground_truth} for MRN {mrn}"
-                    # Display the new DataFrame
-                    modal = Modal("Added Biopsy Result", key="result-modal", padding=10, max_width=430)
+                    try:
+                        response = Network.post_setGroundTruth(userAuthData['id'],new_MRN_values.iloc[0],new_ground_truth_values[0])
+                        if response:
+                            st.success('Saved Successfully')
+                            mrn = new_MRN_values.iloc[0] if not new_MRN_values.empty else "N/A"
+                            new_ground_truth = new_ground_truth_values[0] if new_ground_truth_values else "N/A"
+                            st.session_state['modal_message'] = f"Successfully added with Value {new_ground_truth} for MRN {mrn}"
+                            # Display the new DataFrame
+                            modal.open()
+
+                    except Exception as e:
+                        st.error(f"An error occurred: {e}")   
+
+
 
                 # Button to open the modal
                     
 
 
-                    # Check if modal is open
-                    if modal.is_open():
-                        # Content inside the modal based on the value of 'case'
-                        with modal.container():
+                # Check if modal is open
+                if modal.is_open():
+                    # Content inside the modal based on the value of 'case'
+                    with modal.container():
+                    
+                        content = f"""
+                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                                <h1 style="color: green; font-size: 28px; font-family: 'Open Sans', sans-serif;">{st.session_state['modal_message']}</h1>
+                            </div>
+                        """
                         
-                            content = """
-                                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                                    <h1 style="color: green; font-size: 28px; font-family: 'Open Sans', sans-serif;">{message}</h1>
-                                </div>
-                            """
-                            
-                            st.markdown(content, unsafe_allow_html=True)
+                        st.markdown(content, unsafe_allow_html=True)
 
-                            # Set the height of the modal dynamically
-                            st.markdown(
-                                f"<style>.streamlit-modal .element-container{{height: auto}}</style>",
-                                unsafe_allow_html=True
-                            )             
+                        # Set the height of the modal dynamically
+                        st.markdown(
+                            f"<style>.streamlit-modal .element-container{{height: auto}}</style>",
+                            unsafe_allow_html=True
+                        )             
 
             else:
                 st.write("No changes detected.")
