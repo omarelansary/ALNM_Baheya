@@ -435,11 +435,11 @@ def updateAssessmentToReviewed(request):
 @api_view(['POST'])
 def delete(request):
     try: 
-        dataScientist_id = request.data.get('doctor_id')
+        dataScientist_id = request.data.get('dataScientist_id')
 
         # Check if both email and password are provided
         if dataScientist_id is None:
-            return Response({'success': False, 'message': 'Doctor id is missing.'}, status=400)
+            return Response({'success': False, 'message': 'DataScientist id is missing.'}, status=400)
         try:
             # Retrieve the doctor object based on the ID
             dataScientist = DataScientist.objects.get(id=dataScientist_id)
