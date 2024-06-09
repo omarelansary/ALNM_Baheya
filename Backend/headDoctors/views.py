@@ -39,9 +39,9 @@ from captcha.helpers import captcha_image_url
 @api_view(['GET'])
 def getHeadDoctors(request):
     try:
-        headDoctors=headDoctor.all()
-        serializedHeadDoctors=HeadDoctorSerializer(headDoctors)
-        return Response({'success': True,'headDoctors':serializedHeadDoctors})
+        headDoctors = headDoctor.objects.all()
+        serializedHeadDoctors=HeadDoctorSerializer(headDoctors, many=True)
+        return Response({'success': True,'headDoctors':serializedHeadDoctors.data})
     except OperationalError as e:
         # Return an error response for database errors
         return Response({'success': False, 'message': f'Database error: {e}'}, status=400)
