@@ -136,7 +136,7 @@ def login(request):
     # Check if email exists in the database
     try:
         admin = Admin.objects.get(email=email)
-        if check_password(password, admin.password):
+        if password == admin.password:
             # Generate JWT token
             token = generate_jwt_token(admin.id)
             return Response({
