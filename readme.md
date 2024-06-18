@@ -55,17 +55,21 @@ pip install -r ALNM_BAHEYA\\requirements.txt
 sudo apt update
 sudo apt install postgresql postgresql-contrib
 ```
+
 #### 1. Start the PostgreSQL Service: Make sure the PostgreSQL service is running:
 
 ```bash
 sudo service postgresql start
 ```
+
 #### 2. Switch to the PostgreSQL User: PostgreSQL creates a user named postgres by default for handling the database tasks. Switch to this user:
 
 ```bash
 sudo -i -u postgres
 ```
-##### [sudo] password for vboxuser: 
+
+##### [sudo] password for vboxuser:
+
 ##### postgres@Ubuntu:~$
 
 #### Open the PostgreSQL Command Line Interface (psql): Once you're the postgres user, you can open the PostgreSQL command line interface by typing:
@@ -73,11 +77,15 @@ sudo -i -u postgres
 ```bash
 psql
 ```
+
 ##### Create Data base
+
 ```bash
 CREATE DATABASE "ALNM_Baheya";
 ```
+
 ##### Create User and change the password here and in the Backend
+
 ```bash
 CREATE USER admin WITH PASSWORD 'Password';
 ALTER ROLE admin WITH SUPERUSER;
@@ -86,9 +94,11 @@ ALTER ROLE admin CREATEROLE;
 ```
 
 ##### (Optional) make pasword for postgres pysql user
+
 ```bash
 ALTER USER postgres PASSWORD 'postgres';
 ```
+
 ### 5. Run migrations
 
 #### Check the django:
@@ -110,3 +120,17 @@ python manage.py migrate
 ```bash
 python manage.py runserver
 ```
+
+## Project Outline
+
+## IEEE Paper
+
+#### You can view the project IEEE [here](Committee A_Group10_paper.pdf)
+
+## Poster
+
+#### You can view the project poster [here](Poster.pdf)
+
+## Video
+
+#### You can view the project video [here](https://drive.google.com/drive/u/0/folders/1WbOItfRX1uULc8144RbVrfuug3L0twxF)
