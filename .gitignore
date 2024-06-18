@@ -1,0 +1,4 @@
+#Ignoring the python env files when commiting
+/ALNM_BAHEYA_env
+__pycache__/
+*.py[cod]
