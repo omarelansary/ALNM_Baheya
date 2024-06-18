@@ -125,7 +125,7 @@ python manage.py runserver
 
 ## IEEE Paper
 
-#### You can view the project IEEE [here](Committee A_Group10_paper.pdf)
+#### You can view the project IEEE [here](Committee_A_Group10_paper.pdf)
 
 ## Poster
 
